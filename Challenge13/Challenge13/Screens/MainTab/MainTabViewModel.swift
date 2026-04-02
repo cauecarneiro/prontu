@@ -9,5 +9,5 @@ import Combine
 
 final class MainTabViewModel: ObservableObject {
     @Published var selectedTab: TabItens = .agenda
-    
+    let agendaFlowCoordinator = AgendaFlowCoordinator()
 }

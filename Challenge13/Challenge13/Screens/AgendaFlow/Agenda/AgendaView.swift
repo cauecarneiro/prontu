@@ -9,11 +9,23 @@ import SwiftUI
 
 struct AgendaView: View {
     
+    @ObservedObject var viewModel: AgendaViewModel
+    
     var body: some View {
-        Text("Hello, world!")
+        VStack {
+            Text("Hello, Agenda!")
+            
+            Button("Create Appointment") {
+                viewModel.navigateToCreateAppointment()
+            }
+            
+            Button("Details of Appointment") {
+                viewModel.navigateToAppointmentDetails(appointment: .init())
+            }
+        }
     }
 }
 
 #Preview {
-    AgendaView()
+    AgendaView(viewModel: .init(coordinator: .init()))
 }

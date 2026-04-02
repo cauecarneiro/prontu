@@ -8,5 +8,17 @@
 import Combine
 
 final class AgendaViewModel: ObservableObject {
+    weak private var coordinator: (any AgendaCoordinateProtocol)?
     
+    init(coordinator: some AgendaFlowCoordinator) {
+        self.coordinator = coordinator
+    }
+    
+    func navigateToCreateAppointment() {
+        coordinator?.navigateToCreateAppointment()
+    }
+    
+    func navigateToAppointmentDetails(appointment: Appointment) {
+        coordinator?.navigateToAppointmentDetails(appointment: appointment)
+    }
 }

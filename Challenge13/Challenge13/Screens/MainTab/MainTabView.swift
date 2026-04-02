@@ -20,7 +20,7 @@ struct MainTabView: View {
     var body: some View {
         TabView(selection: $viewModel.selectedTab) {
             Tab(StringValues.agenda, systemImage: "calendar", value: .agenda) {
-                
+                CoordinateView(coordinator: viewModel.agendaFlowCoordinator)
             }
             
             Tab(StringValues.register, systemImage: "person", value: .agenda) {
