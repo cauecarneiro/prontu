@@ -8,11 +8,32 @@
 import SwiftUI
 
 struct MainTabView: View {
+    
+    @ObservedObject var viewModel: MainTabViewModel
+    
+    struct StringValues {
+        static var agenda: String { "Agenda" }
+        static var register: String { "Register" }
+        static var report: String { "Report" }
+    }
+    
     var body: some View {
-        Text("Hello, World!")
+        TabView(selection: $viewModel.selectedTab) {
+            Tab(StringValues.agenda, systemImage: "calendar", value: .agenda) {
+                
+            }
+            
+            Tab(StringValues.register, systemImage: "person", value: .agenda) {
+                
+            }
+            
+            Tab(StringValues.report, systemImage: "calendar", value: .agenda) {
+                
+            }
+        }
     }
 }
 
 #Preview {
-    MainTabView()
+    MainTabView(viewModel: .init())
 }
