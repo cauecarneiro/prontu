@@ -7,7 +7,7 @@
 
 import Combine
 
-final class MainTabViewModel: ObservableObject {
+final class MainTabCoordinator: ObservableObject {
     @Published var selectedTab: TabItens = .agenda
     let agendaFlowCoordinator = AgendaFlowCoordinator()
     

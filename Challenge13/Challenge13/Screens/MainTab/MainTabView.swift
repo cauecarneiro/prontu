@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MainTabView: View {
     
-    @ObservedObject var viewModel: MainTabViewModel
+    @ObservedObject var coordinator: MainTabCoordinator
     
     struct StringValues {
         static var agenda: String { "Agenda" }
@@ -18,9 +18,9 @@ struct MainTabView: View {
     }
     
     var body: some View {
-        TabView(selection: $viewModel.selectedTab) {
+        TabView(selection: $coordinator.selectedTab) {
             Tab(StringValues.agenda, systemImage: "calendar", value: .agenda) {
-                CoordinateView(coordinator: viewModel.agendaFlowCoordinator)
+                CoordinateView(coordinator: coordinator.agendaFlowCoordinator)
             }
             
             Tab(StringValues.register, systemImage: "person", value: .register) {
@@ -35,5 +35,5 @@ struct MainTabView: View {
 }
 
 #Preview {
-    MainTabView(viewModel: .init())
+    MainTabView(coordinator: .init())
 }
