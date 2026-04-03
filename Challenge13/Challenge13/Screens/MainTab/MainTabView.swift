@@ -28,7 +28,7 @@ struct MainTabView: View {
             }
             
             Tab(StringValues.report, systemImage: "calendar", value: .report) {
-                
+                CoordinateView(coordinator: coordinator.appointmentReportCoordinator)
             }
         }
     }

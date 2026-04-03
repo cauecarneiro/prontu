@@ -9,11 +9,23 @@ import SwiftUI
 
 struct AppointmentReportView: View {
     
+    @ObservedObject var viewModel: AppointmentReportViewModel
+    
     var body: some View {
-        Text("Hello, AppointmentReportView!")
+        VStack {
+            Text("Hello, AppointmentReportView!")
+
+            Button("Client History") {
+                viewModel.navigateToClientDetails(client: .init())
+            }
+            
+            Button("Open Chatbot") {
+                viewModel.presentToChatbot()
+            }
+        }
     }
 }
 
 #Preview {
-    AppointmentReportView()
+    AppointmentReportView(viewModel: .init(coordinator: AppointmentReportFlowCoordinator()))
 }

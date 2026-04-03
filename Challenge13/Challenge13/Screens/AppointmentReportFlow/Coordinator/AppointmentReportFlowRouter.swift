@@ -1,0 +1,15 @@
+//
+//  AppointmentReportFlowRouter.swift
+//  Challenge13
+//
+//  Created by Caio Mandarino on 03/04/26.
+//
+
+import Foundation
+
+enum AppointmentReportFlowRouter: Hashable, Identifiable {
+    var id: String { String(describing: self) }
+    
+    case searchChatBot
+    case clientHistory(Client, [Appointment]) // pensar se faz sentido passar o client e os appointments relacionados, ou só passar os appointment
+}

@@ -18,9 +18,9 @@ final class AgendaFlowCoordinator: Coordinator {
         switch route {
         case .createAppointment:
             CreateAppointmentView()
-        case .editAppointment(let Appointment): // Possível que vai precisar passar para essa tela qual appointment deve ser editado
+        case .editAppointment(let Appointment): // TODO: Possível que vai precisar passar para essa tela qual appointment deve ser editado
             EditCardAppointmentView()
-        case .appointmentDetails(let Appointment): // Mesma coisa, passar para essa tela qual o appointment que deve ser mostrado
+        case .appointmentDetails(let Appointment): // TODO: Mesma coisa, passar para essa tela qual o appointment que deve ser mostrado
             AppointmentDetailsView(viewModel: .init(coordinator: self))
         }
     }

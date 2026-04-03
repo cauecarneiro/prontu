@@ -8,5 +8,17 @@
 import Combine
 
 final class AppointmentReportViewModel: ObservableObject {
+    weak private var coordinator: (any AppointmentReportCoordinatorProtocol)?
     
+    init(coordinator: some AppointmentReportCoordinatorProtocol) {
+        self.coordinator = coordinator
+    }
+    
+    func navigateToClientDetails(client: Client) {
+        coordinator?.navigateToClientHistory(client: client, appointments: []) // TODO: Filtrar pelo client quais os appointments
+    }
+    
+    func presentToChatbot() {
+        coordinator?.presentSearchChatbot()
+    }
 }
