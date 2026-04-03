@@ -23,11 +23,11 @@ struct MainTabView: View {
                 CoordinateView(coordinator: viewModel.agendaFlowCoordinator)
             }
             
-            Tab(StringValues.register, systemImage: "person", value: .agenda) {
-                
+            Tab(StringValues.register, systemImage: "person", value: .register) {
+
             }
             
-            Tab(StringValues.report, systemImage: "calendar", value: .agenda) {
+            Tab(StringValues.report, systemImage: "calendar", value: .report) {
                 
             }
         }
