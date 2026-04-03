@@ -8,5 +8,17 @@
 import Combine
 
 final class ClientsListViewModel: ObservableObject {
+    weak var coordinator: (any ClientListCoordinatorProtocol)?
     
+    init(coordinator: some ClientListCoordinatorProtocol) {
+        self.coordinator = coordinator
+    }
+    
+    func presentCreateClient() {
+        coordinator?.presentToCreateClient()
+    }
+    
+    func navigateToEditClient(client: Client) {
+        coordinator?.navigateToEditClient(client: client)
+    }
 }

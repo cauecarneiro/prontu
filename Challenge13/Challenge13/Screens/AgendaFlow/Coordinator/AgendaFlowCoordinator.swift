@@ -25,19 +25,19 @@ final class AgendaFlowCoordinator: Coordinator {
         }
     }
     
-    func navigateTo(_ route: AgendaFlowRouter) {
+    private func navigateTo(_ route: AgendaFlowRouter) {
         navigationController.push(router: route)
     }
     
-    func presentTo(_ route: AgendaFlowRouter) {
+    private func presentTo(_ route: AgendaFlowRouter) {
         navigationController.presentSheet(router: route)
     }
     
-    func dismissNavigation() {
+    private func dismissNavigation() {
         navigationController.pop()
     }
     
-    func dismissPresentation() {
+    private func dismissPresentation() {
         navigationController.dismissSheet()
     }
 }

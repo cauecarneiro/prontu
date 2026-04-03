@@ -24,7 +24,7 @@ struct MainTabView: View {
             }
             
             Tab(StringValues.register, systemImage: "person", value: .register) {
-
+                CoordinateView(coordinator: coordinator.registerFlowCoordinator)
             }
             
             Tab(StringValues.report, systemImage: "calendar", value: .report) {

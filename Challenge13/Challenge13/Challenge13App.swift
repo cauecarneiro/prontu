@@ -11,7 +11,7 @@ import SwiftUI
 struct Challenge13App: App {
     var body: some Scene {
         WindowGroup {
-            MainTabView(viewModel: .init())
+            MainTabView(coordinator: .init())
         }
     }
 }

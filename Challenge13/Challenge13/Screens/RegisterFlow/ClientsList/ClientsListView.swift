@@ -9,11 +9,23 @@ import SwiftUI
 
 struct ClientsListView: View {
     
+    @ObservedObject var viewModel: ClientsListViewModel
+    
     var body: some View {
-        Text("Hello, World!")
+        VStack {
+            Text("Hello, ClientsListView!")
+            
+            Button("Navigate To Create Client") {
+                viewModel.presentCreateClient()
+            }
+            
+            Button("Navigate To Edit Client") {
+                viewModel.navigateToEditClient(client: .init())
+            }
+        }
     }
 }
 
 #Preview {
-    ClientsListView()
+    ClientsListView(viewModel: .init(coordinator: RegisterFlowCoordinator()))
 }

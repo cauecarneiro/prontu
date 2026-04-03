@@ -10,5 +10,6 @@ import Combine
 final class MainTabCoordinator: ObservableObject {
     @Published var selectedTab: TabItens = .agenda
     let agendaFlowCoordinator = AgendaFlowCoordinator()
+    let registerFlowCoordinator = RegisterFlowCoordinator()
     
 }
