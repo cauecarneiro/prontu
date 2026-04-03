@@ -9,10 +9,8 @@ import SwiftUI
 
 protocol Coordinator {
     associatedtype RootView: View
-    associatedtype DestinationView: View
-    associatedtype SheetDestinationView: View
-    
-    associatedtype Router: Hashable
+    associatedtype DestinationView: View    
+    associatedtype Router: Hashable & Identifiable
     
     var navigationController: NavigationController { get set }
     

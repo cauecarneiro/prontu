@@ -7,7 +7,9 @@
 
 import Foundation
 
-enum AgendaFlowRouter: Hashable {
+enum AgendaFlowRouter: Hashable & Identifiable {
+    var id: String { String(describing: self) }
+    
     case createAppointment
     case editAppointment(Appointment)
     case appointmentDetails(Appointment)

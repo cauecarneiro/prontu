@@ -8,15 +8,24 @@
 import SwiftUI
 
 @Observable final class NavigationController {
-    var path: NavigationPath = .init()
+    var navigationPath: NavigationPath = .init()
+    var sheetPath: SheetPath = .init()
     
     func push<T: Hashable>(router: T) {
-        path.append(router)
+        navigationPath.append(router)
     }
     
     func pop() {
-        guard !path.isEmpty else { return }
+        guard !navigationPath.isEmpty else { return }
         
-        path.removeLast()
+        navigationPath.removeLast()
+    }
+    
+    func presentSheet<T: Hashable & Identifiable>(router: T, onDismiss: (() -> Void)? = nil ) {
+        sheetPath.setSheet(router, onDismiss: onDismiss)
+    }
+    
+    func dismissSheet() {
+        sheetPath = .init()
     }
 }

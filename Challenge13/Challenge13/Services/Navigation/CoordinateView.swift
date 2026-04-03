@@ -13,12 +13,16 @@ struct CoordinateView<C: Coordinator>: View {
     var body: some View {
         @Bindable var navigationController = coordinator.navigationController
         
-        NavigationStack(path: $navigationController.path) {
+        NavigationStack(path: $navigationController.navigationPath) {
             coordinator.rootView
                 .navigationDestination(for: C.Router.self) { screen in
                     coordinator.coordinate(to: screen)
                 }
+                .sheetDestination(for: C.Router.self) { screen in
+                    coordinator.coordinate(to: screen)
+                }
         }
+        .sheet(for: $navigationController.sheetPath)
     }
 }
 

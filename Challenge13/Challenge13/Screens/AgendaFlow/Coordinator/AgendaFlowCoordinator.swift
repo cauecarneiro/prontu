@@ -29,15 +29,23 @@ final class AgendaFlowCoordinator: Coordinator {
         navigationController.push(router: route)
     }
     
-    func dismiss() {
+    func presentTo(_ route: AgendaFlowRouter) {
+        navigationController.presentSheet(router: route)
+    }
+    
+    func dismissNavigation() {
         navigationController.pop()
+    }
+    
+    func dismissPresentation() {
+        navigationController.dismissSheet()
     }
 }
 
 extension AgendaFlowCoordinator: AgendaCoordinateProtocol {
 
     func navigateToCreateAppointment() {
-        navigateTo(.createAppointment)
+        presentTo(.createAppointment)
     }
     
     func navigateToAppointmentDetails(appointment: Appointment) {
@@ -49,6 +57,6 @@ extension AgendaFlowCoordinator: AgendaCoordinateProtocol {
 
 extension AgendaFlowCoordinator: AppointmentDetailsCoordinateProtocol {
     func navigateToEditAppointment(appointment: Appointment) {
-        navigateTo(.editAppointment(appointment))
+        presentTo(.editAppointment(appointment))
     }
 }
