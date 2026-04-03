@@ -9,11 +9,19 @@ import SwiftUI
 
 struct CreateAppointmentView: View {
     
+    @ObservedObject var viewModel: CreateAppointmentViewModel
+    
     var body: some View {
-        Text("Hello, CreateAppointmentView!")
+        VStack {
+            Text("Hello, CreateAppointmentView!")
+            
+            Button("Create Client") {
+                viewModel.presentCreateClient()
+            }
+        }
     }
 }
 
 #Preview {
-    CreateAppointmentView()
+    CreateAppointmentView(viewModel: .init(coordinator: AgendaFlowCoordinator()))
 }

@@ -9,4 +9,13 @@ import Combine
 
 final class CreateAppointmentViewModel: ObservableObject {
     
+    weak private var coordinator: (any CreateAppointmentCoordinatorProtocol)?
+    
+    init(coordinator: some CreateAppointmentCoordinatorProtocol) {
+        self.coordinator = coordinator
+    }
+    
+    func presentCreateClient() {
+        coordinator?.presentCreateClient()
+    }
 }

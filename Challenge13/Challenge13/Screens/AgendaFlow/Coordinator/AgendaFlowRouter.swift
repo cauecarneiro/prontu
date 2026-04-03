@@ -11,6 +11,7 @@ enum AgendaFlowRouter: Hashable & Identifiable {
     var id: String { String(describing: self) }
     
     case createAppointment
+    case createClient
     case editAppointment(Appointment)
     case appointmentDetails(Appointment)
 }

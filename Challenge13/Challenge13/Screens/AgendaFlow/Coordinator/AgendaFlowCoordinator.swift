@@ -16,11 +16,13 @@ final class AgendaFlowCoordinator: Coordinator {
     
     @MainActor @ViewBuilder func coordinate(to route: AgendaFlowRouter) -> some View {
         switch route {
+        case .createClient:
+            CreateClientView()
         case .createAppointment:
-            CreateAppointmentView()
-        case .editAppointment(let Appointment): // TODO: Possível que vai precisar passar para essa tela qual appointment deve ser editado
+            CreateAppointmentView(viewModel: .init(coordinator: self))
+        case .editAppointment(let appointment): // TODO: Possível que vai precisar passar para essa tela qual appointment deve ser editado
             EditCardAppointmentView()
-        case .appointmentDetails(let Appointment): // TODO: Mesma coisa, passar para essa tela qual o appointment que deve ser mostrado
+        case .appointmentDetails(let appointment): // TODO: Mesma coisa, passar para essa tela qual o appointment que deve ser mostrado
             AppointmentDetailsView(viewModel: .init(coordinator: self))
         }
     }
@@ -29,7 +31,7 @@ final class AgendaFlowCoordinator: Coordinator {
         navigationController.push(router: route)
     }
     
-    private func presentTo(_ route: AgendaFlowRouter) {
+    private func presentTo(_ route: AgendaFlowRouter, onDismiss: (() -> Void)? = nil) {
         navigationController.presentSheet(router: route)
     }
     
@@ -45,7 +47,7 @@ final class AgendaFlowCoordinator: Coordinator {
 extension AgendaFlowCoordinator: AgendaCoordinateProtocol {
 
     func navigateToCreateAppointment() {
-        presentTo(.createAppointment)
+        navigateTo(.createAppointment)
     }
     
     func navigateToAppointmentDetails(appointment: Appointment) {
@@ -58,5 +60,11 @@ extension AgendaFlowCoordinator: AgendaCoordinateProtocol {
 extension AgendaFlowCoordinator: AppointmentDetailsCoordinateProtocol {
     func navigateToEditAppointment(appointment: Appointment) {
         presentTo(.editAppointment(appointment))
+    }
+}
+
+extension AgendaFlowCoordinator: CreateAppointmentCoordinatorProtocol {
+    func presentCreateClient() {
+        presentTo(.createClient)
     }
 }
