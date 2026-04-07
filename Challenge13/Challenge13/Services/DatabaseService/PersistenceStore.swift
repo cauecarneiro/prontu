@@ -10,11 +10,11 @@ import SwiftData
 @ModelActor
 actor PersistenceStore {
     
-    init(modelContainer: ModelContainer) {
-        let context = ModelContext(modelContainer)
+    init(container: ModelContainer) {
+        let context = ModelContext(container)
         let executor = DefaultSerialModelExecutor(modelContext: context)
         self.modelExecutor = executor
-        self.modelContainer = modelContainer
+        self.modelContainer = container
     }
         
     func insert<T: PersistentModel>(_ model: T) {
