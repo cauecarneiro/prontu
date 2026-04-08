@@ -60,13 +60,6 @@ final class DatabaseService {
         }
     }
     
-    /**
-     Retorna todos os elementos do banco de dados
-     */
-    func getAllElements<T: PersistentModel>() -> [T] {
-        self.getAllElements(predicate: nil, sortBy: [])
-    }
-    
     private func saveContext() {
         do {
             try context.save()
