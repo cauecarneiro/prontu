@@ -21,5 +21,9 @@ struct AppointmentDetailsView: View {
 }
 
 #Preview {
-    AppointmentDetailsView(viewModel: .init(coordinator: AgendaFlowCoordinator()))
+    
+    let coordinator = makeAgendaFlowCoordinator()
+    let databaseService = DatabaseService(context: makeMainContext())
+    
+    AppointmentDetailsView(viewModel: .init(coordinator: coordinator))
 }

@@ -13,9 +13,9 @@ final class MainTabCoordinator: ObservableObject {
     let registerFlowCoordinator: RegisterFlowCoordinator
     let appointmentReportCoordinator: AppointmentReportFlowCoordinator
     
-    init() {
+    init(databaseService: DatabaseService) {
         self.selectedTab = .agenda
-        self.agendaFlowCoordinator = AgendaFlowCoordinator()
+        self.agendaFlowCoordinator = AgendaFlowCoordinator(databaseService: databaseService)
         self.registerFlowCoordinator = RegisterFlowCoordinator()
         self.appointmentReportCoordinator = AppointmentReportFlowCoordinator()
     }
