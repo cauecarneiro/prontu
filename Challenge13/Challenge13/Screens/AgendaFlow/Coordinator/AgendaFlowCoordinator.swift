@@ -11,8 +11,14 @@ import SwiftUI
 final class AgendaFlowCoordinator: Coordinator {
     
     var navigationController: NavigationController = .init()
+    private let databaseService: DatabaseService
     
-    @MainActor @ViewBuilder var rootView: some View { AgendaView(viewModel: .init(coordinator: self)) }
+    init(databaseService: DatabaseService) {
+        self.navigationController = .init()
+        self.databaseService = databaseService
+    }
+    
+    @MainActor @ViewBuilder var rootView: some View { AgendaView(viewModel: .init(coordinator: self, databaseService: databaseService)) }
     
     @MainActor @ViewBuilder func coordinate(to route: AgendaFlowRouter) -> some View {
         switch route {

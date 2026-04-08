@@ -27,5 +27,8 @@ struct AgendaView: View {
 }
 
 #Preview {
-    AgendaView(viewModel: .init(coordinator: .init()))
+    let coordinator = makeAgendaFlowCoordinator()
+    let databaseService = DatabaseService(context: makeMainContext())
+    
+    AgendaView(viewModel: .init(coordinator: coordinator, databaseService: databaseService))
 }

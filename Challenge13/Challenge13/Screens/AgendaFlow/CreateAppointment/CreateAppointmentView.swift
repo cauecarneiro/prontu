@@ -23,5 +23,7 @@ struct CreateAppointmentView: View {
 }
 
 #Preview {
-    CreateAppointmentView(viewModel: .init(coordinator: AgendaFlowCoordinator()))
+    let coordinator = makeAgendaFlowCoordinator()
+
+    CreateAppointmentView(viewModel: .init(coordinator: coordinator))
 }
