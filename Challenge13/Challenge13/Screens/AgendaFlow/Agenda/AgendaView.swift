@@ -23,7 +23,7 @@ struct AgendaView: View {
                 viewModel.navigateToAppointmentDetails(appointment: .init())
             }
             
-            Toggle("User Authentication", isOn: $viewModel.userAuthenticated)
+            Toggle("User Authentication", isOn: $viewModel.userAuthenticated) // TODO: Remover
         }
     }
 }
@@ -32,5 +32,11 @@ struct AgendaView: View {
     let coordinator = makeAgendaFlowCoordinator()
     let databaseService = DatabaseService(context: makeMainContext())
     
-    AgendaView(viewModel: .init(coordinator: coordinator, databaseService: databaseService))
+    AgendaView(
+        viewModel: .init(
+            coordinator: coordinator,
+            databaseService: databaseService,
+            settingsStore: .shared
+        )
+    )
 }

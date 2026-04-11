@@ -38,7 +38,9 @@ struct MainTabView: View {
     MainTabView(
         coordinator: .init(
             databaseService: .init(context: makeMainContext()),
-            authenticationService: .init()
+            authenticationService: .init(),
+            screenMonitor: .shared,
+            settingsStore: .shared
         )
     )
 }

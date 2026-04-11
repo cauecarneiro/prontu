@@ -12,13 +12,23 @@ final class AgendaFlowCoordinator: Coordinator {
     
     var navigationController: NavigationController = .init()
     private let databaseService: DatabaseService
+    private let settingsStore: SettingsStore
     
-    init(databaseService: DatabaseService) {
+    init(databaseService: DatabaseService, settingsStore: SettingsStore) {
         self.navigationController = .init()
         self.databaseService = databaseService
+        self.settingsStore = settingsStore
     }
     
-    @MainActor @ViewBuilder var rootView: some View { AgendaView(viewModel: .init(coordinator: self, databaseService: databaseService)) }
+    @MainActor @ViewBuilder var rootView: some View {
+        AgendaView(
+            viewModel: .init(
+                coordinator: self,
+                databaseService: databaseService,
+                settingsStore: settingsStore
+            )
+        )
+    }
     
     @MainActor @ViewBuilder func coordinate(to route: AgendaFlowRouter) -> some View {
         switch route {

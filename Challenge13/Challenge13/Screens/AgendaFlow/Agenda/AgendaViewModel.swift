@@ -11,22 +11,28 @@ import Foundation
 final class AgendaViewModel: ObservableObject {
     weak private var coordinator: (any AgendaCoordinateProtocol)?
     private let databaseService: DatabaseService
+    private let settingsStore: SettingsStore
     private var cancellables: Set<AnyCancellable> = []
     
     @Published var appointments: [Appointment]
     
-    var userAuthenticated: Bool {
+    var userAuthenticated: Bool { // TODO: Remover
         get {
-            UserDefaults.standard.bool(forKey: UserDefaultsKeys.userEnableAuthentication)
+            settingsStore.isAuthenticationEnabled
         }
         set {
-            UserDefaults.standard.set(newValue, forKey: UserDefaultsKeys.userEnableAuthentication)
+            settingsStore.setAuthenticationEnabled(newValue)
         }
     }
     
-    init(coordinator: some AgendaCoordinateProtocol, databaseService: DatabaseService) {
+    init(
+        coordinator: some AgendaCoordinateProtocol,
+        databaseService: DatabaseService,
+        settingsStore: SettingsStore
+    ) {
         self.coordinator = coordinator
         self.databaseService = databaseService
+        self.settingsStore = settingsStore
         self.appointments = databaseService.getAllElements()
         
         observeAppointments()

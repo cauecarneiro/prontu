@@ -20,7 +20,7 @@ struct LockScreenView: View {
                             coordinator.unlockApp()
                         }
                     } catch {
-                        print("Auth error:", error.localizedDescription)
+                        print("Auth error:", error.localizedDescription) // no caso eu logo para um alerta, isso é provável de acontecer caso o usuário tire a senha do celular, dai eu mantém o bloqueio ou não?
                     }
                 }
             }
@@ -33,7 +33,9 @@ struct LockScreenView: View {
     LockScreenView(
         coordinator: .init(
             databaseService: .init(context: makeMainContext()),
-            authenticationService: .init()
+            authenticationService: .init(),
+            screenMonitor: .shared,
+            settingsStore: .shared
         )
     )
 }

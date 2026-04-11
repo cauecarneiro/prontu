@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import SwiftUI
 
 final class MainTabCoordinator: ObservableObject {
     @Published var selectedTab: TabItens
@@ -16,30 +17,39 @@ final class MainTabCoordinator: ObservableObject {
     let registerFlowCoordinator: RegisterFlowCoordinator
     let appointmentReportCoordinator: AppointmentReportFlowCoordinator
     
-    private var userEnableAuthentication: Bool {
-        get {
-            UserDefaults.standard.bool(forKey: UserDefaultsKeys.userEnableAuthentication)
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: UserDefaultsKeys.userEnableAuthentication)
-        }
-    }
-    
     private let authenticationService: AppLockValidatorService
+    private let screenMonitor: ScreenMonitorService
+    private let settingsStore: SettingsStore
     
-    init(databaseService: DatabaseService, authenticationService: AppLockValidatorService) {
+    private var settingsObservation: AnyCancellable?
+    private var scenePhaseObservation: AnyCancellable?
+    
+    init(
+        databaseService: DatabaseService,
+        authenticationService: AppLockValidatorService,
+        screenMonitor: ScreenMonitorService,
+        settingsStore: SettingsStore
+    ) {
         self.selectedTab = .agenda
-        self.agendaFlowCoordinator = AgendaFlowCoordinator(databaseService: databaseService)
+        self.agendaFlowCoordinator = AgendaFlowCoordinator(
+            databaseService: databaseService,
+            settingsStore: settingsStore
+        )
         self.registerFlowCoordinator = RegisterFlowCoordinator()
         self.appointmentReportCoordinator = AppointmentReportFlowCoordinator()
         self.authenticationService = authenticationService
+        self.screenMonitor = screenMonitor
+        self.settingsStore = settingsStore
         
-        appState = UserDefaults.standard.bool(forKey: UserDefaultsKeys.userEnableAuthentication) ? .lock : .unlock
+        appState = settingsStore.isAuthenticationEnabled ? .lock : .unlock
+        
+        observeAuthenticationSetting()
+        configureScenePhaseObservation(isEnabled: settingsStore.isAuthenticationEnabled)
     }
     
     func authentication() async throws -> Bool {
 
-        if userEnableAuthentication && authenticationService.validate() == .available {
+        if settingsStore.isAuthenticationEnabled && authenticationService.validate() == .available {
             return try await authenticationService.authenticate()
         }
         
@@ -48,5 +58,33 @@ final class MainTabCoordinator: ObservableObject {
     
     func unlockApp() {
         appState = .unlock
+    }
+    
+    private func observeAuthenticationSetting() {
+        settingsObservation = NotificationCenter.default.publisher(for: .authenticationSettingDidChange)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] notification in
+                guard let self else { return }
+                
+                let isAuthenticationEnabled =
+                    notification.userInfo?[SettingsStoreUserInfoKey.isAuthenticationEnabled] as? Bool
+                    ?? settingsStore.isAuthenticationEnabled
+                
+                configureScenePhaseObservation(isEnabled: isAuthenticationEnabled)
+            }
+    }
+    
+    private func configureScenePhaseObservation(isEnabled: Bool) {
+        scenePhaseObservation?.cancel()
+        scenePhaseObservation = nil
+        
+        guard isEnabled else { return }
+        
+        scenePhaseObservation = screenMonitor.sceneDidUpdate
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] sceneState in
+                guard let self, sceneState != .active else { return }
+                appState = .lock
+            }
     }
 }
