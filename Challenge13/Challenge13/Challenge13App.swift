@@ -11,6 +11,7 @@ import SwiftData
 @main
 struct Challenge13App: App {
     
+    @StateObject var coordinator: MainTabCoordinator
     private let databaseService: DatabaseService
     private let container: ModelContainer
     
@@ -19,12 +20,20 @@ struct Challenge13App: App {
         let container = try! ModelContainer(for: Appointment.self, Client.self, configurations: .init())
         self.container = container
         databaseService = .init(context: container.mainContext)
+        let coordinator = MainTabCoordinator(databaseService: databaseService, authenticationService: .init())
+        _coordinator = .init(wrappedValue: coordinator)
     }
     
     var body: some Scene {
         WindowGroup {
-            MainTabView(coordinator: .init(databaseService: databaseService))
-                .modelContainer(container)
+            switch coordinator.appState {
+            case .unlock:
+                MainTabView(coordinator: coordinator)
+                    .modelContainer(container)
+            case .lock:
+                LockScreenView(coordinator: coordinator)
+            }
+            
         }
     }
 }

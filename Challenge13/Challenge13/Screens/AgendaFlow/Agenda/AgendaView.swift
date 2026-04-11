@@ -22,6 +22,8 @@ struct AgendaView: View {
             Button("Details of Appointment") {
                 viewModel.navigateToAppointmentDetails(appointment: .init())
             }
+            
+            Toggle("User Authentication", isOn: $viewModel.userAuthenticated)
         }
     }
 }

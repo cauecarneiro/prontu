@@ -15,6 +15,15 @@ final class AgendaViewModel: ObservableObject {
     
     @Published var appointments: [Appointment]
     
+    var userAuthenticated: Bool {
+        get {
+            UserDefaults.standard.bool(forKey: UserDefaultsKeys.userEnableAuthentication)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: UserDefaultsKeys.userEnableAuthentication)
+        }
+    }
+    
     init(coordinator: some AgendaCoordinateProtocol, databaseService: DatabaseService) {
         self.coordinator = coordinator
         self.databaseService = databaseService

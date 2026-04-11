@@ -35,5 +35,10 @@ struct MainTabView: View {
 }
 
 #Preview {
-    MainTabView(coordinator: .init(databaseService: .init(context: makeMainContext())))
+    MainTabView(
+        coordinator: .init(
+            databaseService: .init(context: makeMainContext()),
+            authenticationService: .init()
+        )
+    )
 }
