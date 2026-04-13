@@ -21,7 +21,16 @@ final class AgendaViewModel: ObservableObject {
             settingsStore.isAuthenticationEnabled
         }
         set {
-            settingsStore.setAuthenticationEnabled(newValue)
+            let authenticationService = AppLockValidatorService()
+            
+            if newValue == false {
+                settingsStore.setAuthenticationEnabled(newValue)
+                return
+            }
+            
+            if authenticationService.validate() == .available {
+                settingsStore.setAuthenticationEnabled(newValue)
+            }
         }
     }
     

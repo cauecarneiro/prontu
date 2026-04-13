@@ -10,6 +10,7 @@ import SwiftUI
 struct LockScreenView: View {
     @ObservedObject var coordinator: MainTabCoordinator
     @Environment(\.scenePhase) var scenePhase
+    @State var error: String? = nil
     
     var body: some View {
         VStack {
@@ -18,7 +19,7 @@ struct LockScreenView: View {
                     do {
                         try await coordinator.authentication()
                     } catch {
-                        print("Auth error:", error.localizedDescription) // no caso eu logo para um alerta, isso é provável de acontecer caso o usuário tire a senha do celular, dai eu mantém o bloqueio ou não?
+                        self.error = error.localizedDescription
                     }
                 }
             }
@@ -30,9 +31,14 @@ struct LockScreenView: View {
                     do {
                         try await coordinator.authentication()
                     } catch {
-                        print("Auth error:", error.localizedDescription)
+                        self.error = error.localizedDescription
                     }
                 }
+            }
+        }
+        .alert(error ?? "", isPresented: Binding(value: $error) ) {
+            Button("OK") {
+                
             }
         }
     }

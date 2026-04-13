@@ -24,6 +24,8 @@ final class MainTabCoordinator: ObservableObject {
     private var settingsObservation: AnyCancellable?
     private var scenePhaseObservation: AnyCancellable?
     
+    private var isRunningAuthentication: Bool = false
+    
     init(
         databaseService: DatabaseService,
         authenticationService: AppLockValidatorService,
@@ -48,7 +50,11 @@ final class MainTabCoordinator: ObservableObject {
     }
     
     func authentication() async throws {
-
+        if isRunningAuthentication { return }
+        
+        isRunningAuthentication = true
+        defer { isRunningAuthentication = false }
+        
         guard settingsStore.isAuthenticationEnabled && authenticationService.validate() == .available else {
             throw NSErrorDomain(string: "Should not be called, because the user is not enabled or the lock is not available") as! any Error
         }
