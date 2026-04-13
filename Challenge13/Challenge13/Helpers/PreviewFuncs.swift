@@ -14,7 +14,10 @@ func makeAgendaFlowCoordinator() -> AgendaFlowCoordinator {
     let context = ModelContext(container)
     let databaseService = DatabaseService(context: context)
     
-    return AgendaFlowCoordinator(databaseService: databaseService)
+    return AgendaFlowCoordinator(
+        databaseService: databaseService,
+        settingsStore: .shared
+    )
 }
 
 func makeMainContext() -> ModelContext {
