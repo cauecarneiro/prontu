@@ -47,16 +47,20 @@ final class MainTabCoordinator: ObservableObject {
         configureScenePhaseObservation(isEnabled: settingsStore.isAuthenticationEnabled)
     }
     
-    func authentication() async throws -> Bool {
+    func authentication() async throws {
 
-        if settingsStore.isAuthenticationEnabled && authenticationService.validate() == .available {
-            return try await authenticationService.authenticate()
+        guard settingsStore.isAuthenticationEnabled && authenticationService.validate() == .available else {
+            throw NSErrorDomain(string: "Should not be called, because the user is not enabled or the lock is not available") as! any Error
         }
         
-        throw NSErrorDomain(string: "Should not be called, because the user is not enabled or the lock is not available") as! any Error
+        guard try await authenticationService.authenticate() else {
+            throw NSErrorDomain(string: "Authentication failed") as! any Error
+        }
+            
+        unlockApp()
     }
     
-    func unlockApp() {
+    private func unlockApp() {
         appState = .unlock
     }
     
