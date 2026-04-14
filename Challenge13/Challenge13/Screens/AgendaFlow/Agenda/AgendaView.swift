@@ -13,6 +13,13 @@ struct AgendaView: View {
     
     var body: some View {
         VStack {
+            WeekCalendarView(selectedDate: $viewModel.selectedDate)
+            
+            Text(viewModel.selectedDate, format: .dateTime.day().month().year())
+                .font(.headline)
+            
+            Spacer()
+            
             Text("Hello, Agenda!")
             
             Button("Create Appointment") {
@@ -24,6 +31,8 @@ struct AgendaView: View {
             }
             
             Toggle("User Authentication", isOn: $viewModel.userAuthenticated) // TODO: Remover
+            
+            Spacer()
         }
     }
 }

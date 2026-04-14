@@ -15,6 +15,7 @@ final class AgendaViewModel: ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
     
     @Published var appointments: [Appointment]
+    @Published var selectedDate: Date
     
     var userAuthenticated: Bool { // TODO: Remover
         get {
@@ -43,6 +44,7 @@ final class AgendaViewModel: ObservableObject {
         self.databaseService = databaseService
         self.settingsStore = settingsStore
         self.appointments = databaseService.getAllElements()
+        self.selectedDate = .now
         
         observeAppointments()
     }
