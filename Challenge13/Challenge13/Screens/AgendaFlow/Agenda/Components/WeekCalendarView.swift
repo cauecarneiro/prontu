@@ -19,33 +19,32 @@ struct WeekCalendarView: View {
     private let centeredPageIndex = 2
     
     var body: some View {
-            ScrollView(.horizontal) {
-                LazyHStack(spacing: .zero) {
-                    ForEach(weekPages) { page in
-                        WeekPageView(
-                            selectedDate: $selectedDate,
-                            page: page,
-                            namespace: currentDayNamespace,
-                            calendar: calendar
-                        )
-                        .containerRelativeFrame(.horizontal)
-                        .id(page.id)
-                    }
+        ScrollView(.horizontal) {
+            LazyHStack(spacing: .zero) {
+                ForEach(weekPages) { page in
+                    WeekPageView(
+                        selectedDate: $selectedDate,
+                        page: page,
+                        namespace: currentDayNamespace,
+                        calendar: calendar
+                    )
+                    .containerRelativeFrame(.horizontal)
+                    .id(page.id)
                 }
-                .scrollTargetLayout()
             }
-            .frame(maxHeight: 90)
-            .scrollIndicators(.hidden)
-            .scrollTargetBehavior(.paging)
-            .scrollPosition(id: $visibleWeekID)
-            .onAppear {
-                configureInitialPagesIfNeeded()
-            }
-            .onScrollPhaseChange { _, newPhase in
-                guard newPhase == .idle else { return }
-                paginateIfNeeded()
-            }
-        
+            .scrollTargetLayout()
+        }
+        .frame(maxHeight: 90)
+        .scrollIndicators(.hidden)
+        .scrollTargetBehavior(.paging)
+        .scrollPosition(id: $visibleWeekID)
+        .onAppear {
+            configureInitialPagesIfNeeded()
+        }
+        .onScrollPhaseChange { _, newPhase in
+            guard newPhase == .idle else { return }
+            paginateIfNeeded()
+        }
     }
 }
 
