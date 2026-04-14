@@ -68,17 +68,40 @@ struct SearchChatbotView: View {
     }
     
     //MARK: Barra de entrada
-    
-        
-        //MARK: Helpers
-        private func rollDown(proxy: ScrollViewProxy){
-            //Rola até a última mensagem
-            guard let id = viewModel.messages.last?.id else {return}
-            withAnimation(.easeOut(duration: 0.25)){
-                proxy.scrollTo(id, anchor: .bottom)
+    private var inputBar: some View{
+        HStack(alignment: .bottom, spacing: 10){
+            TextField("Mensagem...", text: $viewModel.typedText, axis: .vertical)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 9)
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                .lineLimit(1...4)
+                .font(.body)
+            
+            Button{
+                viewModel.sendFreeMessage(appointments: appointments)
+            }label: {
+                Image(systemName: "arrow.up.circle.fill")
+                    .font(.system(size: 34))
+                    .foregroundStyle(viewModel.canSend ? Color.accentColor : Color(.systemGray3))
             }
+            .disabled(!viewModel.canSend)
+            .animation(.easeInOut(duration: 0.15), value: viewModel.canSend)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(Color(.systemBackground))
+    }
+    
+    //MARK: Helpers
+    private func rollDown(proxy: ScrollViewProxy){
+        //Rola até a última mensagem
+        guard let id = viewModel.messages.last?.id else {return}
+        withAnimation(.easeOut(duration: 0.25)){
+            proxy.scrollTo(id, anchor: .bottom)
         }
     }
+}
 
     //Bolha de mensagem
     private struct MessageBubbleView: View{
@@ -103,7 +126,7 @@ struct SearchChatbotView: View {
                     }
                 }
                 
-                if isHero && !message.suggestion.isEmpty{
+                if isHero && !message.suggestions.isEmpty{
                     ChipsSuggestionsView(suggestions: message.suggestions, onTap: onSuggestion)
                         .padding(.leading, 36)
                 }
@@ -146,5 +169,36 @@ private struct ChipsSuggestionsView: View{
             }
             .padding(.vertical, 2)
         }
+    }
+}
+
+//Indicador de digitação
+private struct TypingIndicatorView: View{
+    
+    @State private var animating = false
+    
+    var body: some View{
+        HStack(spacing: 5){
+            ForEach(0..<3, id: \.self){
+                index in
+                Circle()
+                    .fill(Color(.tertiaryLabel))
+                    .frame(width: 7, height: 7)
+                    .scaleEffect(animating ? 1.2 : 0.7)
+                    .opacity(animating ? 1.0 : 0.3)
+                    .animation(
+                        .easeInOut(duration: 0.45)
+                            .repeatForever(autoreverses: true)
+                            .delay(Double(index) * 0.15),
+                        value: animating
+                    )
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .onAppear { animating = true }
+        .onDisappear { animating = false }
     }
 }
