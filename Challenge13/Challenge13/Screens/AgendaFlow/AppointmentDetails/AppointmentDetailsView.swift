@@ -20,10 +20,10 @@ struct AppointmentDetailsView: View {
     }
 }
 
+
 #Preview {
     
     let coordinator = makeAgendaFlowCoordinator()
-    let databaseService = DatabaseService(context: makeMainContext())
     
     AppointmentDetailsView(viewModel: .init(coordinator: coordinator))
 }

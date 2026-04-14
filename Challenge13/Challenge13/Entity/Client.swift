@@ -34,4 +34,8 @@ final class Client { // nunca apagar o client, mudar para o isDeleted para true
         self.birthday = birthday
         self.observations = observations
     }
+    
+    func describe() {
+        
+    }
 }

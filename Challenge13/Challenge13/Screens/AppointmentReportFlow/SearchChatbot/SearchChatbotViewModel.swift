@@ -82,6 +82,8 @@ class SearchChatbotViewModel {
     
     //MARK: Enviar mensagem para o chat
     func sendFreeMessage(appointments: [Appointment]){
+        var appointments = Appointment.mockData()
+        
         let question = typedText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !question.isEmpty else { return }
         
@@ -140,10 +142,14 @@ class SearchChatbotViewModel {
     //MARK: Engenharia de Prompt
     private func createPrompt(question: String, appointments: [Appointment]) -> String{
         
+        for appointment in appointments {
+           
+        }
         //Injeta dados do app e pergunta do user
         """
         Agendamentos cadastrados:
-        \(createContext(appointments))
+        \(appointments)
+        
         
         Pergunta: \(question)
         """
