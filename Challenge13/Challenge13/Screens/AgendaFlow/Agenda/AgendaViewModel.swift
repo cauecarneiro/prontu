@@ -17,6 +17,10 @@ final class AgendaViewModel: ObservableObject {
     @Published var appointments: [Appointment]
     @Published var selectedDate: Date
     
+    var formatterDate: String {
+        selectedDate.formatterRow()
+    }
+    
     var userAuthenticated: Bool { // TODO: Remover
         get {
             settingsStore.isAuthenticationEnabled

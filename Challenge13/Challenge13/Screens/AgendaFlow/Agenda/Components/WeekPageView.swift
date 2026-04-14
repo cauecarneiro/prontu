@@ -33,8 +33,10 @@ struct WeekPageView: View { // TODO: Mudar a cor
 
                         ZStack {
                             if isSelected {
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(Color.primary)
+                                RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius)
+                                    .fill(GlobalConfiguration.primaryBlue)
+                                    .frame(maxWidth: .infinity)
+                                    .aspectRatio(1, contentMode: .fit)
                                     .matchedGeometryEffect(
                                         id: "current-day-highlight",
                                         in: namespace
@@ -49,7 +51,7 @@ struct WeekPageView: View { // TODO: Mudar a cor
                         .frame(height: 40)
 
                         Circle()
-                            .fill(isToday ? Color.primary : Color.clear)
+                            .fill(isToday ? GlobalConfiguration.primaryBlue : Color.clear)
                             .frame(width: 5, height: 5)
                     }
                 }

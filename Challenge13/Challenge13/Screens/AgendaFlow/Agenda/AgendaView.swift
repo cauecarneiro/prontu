@@ -15,9 +15,6 @@ struct AgendaView: View {
         VStack {
             WeekCalendarView(selectedDate: $viewModel.selectedDate)
             
-            Text(viewModel.selectedDate, format: .dateTime.day().month().year())
-                .font(.headline)
-            
             Spacer()
             
             Text("Hello, Agenda!")
@@ -34,6 +31,7 @@ struct AgendaView: View {
             
             Spacer()
         }
+        .navigationTitle(Text(viewModel.formatterDate))
         .padding(.horizontal)
     }
 }

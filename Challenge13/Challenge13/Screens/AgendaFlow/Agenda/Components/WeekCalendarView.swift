@@ -19,37 +19,62 @@ struct WeekCalendarView: View {
     private let centeredPageIndex = 2
     
     var body: some View {
-        ScrollView(.horizontal) {
-            LazyHStack(spacing: .zero) {
-                ForEach(weekPages) { page in
-                    WeekPageView(
-                        selectedDate: $selectedDate,
-                        page: page,
-                        namespace: currentDayNamespace,
-                        calendar: calendar
-                    )
-                    .containerRelativeFrame(.horizontal)
-                    .id(page.id)
+        VStack {
+            
+            HStack(spacing: GlobalConfiguration.normalSpacing) {
+                Button(action: decrementIndex) {
+                    Image(systemName: "chevron.backward")
+                }
+                
+                Button(action: incrementIndex) {
+                    Image(systemName: "chevron.forward")
                 }
             }
-            .scrollTargetLayout()
+            .font(.title)
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            
+            ScrollView(.horizontal) {
+                LazyHStack(spacing: .zero) {
+                    ForEach(weekPages) { page in
+                        WeekPageView(
+                            selectedDate: $selectedDate,
+                            page: page,
+                            namespace: currentDayNamespace,
+                            calendar: calendar
+                        )
+                        .containerRelativeFrame(.horizontal)
+                        .id(page.id)
+                    }
+                }
+                .scrollTargetLayout()
+            }
+            .frame(maxHeight: 90)
+            .scrollIndicators(.hidden)
+            .scrollTargetBehavior(.paging)
+            .scrollPosition(id: $visibleWeekID)
+            .onScrollPhaseChange { _, newPhase in
+                guard newPhase == .idle else { return }
+                paginateIfNeeded()
+            }
         }
-        .frame(maxHeight: 90)
-        .scrollIndicators(.hidden)
-        .scrollTargetBehavior(.paging)
-        .scrollPosition(id: $visibleWeekID)
         .onAppear {
             configureInitialPagesIfNeeded()
-        }
-        .onScrollPhaseChange { _, newPhase in
-            guard newPhase == .idle else { return }
-            paginateIfNeeded()
         }
     }
 }
 
 // MARK: - Paging Logic
 extension WeekCalendarView {
+    private func incrementIndex() {
+        visibleWeekID = weekPages[centeredPageIndex + 1].id
+        paginateIfNeeded()
+    }
+    
+    private func decrementIndex() {
+        visibleWeekID = weekPages[centeredPageIndex - 1].id
+        paginateIfNeeded()
+    }
+    
     private func configureInitialPagesIfNeeded() {
         guard weekPages.isEmpty else { return }
         
