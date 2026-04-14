@@ -34,6 +34,7 @@ struct AgendaView: View {
             
             Spacer()
         }
+        .padding(.horizontal)
     }
 }
 
