@@ -117,13 +117,13 @@ class SearchChatbotViewModel {
         Task{
             do{
                 //Cria o prompt
-                let prompt = createPrompt(question: question, appoinments: appointments)
+                let prompt = createPrompt(question: question, appointments: appointments)
                 //Chama IA
                 let response = try await IAService.createText(prompt: prompt)
                 
                 await MainActor.run{
                     //Adicionar resposta
-                    messages.append(MessageChat(autor: .hero, text: response))
+                    messages.append(MessageChat(author: .hero, text: response))
                     //Para o "digitando..."
                     loading = false
                 }
@@ -138,7 +138,7 @@ class SearchChatbotViewModel {
     }
     
     //MARK: Engenharia de Prompt
-    private func createPrompt(question: String, appoinments: [Appointment]) -> String{
+    private func createPrompt(question: String, appointments: [Appointment]) -> String{
         
         //Injeta dados do app e pergunta do user
         """
@@ -163,13 +163,10 @@ class SearchChatbotViewModel {
             //Transforma cada agendamento em texto para a IA entender
             .map { ag in
                 let data = iso.string(from: ag.startDate)
-                let obs = ag.observacao.flatMap { $0.isEmpty ? nil : $0 } ?? "Sem observação"
-                return "• Título: \(ag.titulo) | Data: \(data) | Observação: \(obs)"
+                return "Data: \(data)"
+               // let obs = ag.observacao.flatMap { $0.isEmpty ? nil : $0 } ?? "Sem observação"
+               // return "• Título: \(ag.titulo) | Data: \(data) | Observação: \(obs)"
             }
             .joined(separator: "\n")
-        
     }
-    
-    
-    
 }
