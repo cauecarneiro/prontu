@@ -6,6 +6,8 @@
 //
 
 import Combine
+import SwiftData
+import SwiftUI
 
 final class SearchChatbotViewModel: ObservableObject {
     
