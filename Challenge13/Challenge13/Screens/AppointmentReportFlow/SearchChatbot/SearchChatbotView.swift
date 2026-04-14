@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SearchChatbotView: View {
     
-    @Query(sort: \Appointment.startDate) private var appoiments: [Appointment]
+    @Query(sort: \Appointment.startDate) private var appointments: [Appointment]
     @State private var viewModel = SearchChatbotViewModel()
     
     //MARK: Layout vertical
@@ -32,12 +32,12 @@ struct SearchChatbotView: View {
                         message in
                         //cada mensagem vira uma "bolha"
                         MessageBubbleView(message: message){
-                            suggestion in viewModel.selectSuggestion(suggestion, appoiments: appoiments)
+                            suggestion in viewModel.selectSuggestion(suggestion, appointment: appointments)
                         }
                         .id(message.id)
                         
                         //Indicar que a IA está pensando
-                        if viewModel.carregando{
+                        if viewModel.loading{
                             TypingIndicatorView()
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.leading, 16)
@@ -47,6 +47,8 @@ struct SearchChatbotView: View {
                     .padding(.horizontal, 16)
                     .padding(.vertical, 20)
                 }
+                //Abaixa o teclado no scroll
+                .scrollDismissesKeyboard(.interactively)
                 //Sempre que um nova mensagem chega, rola o chat para baixo automaticamente
                 .onChange(of: viewModel.messages.count){_, _ in
                     rollDown(proxy: proxy)
@@ -57,13 +59,16 @@ struct SearchChatbotView: View {
                         //faz acontecer a animação
                         withAnimation(.easeOut(duration: 0.25)){
                             //deixa o "typing visivel na parte de baixo da tela"
-                            proxy.scrollTo("typing", anchor: bottom)
+                            proxy.scrollTo("typing", anchor: .bottom)
                         }
                     }
                 }
             }
         }
     }
+    
+    //MARK: Barra de entrada
+    
         
         //MARK: Helpers
         private func rollDown(proxy: ScrollViewProxy){
@@ -82,7 +87,7 @@ struct SearchChatbotView: View {
         //Callback ao clicar na sugestão
         let onSuggestion: (HeroSuggestion) -> Void
         //Verica se é a IA ou  o user
-        private var isHro: Bool{ message.author == .hero }
+        private var isHero: Bool{ message.author == .hero }
         
         //Layout da mensagem:
         var body: some View{
@@ -90,8 +95,6 @@ struct SearchChatbotView: View {
                 //Se for IA, bolha de texto à esquerda
                 HStack(alignment: .bottom, spacing: 0){
                     if isHero{
-                        avatarHero
-                            .padding(.trailing, 8)
                         textBubble
                         Spacer(minLength: 52)
                     } else{
@@ -101,8 +104,8 @@ struct SearchChatbotView: View {
                 }
                 
                 if isHero && !message.suggestion.isEmpty{
-                    ChipsSuggestionView(suggestion: message.suggestion, onTap: Suggestion)
-                        .padding(.leadind, 36)
+                    ChipsSuggestionsView(suggestions: message.suggestions, onTap: onSuggestion)
+                        .padding(.leading, 36)
                 }
             }
         }
@@ -118,14 +121,14 @@ struct SearchChatbotView: View {
         }
 }
 
-private struct ChipSuggestionsView: View{
+private struct ChipsSuggestionsView: View{
     
     let suggestions: [HeroSuggestion]
     let onTap: (HeroSuggestion) -> Void
     
     var body: some View{
         //Scroll horizontal das sugestões
-        ScrollView(.horizontal, showIndicators: false){
+        ScrollView(.horizontal, showsIndicators: false){
             //Cada sugestão vira um botão
             HStack(spacing: 8){
                 ForEach(suggestions){ suggestion in
