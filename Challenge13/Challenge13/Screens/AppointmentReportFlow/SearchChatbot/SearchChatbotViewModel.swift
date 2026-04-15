@@ -69,11 +69,10 @@ class SearchChatbotViewModel: ObservableObject {
         !typedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !loading
     }
     
-    private let databaseService: DatabaseService
     private var cancelables: Set<AnyCancellable> = []
     
-    init(databaseService: DatabaseService){
-        messages = [
+    init(appointments: [Appointment]){
+        self.messages = [
             MessageChat(
                 author: .hero,
                 text: "Olá! Sou o Hero, seu assistente de agendamentos do FisioPlus. Posso te ajudar com informações sobre seus agendamentos. Como posso te ajudar?",
@@ -85,10 +84,7 @@ class SearchChatbotViewModel: ObservableObject {
                 ]
             )
         ]
-        self.databaseService = databaseService
-        self.appointments = databaseService.getAllElements()
-        
-        observableDatabase()
+        self.appointments = appointments
     }
     
     //MARK: Enviar mensagem para o chat
@@ -185,15 +181,5 @@ class SearchChatbotViewModel: ObservableObject {
                // return "• Título: \(ag.titulo) | Data: \(data) | Observação: \(obs)"
             }
             .joined(separator: "\n")
-    }
-    
-    private func observableDatabase() {
-        databaseService.databaseChangePublisher
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                guard let self else { return }
-                self.appointments = self.databaseService.getAllElements()
-            }
-            .store(in: &cancelables)
     }
 }

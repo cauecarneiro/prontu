@@ -108,7 +108,7 @@ struct SearchChatbotView: View {
 }
 
 #Preview {
-    SearchChatbotView(viewModel: .init(databaseService: .init(context: makeMainContext())))
+    SearchChatbotView(viewModel: .init(appointments: []))
     
 }
 
