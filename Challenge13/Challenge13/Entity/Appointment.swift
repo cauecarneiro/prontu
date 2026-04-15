@@ -45,15 +45,28 @@ final class Appointment {
     }
     
     func describe() -> String {
+        let formatter = ISO8601DateFormatter()
+        
+        let start = formatter.string(from: startDate)
+        let end = formatter.string(from: endDate)
+        
+        let clientDetails = client?.describe() ?? "Sem cliente"
+        
+        let exercisesText = exercises ?? "Não informado"
+        let equipmentText = equipment ?? "Não informado"
+        let notesText = notes ?? "Sem observações"
+        
         return """
-            Start Date: \(startDate)
-            End Date: \(endDate)
-            Status: \(status)
-            Client: \(client?.describe ?? "nil")
-            exercises: String?
-            equipment: String?
-            notes: String?
-            """
+        Agendamento:
+        - ID: \(id)
+        - Início: \(start)
+        - Fim: \(end)
+        - Status: \(status.rawValue)
+        - Cliente: \(clientDetails)
+        - Exercícios: \(exercisesText)
+        - Equipamento: \(equipmentText)
+        - Observações: \(notesText)
+        """
     }
 }
 

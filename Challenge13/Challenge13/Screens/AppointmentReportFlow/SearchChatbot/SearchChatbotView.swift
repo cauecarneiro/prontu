@@ -9,8 +9,8 @@ import SwiftUI
 
 struct SearchChatbotView: View {
     
-    @Query(sort: \Appointment.startDate) private var appointments: [Appointment]
-    @State private var viewModel = SearchChatbotViewModel()
+    //@Query(sort: \Appointment.startDate) private var appointments: [Appointment]
+    @ObservedObject var viewModel: SearchChatbotViewModel
     
     //MARK: Layout vertical
     var body: some View {
@@ -33,7 +33,7 @@ struct SearchChatbotView: View {
                             message in
                             //cada mensagem vira uma "bolha"
                             MessageBubbleView(message: message){
-                                suggestion in viewModel.selectSuggestion(suggestion, appointment: appointments)
+                                suggestion in viewModel.selectSuggestion(suggestion, appointment: viewModel.appointments)
                             }
                             .id(message.id)
                             
@@ -83,7 +83,7 @@ struct SearchChatbotView: View {
                 .font(.body)
             
             Button{
-                viewModel.sendFreeMessage(appointments: appointments)
+                viewModel.sendFreeMessage(appointments: viewModel.appointments)
             }label: {
                 Image(systemName: "arrow.up.circle.fill")
                     .font(.system(size: 34))
@@ -108,8 +108,7 @@ struct SearchChatbotView: View {
 }
 
 #Preview {
-    
-    SearchChatbotView()
+    SearchChatbotView(viewModel: .init(databaseService: .init(context: makeMainContext())))
     
 }
 
