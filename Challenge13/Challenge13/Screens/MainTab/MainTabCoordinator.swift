@@ -39,7 +39,7 @@ final class MainTabCoordinator: ObservableObject {
         )
         
         self.registerFlowCoordinator = RegisterFlowCoordinator()
-        self.appointmentReportCoordinator = AppointmentReportFlowCoordinator()
+        self.appointmentReportCoordinator = AppointmentReportFlowCoordinator(factory: .init())
         self.authenticationService = authenticationService
         self.screenMonitor = screenMonitor
         self.settingsStore = settingsStore

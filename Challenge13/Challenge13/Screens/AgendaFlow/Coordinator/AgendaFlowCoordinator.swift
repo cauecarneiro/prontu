@@ -11,7 +11,7 @@ import SwiftUI
 final class AgendaFlowCoordinator: Coordinator {
     
     var navigationController: NavigationController = .init()
-    var factory: AgendaFlowFactory
+    private var factory: AgendaFlowFactory
     
     init(factory: AgendaFlowFactory) {
         self.factory = factory

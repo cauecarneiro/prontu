@@ -10,7 +10,7 @@ import Combine
 final class AppointmentReportViewModel: ObservableObject {
     weak private var coordinator: (any AppointmentReportCoordinatorProtocol)?
     
-    init(coordinator: some AppointmentReportCoordinatorProtocol) {
+    init(coordinator: (any AppointmentReportCoordinatorProtocol)?) {
         self.coordinator = coordinator
     }
     
