@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "skills": {
+    "claude-hook-writer": {
+      "source": "pr-pm/prpm",
+      "sourceType": "github",
+      "computedHash": "44f04ba69796ed62e48bd1215f3c06b4f9935ebb06c13a846a7e095d4a3969ad"
+    },
+    "creating-agent-skills": {
+      "source": "pr-pm/prpm",
+      "sourceType": "github",
+      "computedHash": "f832d967ea7a915d0644fa599d77269a0a6880c09fe837206eb0b29a4d4642d9"
+    },
+    "creating-agents-md": {
+      "source": "pr-pm/prpm",
+      "sourceType": "github",
+      "computedHash": "e65764fa1a66a0c231662347ca26b6f14aaaf2818eeb2d1822022aa2b0730e44"
+    },
+    "creating-claude-agents": {
+      "source": "pr-pm/prpm",
+      "sourceType": "github",
+      "computedHash": "815d3621a08262e6a411dfed3e3b877f2eb7e87765bb6de92ec0682a4f52f7ca"
+    },
+    "creating-claude-commands": {
+      "source": "pr-pm/prpm",
+      "sourceType": "github",
+      "computedHash": "1669b07af0ef28751462f452bd61257764f8ce531638581d4341720f18adae92"
+    },
+    "creating-claude-hooks": {
+      "source": "pr-pm/prpm",
+      "sourceType": "github",
+      "computedHash": "12ba333297f867068828a7916aaf69f8fbff35a1a7a02e5c70176a6da8d6e650"
+    },
+    "creating-claude-rules": {
+      "source": "pr-pm/prpm",
+      "sourceType": "github",
+      "computedHash": "dea6d382e5c626c991e2775089012932b175a4f8ac6a186b8bb121bd057ddf26"
+    },
+    "creating-continue-packages": {
+      "source": "pr-pm/prpm",
+      "sourceType": "github",
+      "computedHash": "0d75a677995c8503bfbd3a305641a849b41556c36afe960f1fefc98b6a792e8a"
+    },
+    "creating-copilot-packages": {
+      "source": "pr-pm/prpm",
+      "sourceType": "github",
+      "computedHash": "0322d7db783f242c40f9d02a3a64ca4866d4017318620af5edbb9fc303e78e7d"
+    },
+    "creating-skills": {
+      "source": "pr-pm/prpm",
+      "sourceType": "github",
+      "computedHash": "215768eddabfcab39480234798b992c923e8be9716d0cbcccd2f866e7dadf0b2"
+    },
+    "self-improving": {
+      "source": "pr-pm/prpm",
+      "sourceType": "github",
+      "computedHash": "7d2f2d518405c23ff60f5868c15e1b32a09ffc1dd70bcf75ced03b2c5fb0c6c5"
+    },
+    "thoroughness": {
+      "source": "pr-pm/prpm",
+      "sourceType": "github",
+      "computedHash": "a7c021d1456a526532f5e60d4511b3dbbb9e6b5fa5df5932a323663f2843bc6f"
+    }
+  }
+}
