@@ -10,15 +10,21 @@ import SwiftUI
 final class RegisterFlowCoordinator: Coordinator  {
  
     var navigationController: NavigationController = .init()
+    private let factory: RegisterFlowFactory
     
-    @MainActor @ViewBuilder var rootView: some View { ClientsListView(viewModel: .init(coordinator: self)) }
+    init(factory: RegisterFlowFactory) {
+        self.factory = factory
+        self.factory.coordinator = self
+    }
+    
+    @MainActor @ViewBuilder var rootView: some View { factory.makeClientsListView() }
     
     @MainActor @ViewBuilder func coordinate(to route: RegisterFlowRouter) -> some View {
         switch route {
         case .createClient:
-            CreateClientView()
+            factory.makeCreateClientView()
         case .editClient(let client): // TODO: Possível precisar passar qual o client a ser editado
-            EditClientView()
+            factory.makeEditClientView()
         }
     }
     

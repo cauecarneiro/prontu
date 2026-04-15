@@ -13,17 +13,17 @@ final class AgendaFlowFactory {
     private let settingsStore: SettingsStore
     weak var coordinator: AgendaFlowCoordinator?
     
-    lazy var agendaVM: AgendaViewModel = AgendaViewModel(
+    private lazy var agendaVM: AgendaViewModel = AgendaViewModel(
         coordinator: coordinator,
         databaseService: databaseService,
         settingsStore: settingsStore
     )
     
-    lazy var createAppointmentVM: CreateAppointmentViewModel = CreateAppointmentViewModel(
+    private lazy var createAppointmentVM: CreateAppointmentViewModel = CreateAppointmentViewModel(
         coordinator: coordinator
     )
     
-    lazy var appointmentDetailsVM: AppointmentDetailsViewModel = AppointmentDetailsViewModel(
+    private lazy var appointmentDetailsVM: AppointmentDetailsViewModel = AppointmentDetailsViewModel(
         coordinator: coordinator
     )
     

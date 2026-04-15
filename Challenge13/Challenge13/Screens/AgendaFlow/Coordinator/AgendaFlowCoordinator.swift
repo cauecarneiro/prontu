@@ -11,11 +11,11 @@ import SwiftUI
 final class AgendaFlowCoordinator: Coordinator {
     
     var navigationController: NavigationController = .init()
-    private var factory: AgendaFlowFactory
+    private let factory: AgendaFlowFactory
     
     init(factory: AgendaFlowFactory) {
         self.factory = factory
-        factory.coordinator = self
+        self.factory.coordinator = self
     }
     
     @MainActor @ViewBuilder var rootView: some View {

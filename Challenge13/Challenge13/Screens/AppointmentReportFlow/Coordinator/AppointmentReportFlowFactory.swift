@@ -9,7 +9,7 @@ import Foundation
 
 final class AppointmentReportFlowFactory {
     
-    lazy var appointmentReportVM: AppointmentReportViewModel = .init(coordinator: coordinator)
+    private lazy var appointmentReportVM: AppointmentReportViewModel = .init(coordinator: coordinator)
     
     weak var coordinator: AppointmentReportFlowCoordinator?
     

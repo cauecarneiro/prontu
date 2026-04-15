@@ -10,7 +10,7 @@ import Combine
 final class ClientsListViewModel: ObservableObject {
     weak var coordinator: (any ClientListCoordinatorProtocol)?
     
-    init(coordinator: some ClientListCoordinatorProtocol) {
+    init(coordinator: (any ClientListCoordinatorProtocol)?) {
         self.coordinator = coordinator
     }
     
