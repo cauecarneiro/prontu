@@ -40,16 +40,13 @@ final class Client { // nunca apagar o client, mudar para o isDeleted para true
         
         let birthdayText = birthday.map { formatter.string(from: $0) } ?? "Não informado"
         let observationsText = observations ?? "Sem observações"
-        let deletedText = isDeleted ? "Sim" : "Não"
         
         return """
         Cliente:
-        - ID: \(id)
         - Nome: \(name)
         - Contato: \(contactInfo)
         - Data de nascimento: \(birthdayText)
         - Observações: \(observationsText)
-        - Deletado: \(deletedText)
         - Total de agendamentos: \(appointments.count)
         """
     }
