@@ -13,25 +13,28 @@ struct AgendaView: View {
     
     var body: some View {
         VStack {
-            WeekCalendarView(selectedDate: $viewModel.selectedDate)
-            
+            CalendarWeeklyStrip(
+                selectedDate: $viewModel.selectedDate,
+                appointments: viewModel.appointments
+            )
+
             Spacer()
-            
+
             Text("Hello, Agenda!")
-            
+
             Button("Create Appointment") {
                 viewModel.navigateToCreateAppointment()
             }
-            
+
             Button("Details of Appointment") {
                 viewModel.navigateToAppointmentDetails(appointment: .init())
             }
-            
+
             Toggle("User Authentication", isOn: $viewModel.userAuthenticated) // TODO: Remover
-            
+
             Spacer()
         }
-        .navigationTitle(Text(viewModel.formatterDate))
+        .navigationBarTitleDisplayMode(.inline)
         .padding(.horizontal)
     }
 }
