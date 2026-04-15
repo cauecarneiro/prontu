@@ -9,9 +9,18 @@ import Foundation
 
 final class AppointmentReportFlowFactory {
     
-    private lazy var appointmentReportVM: AppointmentReportViewModel = .init(coordinator: coordinator)
+    private var databaseService: DatabaseService
     
+    private lazy var appointmentReportVM: AppointmentReportViewModel = .init(
+        coordinator: coordinator,
+        databaseService: databaseService
+    )
+        
     weak var coordinator: AppointmentReportFlowCoordinator?
+    
+    init(databaseService: DatabaseService) {
+        self.databaseService = databaseService
+    }
     
     func makeAppointmentReportView() -> AppointmentReportView {
         AppointmentReportView(viewModel: appointmentReportVM)
@@ -21,7 +30,7 @@ final class AppointmentReportFlowFactory {
         ClientHistoryView()
     }
     
-    func makeSearchChatbotView() -> SearchChatbotView {
-        SearchChatbotView()
+    func makeSearchChatbotView(appointments: [Appointment]) -> SearchChatbotView {
+        SearchChatbotView(viewModel: .init(appointments: appointments))
     }
 }

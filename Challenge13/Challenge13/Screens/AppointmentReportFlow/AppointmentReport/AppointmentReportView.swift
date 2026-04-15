@@ -27,11 +27,11 @@ struct AppointmentReportView: View {
 }
 
 #Preview {
-    let coordinator = AppointmentReportFlowCoordinator(factory: .init())
+    let coordinator = AppointmentReportFlowCoordinator(factory: .init(databaseService: .init(context: makeMainContext())))
     
     AppointmentReportView(
         viewModel: .init(
-            coordinator: coordinator
+            coordinator: coordinator, databaseService: .init(context: makeMainContext())
         )
     )
 }
