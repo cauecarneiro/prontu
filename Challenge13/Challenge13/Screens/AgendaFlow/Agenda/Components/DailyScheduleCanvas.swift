@@ -63,13 +63,14 @@ struct DailyScheduleCanvas: View {
     var body: some View {
         GeometryReader { geo in
             ScrollViewReader { proxy in
-                ScrollView(.vertical, showsIndicators: false) {
+                ScrollView(.vertical) {
                     canvas(width: geo.size.width)
                 }
+                .scrollIndicators(.hidden)
                 .onAppear {
                     focusCanvas(proxy: proxy, animated: false)
                 }
-                .onChange(of: date) {
+                .onChange(of: date) { _, _ in
                     currentTime = Date()
                     focusCanvas(proxy: proxy, animated: true)
                 }
@@ -84,7 +85,8 @@ struct DailyScheduleCanvas: View {
 
     @ViewBuilder
     private func canvas(width: CGFloat) -> some View {
-        let window = WorkingWindow.calculate(appointments: appointmentsForDisplay, currentTime: timelineNow)
+        let window = WorkingWindow.calculate(appointments: activeAppointments, currentTime: timelineNow)
+            
         let height = canvasHeight(for: window)
         let marks = anchorTimes(for: window)
 
@@ -98,7 +100,7 @@ struct DailyScheduleCanvas: View {
                     .offset(y: yOffset(for: time, window: window))
             }
 
-            ForEach(appointmentsForDisplay, id: \.id) { appt in
+            ForEach(activeAppointments, id: \.id) { appt in
                 ScheduleCard(appointment: appt, state: cardState(for: appt))
                     .frame(
                         width: max(width - Layout.leftInset - Layout.cardTrailingPadding, Layout.minCardWidth),
@@ -108,10 +110,12 @@ struct DailyScheduleCanvas: View {
                     .zIndex(1)
             }
 
-            CurrentTimeNeedle(time: timelineNow, width: width, leftInset: Layout.leftInset)
-                .offset(y: yOffset(for: timelineNow, window: window))
-                .id("needle")
-                .zIndex(2)
+            if Calendar.current.isDateInToday(date) {
+                CurrentTimeNeedle(time: timelineNow, width: width, leftInset: Layout.leftInset)
+                    .offset(y: yOffset(for: timelineNow, window: window))
+                    .id("needle")
+                    .zIndex(2)
+            }
         }
     }
 
@@ -122,42 +126,12 @@ struct DailyScheduleCanvas: View {
             .sorted(by: { $0.startDate < $1.startDate })
     }
 
-    private var appointmentsForDisplay: [Appointment] {
-        activeAppointments.isEmpty ? placeholderAppointments : activeAppointments
-    }
-
-    private var placeholderAppointments: [Appointment] {
-        [
-            Appointment(
-                startDate: dayTime(hour: 8, minute: 0),
-                endDate: dayTime(hour: 8, minute: 50),
-                status: .confirmed,
-                client: Client(name: "Aula de Pilates")
-            ),
-            Appointment(
-                startDate: dayTime(hour: 10, minute: 0),
-                endDate: dayTime(hour: 10, minute: 45),
-                status: .pending,
-                client: Client(name: "Aula Funcional")
-            ),
-            Appointment(
-                startDate: dayTime(hour: 12, minute: 30),
-                endDate: dayTime(hour: 13, minute: 0),
-                status: .blocked
-            ),
-            Appointment(
-                startDate: dayTime(hour: 16, minute: 0),
-                endDate: dayTime(hour: 16, minute: 50),
-                status: .finished,
-                client: Client(name: "Aula de Mobilidade")
-            )
-        ]
-        .sorted(by: { $0.startDate < $1.startDate })
-    }
-
     private var timelineNow: Date {
         let calendar = Calendar.current
-        guard !calendar.isDateInToday(date) else { return currentTime }
+        
+        if calendar.isDateInToday(date) {
+            return currentTime
+        }
 
         let time = calendar.dateComponents([.hour, .minute], from: currentTime)
         var day = calendar.dateComponents([.year, .month, .day], from: date)
@@ -223,14 +197,14 @@ struct DailyScheduleCanvas: View {
         let anchor: UnitPoint
         let referenceTime = timelineNow
 
-        if appointmentsForDisplay.isEmpty {
+        if activeAppointments.isEmpty {
             anchor = .center
-        } else if appointmentsForDisplay.contains(where: { appointment in
+        } else if activeAppointments.contains(where: { appointment in
             referenceTime >= appointment.startDate && referenceTime <= appointment.endDate
         }) {
             // Active case: current time sits inside an appointment.
             anchor = UnitPoint(x: Layout.anchorX, y: Layout.activeAnchorY)
-        } else if appointmentsForDisplay.contains(where: { $0.startDate > referenceTime }) {
+        } else if activeAppointments.contains(where: { $0.startDate > referenceTime }) {
             // Default case: show current needle and the next appointment.
             anchor = UnitPoint(x: Layout.anchorX, y: Layout.defaultAnchorY)
         } else {

@@ -125,7 +125,7 @@ struct ScheduleCard: View {
 
     private var durationLabel: String {
         let minutes = Int(appointment.endDate.timeIntervalSince(appointment.startDate) / 60)
-        guard minutes > 0 else { return "" }
+        guard minutes > 0 else { return "0min" }
         if minutes >= 60 {
             let hours = minutes / 60
             let remainder = minutes % 60

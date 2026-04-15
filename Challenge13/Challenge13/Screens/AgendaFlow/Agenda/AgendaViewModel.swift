@@ -11,7 +11,7 @@ import Foundation
 final class AgendaViewModel: ObservableObject {
     weak private var coordinator: (any AgendaCoordinateProtocol)?
     private let databaseService: DatabaseService
-    private let settingsStore: SettingsStore
+    private let settingsStore: SettingsStore // TODO: Remover
     private var cancellables: Set<AnyCancellable> = []
     
     @Published var appointments: [Appointment]

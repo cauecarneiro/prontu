@@ -22,12 +22,7 @@ struct AgendaView: View {
                 date: viewModel.selectedDate
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-            AgendaDebugControls(
-                onCreateAppointment: { viewModel.navigateToCreateAppointment() },
-                onOpenAppointmentDetails: { viewModel.navigateToAppointmentDetails(appointment: .init()) },
-                userAuthenticated: $viewModel.userAuthenticated
-            )
+            
         }
         .navigationBarTitleDisplayMode(.inline)
         .padding(.horizontal, GlobalConfiguration.normalSpacing)
