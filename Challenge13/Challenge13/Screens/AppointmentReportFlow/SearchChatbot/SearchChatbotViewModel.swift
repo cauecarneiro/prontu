@@ -16,17 +16,22 @@ enum ChatAuthor{
 }
 
 //MARK: opçoes do que o usuário quer que seja respondido
+//Nesse enum cada case tem um valor interno do tipo String
 enum HeroSuggestionType: String, Hashable{
     case checkAvailableTimes
 }
 
 //MARK: botão clicável
+//Protocolo Identifiable cada objeto deve ter um identificador único
+//Protocolo Hashable o objeto pode virar um hash, um identificador único
 struct HeroSuggestion: Identifiable, Hashable{
     //Qual opção o usuário quer
     let type: HeroSuggestionType
     //Texto mostrado
     let title: String
     //ID da opção
+    //O protocolo Identifiable exige essa a implementação de um ID
+    //rawValue diz que o ID será o texto do enum HeroSuggestionType
     var id: String {type.rawValue}
 }
 
@@ -46,26 +51,28 @@ struct MessageChat: Identifiable, Hashable{
 
 //MARK: View Model
 
-//Classe reativa
-@Observable
-class SearchChatbotViewModel {
-    
+class SearchChatbotViewModel: ObservableObject {
+        
     //Lista do chat
-    var messages: [MessageChat] = []
+    @Published var messages: [MessageChat]
     
     //Texto digitado
-    var typedText: String = ""
+    @Published var typedText: String = ""
     
     //Indica se a IA está respondendo
-    var loading: Bool = false
+    @Published var loading: Bool = false
     
+    @Published var appointments: [Appointment]
     //Valida botão enviar
     var canSend: Bool{
         //Só permite enviar se tem texto e se não está carregando
         !typedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !loading
     }
     
-    init(){
+    private let databaseService: DatabaseService
+    private var cancelables: Set<AnyCancellable> = []
+    
+    init(databaseService: DatabaseService){
         messages = [
             MessageChat(
                 author: .hero,
@@ -78,6 +85,10 @@ class SearchChatbotViewModel {
                 ]
             )
         ]
+        self.databaseService = databaseService
+        self.appointments = databaseService.getAllElements()
+        
+        observableDatabase()
     }
     
     //MARK: Enviar mensagem para o chat
@@ -146,7 +157,7 @@ class SearchChatbotViewModel {
            
         }
         //Injeta dados do app e pergunta do user
-        """
+        return """
         Agendamentos cadastrados:
         \(appointments)
         
@@ -174,5 +185,15 @@ class SearchChatbotViewModel {
                // return "• Título: \(ag.titulo) | Data: \(data) | Observação: \(obs)"
             }
             .joined(separator: "\n")
+    }
+    
+    private func observableDatabase() {
+        databaseService.databaseChangePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                guard let self else { return }
+                self.appointments = self.databaseService.getAllElements()
+            }
+            .store(in: &cancelables)
     }
 }
