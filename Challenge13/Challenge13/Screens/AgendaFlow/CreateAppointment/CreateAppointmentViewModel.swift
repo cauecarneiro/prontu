@@ -11,7 +11,7 @@ final class CreateAppointmentViewModel: ObservableObject {
     
     weak private var coordinator: (any CreateAppointmentCoordinatorProtocol)?
     
-    init(coordinator: some CreateAppointmentCoordinatorProtocol) {
+    init(coordinator: (any CreateAppointmentCoordinatorProtocol)?) {
         self.coordinator = coordinator
     }
     

@@ -11,35 +11,27 @@ import SwiftUI
 final class AgendaFlowCoordinator: Coordinator {
     
     var navigationController: NavigationController = .init()
-    private let databaseService: DatabaseService
-    private let settingsStore: SettingsStore
+    private let factory: AgendaFlowFactory
     
-    init(databaseService: DatabaseService, settingsStore: SettingsStore) {
-        self.navigationController = .init()
-        self.databaseService = databaseService
-        self.settingsStore = settingsStore
+    init(factory: AgendaFlowFactory) {
+        self.factory = factory
+        self.factory.coordinator = self
     }
     
     @MainActor @ViewBuilder var rootView: some View {
-        AgendaView(
-            viewModel: .init(
-                coordinator: self,
-                databaseService: databaseService,
-                settingsStore: settingsStore
-            )
-        )
+        factory.makeAgendaView()
     }
     
     @MainActor @ViewBuilder func coordinate(to route: AgendaFlowRouter) -> some View {
         switch route {
         case .createClient:
-            CreateClientView()
+            factory.makeCreateClientView()
         case .createAppointment:
-            CreateAppointmentView(viewModel: .init(coordinator: self))
+            factory.makeCreateAppointmentView()
         case .editAppointment(let appointment): // TODO: Possível que vai precisar passar para essa tela qual appointment deve ser editado
-            EditCardAppointmentView()
+            factory.makeEditAppointment()
         case .appointmentDetails(let appointment): // TODO: Mesma coisa, passar para essa tela qual o appointment que deve ser mostrado
-            AppointmentDetailsView(viewModel: .init(coordinator: self))
+            factory.makeEditAppointment()
         }
     }
     
