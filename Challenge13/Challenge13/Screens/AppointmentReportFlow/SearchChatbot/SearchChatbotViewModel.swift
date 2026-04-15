@@ -9,48 +9,7 @@ import Combine
 import SwiftData
 import SwiftUI
 
-//MARK: Tipos de chat
-enum ChatAuthor{
-    case hero
-    case user
-}
-
-//MARK: opçoes do que o usuário quer que seja respondido
-//Nesse enum cada case tem um valor interno do tipo String
-enum HeroSuggestionType: String, Hashable{
-    case checkAvailableTimes
-}
-
-//MARK: botão clicável
-//Protocolo Identifiable cada objeto deve ter um identificador único
-//Protocolo Hashable o objeto pode virar um hash, um identificador único
-struct HeroSuggestion: Identifiable, Hashable{
-    //Qual opção o usuário quer
-    let type: HeroSuggestionType
-    //Texto mostrado
-    let title: String
-    //ID da opção
-    //O protocolo Identifiable exige essa a implementação de um ID
-    //rawValue diz que o ID será o texto do enum HeroSuggestionType
-    var id: String {type.rawValue}
-}
-
-//MARK: mensagem do chat
-struct MessageChat: Identifiable, Hashable{
-    let id = UUID()
-    let author: ChatAuthor
-    let text: String
-    let suggestions: [HeroSuggestion]
-    
-    init(author: ChatAuthor, text: String, suggestions: [HeroSuggestion] = []){
-        self.author = author
-        self.text = text
-        self.suggestions = suggestions
-    }
-}
-
 //MARK: View Model
-
 class SearchChatbotViewModel: ObservableObject {
         
     //Lista do chat
@@ -89,7 +48,7 @@ class SearchChatbotViewModel: ObservableObject {
     
     //MARK: Enviar mensagem para o chat
     func sendFreeMessage(appointments: [Appointment]){
-        var appointments = Appointment.mockData()
+        let appointments = Appointment.mockData() // TODO: Remover
         
         let question = typedText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !question.isEmpty else { return }
@@ -102,6 +61,8 @@ class SearchChatbotViewModel: ObservableObject {
     //MARK: selecionar sugestão quando o user clica no botão
     func selectSuggestion(_ suggestion: HeroSuggestion, appointment: [Appointment]){
         //Mostra a escolha no chat
+        let appointments = Appointment.mockData() // TODO: Remover
+        
         messages.append(MessageChat(author: .user, text: suggestion.title))
         
         //Decide o que fazer
@@ -111,7 +72,7 @@ class SearchChatbotViewModel: ObservableObject {
             //Manda o prompt  para a IA
             answer(
                 question: "Verifique os horários disponíveis dentro do horário comercial (08:00 às 18:00) com base no agendamentos cadastrados.",
-                appointments: appointment
+                appointments: appointments
             )
         }
     }
@@ -127,6 +88,7 @@ class SearchChatbotViewModel: ObservableObject {
             do{
                 //Cria o prompt
                 let prompt = createPrompt(question: question, appointments: appointments)
+                print(prompt)
                 //Chama IA
                 let response = try await IAService.createText(prompt: prompt)
                 
@@ -149,13 +111,13 @@ class SearchChatbotViewModel: ObservableObject {
     //MARK: Engenharia de Prompt
     private func createPrompt(question: String, appointments: [Appointment]) -> String{
         
-        for appointment in appointments {
-           
+        let appointmentsDetails: [String] = appointments.compactMap {
+            $0.describe()
         }
         //Injeta dados do app e pergunta do user
         return """
         Agendamentos cadastrados:
-        \(appointments)
+        \(appointmentsDetails)
         
         
         Pergunta: \(question)

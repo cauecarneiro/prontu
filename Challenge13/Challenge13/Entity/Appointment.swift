@@ -58,7 +58,6 @@ final class Appointment {
         
         return """
         Agendamento:
-        - ID: \(id)
         - Início: \(start)
         - Fim: \(end)
         - Status: \(status.rawValue)

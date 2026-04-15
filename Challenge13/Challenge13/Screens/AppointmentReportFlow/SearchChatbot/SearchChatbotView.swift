@@ -9,7 +9,6 @@ import SwiftUI
 
 struct SearchChatbotView: View {
     
-    //@Query(sort: \Appointment.startDate) private var appointments: [Appointment]
     @ObservedObject var viewModel: SearchChatbotViewModel
     
     //MARK: Layout vertical
