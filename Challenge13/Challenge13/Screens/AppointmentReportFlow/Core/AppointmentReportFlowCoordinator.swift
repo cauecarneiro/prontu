@@ -10,15 +10,21 @@ import SwiftUI
 final class AppointmentReportFlowCoordinator: Coordinator {
     
     var navigationController: NavigationController = .init()
+    private let factory: AppointmentReportFlowFactory
 
-    @MainActor @ViewBuilder var rootView: some View { AppointmentReportView(viewModel: .init(coordinator: self)) }
+    init(factory: AppointmentReportFlowFactory) {
+        self.factory = factory
+        self.factory.coordinator = self
+    }
+    
+    @MainActor @ViewBuilder var rootView: some View { factory.makeAppointmentReportView() }
     
     @MainActor @ViewBuilder func coordinate(to route: AppointmentReportFlowRouter) -> some View {
         switch route {
         case .clientHistory(let currentClient, let clientAppointments): // TODO: ver se faz sentido
-            ClientHistoryView()
+            factory.makeClientHistoryView()
         case .searchChatBot:
-            SearchChatbotView()
+            factory.makeSearchChatbotView()
         }
     }
     

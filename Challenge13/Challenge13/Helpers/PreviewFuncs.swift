@@ -15,8 +15,7 @@ func makeAgendaFlowCoordinator() -> AgendaFlowCoordinator {
     let databaseService = DatabaseService(context: context)
     
     return AgendaFlowCoordinator(
-        databaseService: databaseService,
-        settingsStore: .shared
+        factory: .init(databaseService: databaseService, settingsStore: .shared)
     )
 }
 

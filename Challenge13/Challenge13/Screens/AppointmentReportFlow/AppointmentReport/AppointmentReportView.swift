@@ -27,5 +27,11 @@ struct AppointmentReportView: View {
 }
 
 #Preview {
-    AppointmentReportView(viewModel: .init(coordinator: AppointmentReportFlowCoordinator()))
+    let coordinator = AppointmentReportFlowCoordinator(factory: .init())
+    
+    AppointmentReportView(
+        viewModel: .init(
+            coordinator: coordinator
+        )
+    )
 }
