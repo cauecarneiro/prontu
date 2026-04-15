@@ -40,7 +40,7 @@ final class AgendaViewModel: ObservableObject {
     }
     
     init(
-        coordinator: some AgendaCoordinateProtocol,
+        coordinator: (any AgendaCoordinateProtocol)?,
         databaseService: DatabaseService,
         settingsStore: SettingsStore
     ) {
