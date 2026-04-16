@@ -22,7 +22,19 @@ struct CurrentTimeNeedle: View {
                     .frame(width: Layout.dotSize, height: Layout.dotSize)
                     .offset(x: leftInset - Layout.dotSize / 2)
             }
+            .accessibilityLabel("Agora: \(timeLabel)")
     }
+
+    private var timeLabel: String {
+        Self.timeFormatter.string(from: time)
+    }
+
+    private static let timeFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "pt_BR")
+        f.dateFormat = "HH:mm"
+        return f
+    }()
 
     private enum Layout {
         static let dotSize: CGFloat = 10

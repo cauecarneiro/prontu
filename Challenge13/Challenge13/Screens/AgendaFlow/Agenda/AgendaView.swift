@@ -8,34 +8,29 @@
 import SwiftUI
 
 struct AgendaView: View {
-    
     @ObservedObject var viewModel: AgendaViewModel
-    
+
     var body: some View {
-        VStack {
+        VStack(spacing: GlobalConfiguration.normalSpacing) {
             CalendarWeeklyStrip(
                 selectedDate: $viewModel.selectedDate,
                 appointments: viewModel.appointments
             )
 
-            Spacer()
+            DailyScheduleCanvas(
+                appointments: viewModel.dailyAppointments,
+                date: viewModel.selectedDate
+            )
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            Text("Hello, Agenda!")
-
-            Button("Create Appointment") {
-                viewModel.navigateToCreateAppointment()
-            }
-
-            Button("Details of Appointment") {
-                viewModel.navigateToAppointmentDetails(appointment: .init())
-            }
-
-            Toggle("User Authentication", isOn: $viewModel.userAuthenticated) // TODO: Remover
-
-            Spacer()
+            AgendaDebugControls(
+                onCreateAppointment: { viewModel.navigateToCreateAppointment() },
+                onOpenAppointmentDetails: { viewModel.navigateToAppointmentDetails(appointment: .init()) },
+                userAuthenticated: $viewModel.userAuthenticated
+            )
         }
         .navigationBarTitleDisplayMode(.inline)
-        .padding(.horizontal)
+        .padding(.horizontal, GlobalConfiguration.normalSpacing)
     }
 }
 

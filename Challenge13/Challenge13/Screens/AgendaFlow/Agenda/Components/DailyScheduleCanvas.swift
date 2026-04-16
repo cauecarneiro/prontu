@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 // MARK: - WorkingWindow
 
@@ -83,7 +84,7 @@ struct DailyScheduleCanvas: View {
 
     @ViewBuilder
     private func canvas(width: CGFloat) -> some View {
-        let window = WorkingWindow.calculate(appointments: activeAppointments, currentTime: currentTime)
+        let window = WorkingWindow.calculate(appointments: appointmentsForDisplay, currentTime: timelineNow)
         let height = canvasHeight(for: window)
         let marks = anchorTimes(for: window)
 
@@ -97,18 +98,18 @@ struct DailyScheduleCanvas: View {
                     .offset(y: yOffset(for: time, window: window))
             }
 
-            ForEach(activeAppointments, id: \.id) { appt in
+            ForEach(appointmentsForDisplay, id: \.id) { appt in
                 ScheduleCard(appointment: appt, state: cardState(for: appt))
                     .frame(
-                        width: width - Layout.leftInset - Layout.cardTrailingPadding,
+                        width: max(width - Layout.leftInset - Layout.cardTrailingPadding, Layout.minCardWidth),
                         height: cardHeight(for: appt)
                     )
                     .offset(x: Layout.leftInset, y: yOffset(for: appt.startDate, window: window))
                     .zIndex(1)
             }
 
-            CurrentTimeNeedle(time: currentTime, width: width, leftInset: Layout.leftInset)
-                .offset(y: yOffset(for: currentTime, window: window))
+            CurrentTimeNeedle(time: timelineNow, width: width, leftInset: Layout.leftInset)
+                .offset(y: yOffset(for: timelineNow, window: window))
                 .id("needle")
                 .zIndex(2)
         }
@@ -118,6 +119,59 @@ struct DailyScheduleCanvas: View {
 
     private var activeAppointments: [Appointment] {
         appointments.filter { $0.status != .cancelled }
+            .sorted(by: { $0.startDate < $1.startDate })
+    }
+
+    private var appointmentsForDisplay: [Appointment] {
+        activeAppointments.isEmpty ? placeholderAppointments : activeAppointments
+    }
+
+    private var placeholderAppointments: [Appointment] {
+        [
+            Appointment(
+                startDate: dayTime(hour: 8, minute: 0),
+                endDate: dayTime(hour: 8, minute: 50),
+                status: .confirmed,
+                client: Client(name: "Aula de Pilates")
+            ),
+            Appointment(
+                startDate: dayTime(hour: 10, minute: 0),
+                endDate: dayTime(hour: 10, minute: 45),
+                status: .pending,
+                client: Client(name: "Aula Funcional")
+            ),
+            Appointment(
+                startDate: dayTime(hour: 12, minute: 30),
+                endDate: dayTime(hour: 13, minute: 0),
+                status: .blocked
+            ),
+            Appointment(
+                startDate: dayTime(hour: 16, minute: 0),
+                endDate: dayTime(hour: 16, minute: 50),
+                status: .finished,
+                client: Client(name: "Aula de Mobilidade")
+            )
+        ]
+        .sorted(by: { $0.startDate < $1.startDate })
+    }
+
+    private var timelineNow: Date {
+        let calendar = Calendar.current
+        guard !calendar.isDateInToday(date) else { return currentTime }
+
+        let time = calendar.dateComponents([.hour, .minute], from: currentTime)
+        var day = calendar.dateComponents([.year, .month, .day], from: date)
+        day.hour = time.hour
+        day.minute = time.minute
+        return calendar.date(from: day) ?? date
+    }
+
+    private func dayTime(hour: Int, minute: Int) -> Date {
+        let calendar = Calendar.current
+        var components = calendar.dateComponents([.year, .month, .day], from: date)
+        components.hour = hour
+        components.minute = minute
+        return calendar.date(from: components) ?? date
     }
 
     // MARK: - Geometry Helpers
@@ -129,7 +183,7 @@ struct DailyScheduleCanvas: View {
 
     private func anchorTimes(for window: WorkingWindow) -> [Date] {
         let calendar = Calendar.current
-        var components = calendar.dateComponents([.year, .month, .day, .hour], from: window.start)
+        let components = calendar.dateComponents([.year, .month, .day, .hour], from: window.start)
         guard var hourStart = calendar.date(from: components) else { return [] }
 
         if hourStart < window.start {
@@ -158,8 +212,8 @@ struct DailyScheduleCanvas: View {
     // MARK: - Card State
 
     private func cardState(for appointment: Appointment) -> ScheduleCardState {
-        if currentTime > appointment.endDate { return .past }
-        if currentTime >= appointment.startDate { return .active }
+        if timelineNow > appointment.endDate { return .past }
+        if timelineNow >= appointment.startDate { return .active }
         return .standard
     }
 
@@ -167,19 +221,25 @@ struct DailyScheduleCanvas: View {
 
     private func focusCanvas(proxy: ScrollViewProxy, animated: Bool) {
         let anchor: UnitPoint
+        let referenceTime = timelineNow
 
-        if activeAppointments.isEmpty {
+        if appointmentsForDisplay.isEmpty {
             anchor = .center
-        } else if activeAppointments.allSatisfy({ currentTime > $0.endDate }) {
-            // Late case: all appointments are past, needle in lower third
-            anchor = UnitPoint(x: 0.5, y: 0.7)
+        } else if appointmentsForDisplay.contains(where: { appointment in
+            referenceTime >= appointment.startDate && referenceTime <= appointment.endDate
+        }) {
+            // Active case: current time sits inside an appointment.
+            anchor = UnitPoint(x: Layout.anchorX, y: Layout.activeAnchorY)
+        } else if appointmentsForDisplay.contains(where: { $0.startDate > referenceTime }) {
+            // Default case: show current needle and the next appointment.
+            anchor = UnitPoint(x: Layout.anchorX, y: Layout.defaultAnchorY)
         } else {
-            // Default and active cases: needle in upper third
-            anchor = UnitPoint(x: 0.5, y: 0.25)
+            // Late case: all appointments are past, needle in lower third
+            anchor = UnitPoint(x: Layout.anchorX, y: Layout.lateAnchorY)
         }
 
         if animated {
-            withAnimation(.smooth(duration: 0.4)) {
+            withAnimation(.smooth(duration: Layout.focusAnimationDuration)) {
                 proxy.scrollTo("needle", anchor: anchor)
             }
         } else {
@@ -194,6 +254,12 @@ struct DailyScheduleCanvas: View {
         static let leftInset: CGFloat = 52
         static let cardTrailingPadding: CGFloat = GlobalConfiguration.normalSpacing
         static let minCardHeight: CGFloat = 24
+        static let minCardWidth: CGFloat = 120
+        static let anchorX: CGFloat = 0.5
+        static let defaultAnchorY: CGFloat = 0.25
+        static let activeAnchorY: CGFloat = 0.3
+        static let lateAnchorY: CGFloat = 0.7
+        static let focusAnimationDuration: Double = 0.4
     }
 }
 

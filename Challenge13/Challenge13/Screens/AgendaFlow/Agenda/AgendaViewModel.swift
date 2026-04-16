@@ -23,8 +23,10 @@ final class AgendaViewModel: ObservableObject {
 
     var dailyAppointments: [Appointment] {
         appointments.filter {
-            Calendar.current.isDate($0.startDate, inSameDayAs: selectedDate)
+            Calendar.current.isDate($0.startDate, inSameDayAs: selectedDate) &&
+            $0.status != .cancelled
         }
+        .sorted(by: { $0.startDate < $1.startDate })
     }
     
     var userAuthenticated: Bool { // TODO: Remover
