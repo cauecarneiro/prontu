@@ -18,7 +18,7 @@ final class Appointment {
     var endDate: Date
     var status: AppointmentStatus
     
-    var client: Client? // Opcional pq caso eu crie um bloqueio o client n deve ser setado para n tem o client para isso
+    var client: Client? // Opcional pq caso eu crie um bloqueio o client n deve ser setado pq n tem o client para isso
     
     var exercises: String?
     var equipment: String?
@@ -49,9 +49,7 @@ final class Appointment {
         
         let start = formatter.string(from: startDate)
         let end = formatter.string(from: endDate)
-        
         let clientDetails = client?.describe() ?? "Sem cliente"
-        
         let exercisesText = exercises ?? "Não informado"
         let equipmentText = equipment ?? "Não informado"
         let notesText = notes ?? "Sem observações"
@@ -68,8 +66,9 @@ final class Appointment {
         """
     }
 }
-
+//Extension para adicionar funcionalidades extrar ao Appointment
 extension Appointment {
+    //Gera um lista de agendamentos falsos para teste
     static func mockData() -> [Appointment] {
         
         let calendar = Calendar.current
@@ -80,6 +79,7 @@ extension Appointment {
         let cliente2 = Client(name: "João Souza", contactInfo: "11988887777", observations: "Joelho")
         let cliente3 = Client(name: "Ana Costa", contactInfo: "11977776666", observations: "Cervical")
         
+        //Agrupa os clientes em um Array
         let clientes = [cliente1, cliente2, cliente3]
         
         // MARK: - Helper de data
@@ -88,6 +88,7 @@ extension Appointment {
             return calendar.date(bySettingHour: hora, minute: 0, second: 0, of: base)!
         }
         
+        //Onde tudo está sendo armazenado
         var appointments: [Appointment] = []
         
         // MARK: - Dias (0 = hoje, 1 = amanhã...)
@@ -99,11 +100,11 @@ extension Appointment {
             for (index, hora) in horarios.enumerated() {
                 
                 let inicio = criarData(dia: dia, hora: hora)
+                //Cada consulta dura 1h
                 let fim = calendar.date(byAdding: .hour, value: 1, to: inicio)!
                 
                 // MARK: - Regras determinísticas
-                
-                // 🚫 Horários bloqueados (sempre os mesmos)
+                // Horários bloqueados 12h e 17h em dias pares
                 if hora == 12 || hora == 17 && dia % 2 == 0 {
                     appointments.append(
                         Appointment(
@@ -120,10 +121,10 @@ extension Appointment {
                     continue
                 }
                 
-                // 👤 Cliente fixo baseado no índice
+                // Cliente fixo baseado no índice
                 let cliente = clientes[index % clientes.count]
                 
-                // 📊 Status fixo baseado no horário
+                // Status fixo baseado no horário
                 let status: AppointmentStatus
                 switch hora {
                 case 8, 9:

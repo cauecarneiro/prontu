@@ -9,8 +9,8 @@ import FoundationModels
 
 struct IAService {
 
-
-    private static let instructions = """
+    static let instrucoes =
+    """
     ### ROLE
     Você é o Assistente Pessoal Interno do aplicativo FisioPlus. \
     Sua única função é informar o usuário sobre os agendamentos registrados no banco de dados local.
@@ -39,10 +39,16 @@ struct IAService {
     """
 
     static func createText(prompt: String) async throws -> String {
-        let session = LanguageModelSession(instructions: instructions)
         
+        let session = LanguageModelSession(instructions: instrucoes)
         print(prompt)
-        let response = try await session.respond(to: prompt)
-        return "\(response.content)"
+        do{
+            let response = try await session.respond(to: prompt)
+            print(response.content)
+            return "\(response.content)"
+        }catch{
+          print("Error: \(error.localizedDescription)")
+            return "Error: \(error.localizedDescription)"
+        }
     }
 }

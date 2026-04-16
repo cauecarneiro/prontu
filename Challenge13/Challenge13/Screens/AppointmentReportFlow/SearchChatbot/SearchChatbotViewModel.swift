@@ -48,6 +48,7 @@ class SearchChatbotViewModel: ObservableObject {
     
     //MARK: Enviar mensagem para o chat
     func sendFreeMessage(appointments: [Appointment]){
+        //Chamando o mock
         let appointments = Appointment.mockData() // TODO: Remover
         
         let question = typedText.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -72,7 +73,7 @@ class SearchChatbotViewModel: ObservableObject {
             //Manda o prompt  para a IA
             answer(
                 question: "Verifique os horários disponíveis dentro do horário comercial (08:00 às 18:00) com base no agendamentos cadastrados.",
-                appointments: appointments
+                appointments: appointments.filter({ Calendar.current.isDateInToday($0.startDate)})
             )
         }
     }
@@ -90,6 +91,7 @@ class SearchChatbotViewModel: ObservableObject {
                 let prompt = createPrompt(question: question, appointments: appointments)
                 print(prompt)
                 //Chama IA
+                
                 let response = try await IAService.createText(prompt: prompt)
                 
                 await MainActor.run{
@@ -111,13 +113,11 @@ class SearchChatbotViewModel: ObservableObject {
     //MARK: Engenharia de Prompt
     private func createPrompt(question: String, appointments: [Appointment]) -> String{
         
-        let appointmentsDetails: [String] = appointments.compactMap {
-            $0.describe()
-        }
+        let context = createContext(appointments)
         //Injeta dados do app e pergunta do user
         return """
         Agendamentos cadastrados:
-        \(appointmentsDetails)
+        \(context)
         
         
         Pergunta: \(question)
@@ -130,18 +130,10 @@ class SearchChatbotViewModel: ObservableObject {
             return "Nenhum agendamento cadastrado"
         }
         
-        //Padrão para formatar data
-        let iso = ISO8601DateFormatter()
-        
         return appointments
             .sorted { $0.startDate < $1.startDate }
-            //Transforma cada agendamento em texto para a IA entender
-            .map { ag in
-                let data = iso.string(from: ag.startDate)
-                return "Data: \(data)"
-               // let obs = ag.observacao.flatMap { $0.isEmpty ? nil : $0 } ?? "Sem observação"
-               // return "• Título: \(ag.titulo) | Data: \(data) | Observação: \(obs)"
-            }
-            .joined(separator: "\n")
+            //Transforma cada agendamento em texto para o Foundation entender
+            .map { $0.describe()}
+            .joined(separator: "\n\n")
     }
 }

@@ -35,9 +35,11 @@ final class Client { // nunca apagar o client, mudar para o isDeleted para true
         self.observations = observations
     }
     
+    //Função que prepara os dados para Foundations entende. Pega o objeto e descreve ele em forma de texto
     func describe() -> String {
         let formatter = ISO8601DateFormatter()
         
+        //Se tiver data, formata a data, se não diver data mostra texto padrão
         let birthdayText = birthday.map { formatter.string(from: $0) } ?? "Não informado"
         let observationsText = observations ?? "Sem observações"
         
@@ -47,7 +49,7 @@ final class Client { // nunca apagar o client, mudar para o isDeleted para true
         - Contato: \(contactInfo)
         - Data de nascimento: \(birthdayText)
         - Observações: \(observationsText)
-        - Total de agendamentos: \(appointments.count)
+        - Total de agendamentos: \(appointments.count) //já vê quantos atendimentos o clinete tem
         """
     }
 }
