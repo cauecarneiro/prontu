@@ -15,14 +15,14 @@ struct CalendarWeeklyStripHeader: View {
     var body: some View {
         HStack(alignment: .center, spacing: Layout.headerSpacing) {
             Text(title)
-                .font(.largeTitle.weight(.bold))
+                .font(.title.weight(.bold))
                 .foregroundStyle(.primary)
                 .lineLimit(1)
                 .minimumScaleFactor(Layout.titleScaleFactor)
 
-            Spacer(minLength: 0)
+            Spacer(minLength: .zero)
 
-            HStack(spacing: 0) {
+            HStack(spacing: .zero) {
                 navButton(systemName: "chevron.left", label: "Semana anterior", action: onPrevious)
                 navButton(systemName: "chevron.right", label: "Próxima semana", action: onNext)
             }
@@ -49,8 +49,8 @@ struct CalendarWeeklyStripHeader: View {
     private enum Layout {
         static let chevronSize: CGFloat = 26
         static let tapTargetSize: CGFloat = 44
-        static let headerSpacing: CGFloat = 12
-        static let titleScaleFactor: CGFloat = 0.78
+        static let headerSpacing: CGFloat = 8
+        static let titleScaleFactor: CGFloat = 0.65
     }
 }
 

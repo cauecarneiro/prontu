@@ -38,33 +38,31 @@ struct CalendarWeeklyStrip: View {
     // MARK: - Week Pager
 
     private var weekPager: some View {
-        ScrollViewReader { _ in
-            ScrollView(.horizontal) {
-                LazyHStack(spacing: 0) {
-                    ForEach(pages) { page in
-                        weekRow(for: page)
-                            .containerRelativeFrame(.horizontal)
-                            .id(page.id)
-                    }
+        ScrollView(.horizontal) {
+            LazyHStack(spacing: .zero) {
+                ForEach(pages) { page in
+                    weekRow(for: page)
+                        .containerRelativeFrame(.horizontal)
+                        .id(page.id)
                 }
-                .scrollTargetLayout()
             }
-            .frame(height: Layout.weekPagerHeight)
-            .scrollIndicators(.hidden)
-            .scrollTargetBehavior(.paging)
-            .scrollPosition(id: $visiblePageID)
-            .onScrollPhaseChange { _, newPhase in
-                guard newPhase == .idle else { return }
-                paginateIfNeeded()
-            }
-            .onAppear {
-                setupInitialPages()
-            }
+            .scrollTargetLayout()
+        }
+        .frame(height: Layout.weekPagerHeight)
+        .scrollIndicators(.hidden)
+        .scrollTargetBehavior(.paging)
+        .scrollPosition(id: $visiblePageID)
+        .onScrollPhaseChange { _, newPhase in
+            guard newPhase == .idle else { return }
+            paginateIfNeeded()
+        }
+        .onAppear {
+            setupInitialPages()
         }
     }
 
     private func weekRow(for page: WeekPageData) -> some View {
-        HStack(spacing: 0) {
+        HStack(spacing: .zero) {
             ForEach(page.dates, id: \.self) { date in
                 CalendarWeeklyStripDayCell(
                     date: date,

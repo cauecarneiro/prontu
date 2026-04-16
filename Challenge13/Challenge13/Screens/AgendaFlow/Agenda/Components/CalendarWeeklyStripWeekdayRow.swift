@@ -13,7 +13,7 @@ struct CalendarWeeklyStripWeekdayRow: View {
     private let locale = Locale(identifier: "pt-BR")
 
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: .zero) {
             ForEach(Array(weekDates.enumerated()), id: \.offset) { _, date in
                 Text(date.formatted(.dateTime.weekday(.narrow).locale(locale)).uppercased())
                     .font(.system(size: Layout.fontSize, weight: .semibold))
