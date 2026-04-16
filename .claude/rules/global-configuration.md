@@ -43,4 +43,23 @@ VStack(spacing: 16) { ... }
     .cornerRadius(12)
 ```
 
-Se precisar de um valor pontual não-reutilizável, **ainda assim** adicione nomeado (`<tela>Height`, `<componente>IconSize`) — a regra é "valor tem nome", não "valor é reutilizado".
+## Valores específicos de tela: constantes locais
+
+Frames, paddings, tamanhos de fonte e espaçamentos **exclusivos de um único componente** não entram no `GlobalConfiguration`. Mantenha-os como `private enum Layout` no próprio arquivo:
+
+```swift
+// ✅ constante local nomeada
+private enum Layout {
+    static let headerHeight: CGFloat = 52
+    static let dotSize: CGFloat = 5
+}
+
+// ❌ não jogar no GlobalConfiguration só para evitar inline
+static var calendarPaddingTop: CGFloat { 12 }
+```
+
+O critério de entrada no `GlobalConfiguration` é **reutilização real em 2+ arquivos distintos**:
+- Pertencem ao `GlobalConfiguration`: `normalSpacing`, `normalCornerRadius`, `primaryBlue`.
+- Ficam locais: tamanho de chevron, altura do pager semanal, padding exclusivo de um componente.
+
+Valores locais **ainda precisam de nome** (proibido literal inline) — a diferença é onde o nome vive.
