@@ -40,3 +40,32 @@ Ao promover um componente (subir de nível), mova o arquivo; não duplique. Um c
 - Header padrão `//  <Arquivo>.swift  //  Challenge13  //  Created by <Autor> on <data>.` mantendo o estilo existente.
 - Imports mínimos (`Foundation`, `SwiftUI`, `Combine` apenas se usados).
 - Uma `struct`/`class`/`enum` de topo por arquivo; tipos auxiliares privados podem coexistir abaixo se forem internos àquele arquivo.
+
+## Extração de sub-views
+
+Sub-partes de uma View com nome semântico claro e mais de ~5 linhas devem ser extraídas como `struct` em arquivos separados, não como `private var` computadas na mesma struct.
+
+```swift
+// ❌ computed var embutida na View pai
+private var header: some View {
+    HStack { Text(title) ... }
+}
+
+// ✅ struct em arquivo próprio
+// Components/CalendarWeeklyStripHeader.swift
+struct CalendarWeeklyStripHeader: View { ... }
+```
+
+Funções auxiliares puras (sem `View`) e tipos de suporte (`private enum Layout`, structs de dados) podem coexistir no mesmo arquivo que as utiliza.
+
+## Reutilização de extensões existentes
+
+Antes de implementar lógica de formatação, parsing ou transformação, verifique se já existe uma extension em `Helpers/Extension/`. Reutilize — não duplique.
+
+```swift
+// ✅ reutiliza Date+Ext.swift
+Text(selectedDate.formatterRow())
+
+// ❌ reimplementa formatação inline
+let month = selectedDate.formatted(.dateTime.month(.wide)...)
+```

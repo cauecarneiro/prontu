@@ -18,7 +18,7 @@ struct CalendarWeeklyStripDayCell: View {
     private var isToday: Bool { calendar.isDateInToday(date) }
 
     var body: some View {
-        VStack(spacing: GlobalConfiguration.calendarDayCellInnerSpacing) {
+        VStack(spacing: Layout.innerSpacing) {
             ZStack {
                 if isSelected {
                     RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius, style: .continuous)
@@ -31,21 +31,24 @@ struct CalendarWeeklyStripDayCell: View {
                 Text(dayNum)
                     .font(.headline)
                     .foregroundStyle(isSelected ? Color.white : Color.primary)
-                    .frame(maxWidth: .infinity, minHeight: GlobalConfiguration.calendarDayCellSize)
+                    .frame(maxWidth: .infinity, minHeight: Layout.cellSize)
             }
-            .frame(height: GlobalConfiguration.calendarDayCellSize)
+            .frame(height: Layout.cellSize)
 
             Circle()
                 .fill(isToday ? GlobalConfiguration.primaryBlue : Color.clear)
-                .frame(
-                    width: GlobalConfiguration.calendarDotSize,
-                    height: GlobalConfiguration.calendarDotSize
-                )
+                .frame(width: Layout.dotSize, height: Layout.dotSize)
                 .overlay {
                     if hasAppointments && !isToday {
                         Circle().fill(GlobalConfiguration.primaryBlue.opacity(0.5))
                     }
                 }
         }
+    }
+
+    private enum Layout {
+        static let cellSize: CGFloat = 40
+        static let dotSize: CGFloat = 5
+        static let innerSpacing: CGFloat = 4
     }
 }

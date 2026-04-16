@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct CalendarWeeklyStrip: View {
     @Binding var selectedDate: Date
@@ -18,84 +17,22 @@ struct CalendarWeeklyStrip: View {
     @Namespace private var selectionNamespace
 
     private let calendar = Calendar.current
-    private let locale = Locale(identifier: "pt-BR")
     private let centeredIndex = 2
 
     var body: some View {
-        VStack(spacing: GlobalConfiguration.calendarHeaderSpacing) {
-            header
-            weekdayLabelsRow
+        VStack(spacing: Layout.sectionSpacing) {
+            CalendarWeeklyStripHeader(
+                title: selectedDate.formatterRow(),
+                onPrevious: { shiftWeek(by: -1) },
+                onNext: { shiftWeek(by: 1) }
+            )
+
+            CalendarWeeklyStripWeekdayRow(weekDates: weekDates(from: startOfWeek(containing: selectedDate)))
+
             weekPager
         }
-        .padding(.top, GlobalConfiguration.calendarPaddingTop)
-        .padding(.bottom, GlobalConfiguration.calendarPaddingBottom)
-    }
-
-    // MARK: - Header
-
-    private var headerTitle: String {
-        let day = selectedDate.formatted(.dateTime.day().locale(locale))
-        let monthRaw = selectedDate.formatted(.dateTime.month(.wide).locale(locale))
-        let month = String(monthRaw.prefix(1)).uppercased() + String(monthRaw.dropFirst())
-        let dateStr = "\(day) de \(month)"
-        return calendar.isDateInToday(selectedDate) ? "Hoje, \(dateStr)" : dateStr
-    }
-
-    private var header: some View {
-        HStack(alignment: .center, spacing: GlobalConfiguration.calendarHeaderSpacing) {
-            Text(headerTitle)
-                .font(.largeTitle.weight(.bold))
-                .foregroundStyle(.primary)
-                .lineLimit(1)
-                .minimumScaleFactor(GlobalConfiguration.calendarTitleScaleFactor)
-
-            Spacer(minLength: 0)
-
-            HStack(spacing: GlobalConfiguration.calendarDayCellInnerSpacing) {
-                navButton(systemName: "chevron.left", label: "Semana anterior") {
-                    shiftWeek(by: -1)
-                }
-                navButton(systemName: "chevron.right", label: "Próxima semana") {
-                    shiftWeek(by: 1)
-                }
-            }
-        }
-        .padding(.horizontal, GlobalConfiguration.normalSpacing)
-    }
-
-    private func navButton(
-        systemName: String,
-        label: String,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            Image(systemName: systemName)
-                .font(.system(size: GlobalConfiguration.calendarChevronSize, weight: .semibold))
-                .frame(
-                    width: GlobalConfiguration.calendarTapTargetSize,
-                    height: GlobalConfiguration.calendarTapTargetSize
-                )
-                .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .foregroundStyle(GlobalConfiguration.primaryBlue)
-        .accessibilityLabel(label)
-    }
-
-    // MARK: - Weekday Labels
-
-    private var weekdayLabelsRow: some View {
-        let anchor = startOfWeek(containing: selectedDate)
-        let dates = weekDates(from: anchor)
-        return HStack(spacing: 0) {
-            ForEach(Array(dates.enumerated()), id: \.offset) { _, date in
-                Text(date.formatted(.dateTime.weekday(.narrow).locale(locale)).uppercased())
-                    .font(.system(size: GlobalConfiguration.calendarWeekdayFontSize, weight: .semibold))
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity)
-            }
-        }
-        .padding(.horizontal, GlobalConfiguration.normalSpacing)
+        .padding(.top, Layout.paddingTop)
+        .padding(.bottom, Layout.paddingBottom)
     }
 
     // MARK: - Week Pager
@@ -112,7 +49,7 @@ struct CalendarWeeklyStrip: View {
                 }
                 .scrollTargetLayout()
             }
-            .frame(height: GlobalConfiguration.calendarWeekPagerHeight)
+            .frame(height: Layout.weekPagerHeight)
             .scrollIndicators(.hidden)
             .scrollTargetBehavior(.paging)
             .scrollPosition(id: $visiblePageID)
@@ -140,8 +77,8 @@ struct CalendarWeeklyStrip: View {
                 .onTapGesture {
                     withAnimation(
                         .spring(
-                            response: GlobalConfiguration.calendarSpringResponse,
-                            dampingFraction: GlobalConfiguration.calendarSpringDamping
+                            response: Layout.springResponse,
+                            dampingFraction: Layout.springDamping
                         )
                     ) {
                         selectedDate = date
@@ -209,6 +146,17 @@ struct CalendarWeeklyStrip: View {
             apt.status != .blocked && apt.status != .cancelled &&
             calendar.isDate(apt.startDate, inSameDayAs: date)
         }
+    }
+
+    // MARK: - Layout
+
+    private enum Layout {
+        static let sectionSpacing: CGFloat = 12
+        static let paddingTop: CGFloat = 12
+        static let paddingBottom: CGFloat = 8
+        static let weekPagerHeight: CGFloat = 52
+        static let springResponse: Double = 0.37
+        static let springDamping: Double = 0.85
     }
 }
 
