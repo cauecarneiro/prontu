@@ -20,6 +20,12 @@ final class AgendaViewModel: ObservableObject {
     var formatterDate: String {
         selectedDate.formatterRow()
     }
+
+    var dailyAppointments: [Appointment] {
+        appointments.filter {
+            Calendar.current.isDate($0.startDate, inSameDayAs: selectedDate)
+        }
+    }
     
     var userAuthenticated: Bool { // TODO: Remover
         get {
