@@ -38,11 +38,12 @@ class SearchChatbotViewModel: ObservableObject {
                 suggestions: [
                     HeroSuggestion(
                         type: .checkAvailableTimes,
-                        title: "Verificar horários disponíveis na semana"
+                        title: "Verificar horários disponíveis"
                     )
                 ]
             )
         ]
+        
         self.appointments = appointments
     }
     
@@ -50,6 +51,7 @@ class SearchChatbotViewModel: ObservableObject {
     func sendFreeMessage(appointments: [Appointment]){
         //Chamando o mock
         let appointments = Appointment.mockData() // TODO: Remover
+        
         
         let question = typedText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !question.isEmpty else { return }
@@ -64,6 +66,11 @@ class SearchChatbotViewModel: ObservableObject {
         //Mostra a escolha no chat
         let appointments = Appointment.mockData() // TODO: Remover
         
+        for appointment in appointments {
+            print(appointment.describe())
+        }
+
+        
         messages.append(MessageChat(author: .user, text: suggestion.title))
         
         //Decide o que fazer
@@ -72,8 +79,36 @@ class SearchChatbotViewModel: ObservableObject {
         case .checkAvailableTimes:
             //Manda o prompt  para a IA
             answer(
-                question: "Verifique os horários disponíveis dentro do horário comercial (08:00 às 18:00) com base no agendamentos cadastrados.",
+                /* "Verifique os horários disponíveis hoje para agendamento com base nos horários de agendamentos cadastrados e com status confirmado. A saída de resposta informar somente os horários disponíveis"*/
+                question: """
+                Você é um assistente responsável por analisar horários de agendamentos.
+                
+                Sua tarefa é identificar os horários disponíveis no dia de hoje com base nos agendamentos já cadastrados.
+
+                Considere que:
+                - O horário de funcionamento é das 08:00 às 18:00.
+                - Cada agendamento ocupa exatamente o intervalo informado.
+                - Não pode haver sobreposição de horários.
+                - Você deve encontrar os intervalos livres entre os agendamentos existentes.
+
+                Instruções:
+                - Analise os horários ocupados.
+                - Identifique os intervalos livres entre eles.
+                - Retorne apenas os horários disponíveis (intervalos livres).
+                - NÃO inclua a data na resposta.
+                - NÃO explique o raciocínio.
+
+                Formato de saída (OBRIGATÓRIO):
+                [
+                  { "inicio": "HH:mm", "fim": "HH:mm" },
+                  { "inicio": "HH:mm", "fim": "HH:mm" }
+                ]
+
+                Pergunta do usuário:
+                Verifique os horários disponíveis hoje para agendamento.
+                """,
                 appointments: appointments.filter({ Calendar.current.isDateInToday($0.startDate)})
+                
             )
         }
     }
