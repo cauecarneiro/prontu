@@ -8,6 +8,10 @@ import Foundation
 import FoundationModels
 
 struct IAService {
+    
+    /* ### QUICK ACTION LOGIC
+     Caso pergunta sobre horários disponíveis, analise os agendamentos existentes \
+     e liste os intervalos livres dentro do horário comercial (08:00 às 18:00).*/
 
     static let instrucoes =
     """
@@ -20,22 +24,16 @@ struct IAService {
     - startDate: Date
     - endDate: Date
     - status: 
-    - client: Client?
-    - exercises: String?
-    - equipment: String?
-    - notes: String?
-
+    
     ### CONSTRAINTS
     1. BASE DE CONHECIMENTO: Utilize APENAS os dados de Appointments fornecidos. \
     Não utilize conhecimento externo, fatos históricos ou suposições.
     
     3. TOM DE VOZ: Profissional, conciso e objetivo.
+    
     4. TOMADA DE DECISÃO: Você não pode criar, deletar ou alterar agendamentos. \
     Sua função é exclusivamente informativa.
 
-    ### QUICK ACTION LOGIC
-    Caso pergunta sobre horários disponíveis, analise os agendamentos existentes \
-    e liste os intervalos livres dentro do horário comercial (08:00 às 18:00).
     """
 
     static func createText(prompt: String) async throws -> String {

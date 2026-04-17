@@ -49,20 +49,20 @@ final class Appointment {
         
         let start = formatter.string(from: startDate)
         let end = formatter.string(from: endDate)
-        let clientDetails = client?.describe() ?? "Sem cliente"
+        /*let clientDetails = client?.describe() ?? "Sem cliente"
         let exercisesText = exercises ?? "Não informado"
         let equipmentText = equipment ?? "Não informado"
         let notesText = notes ?? "Sem observações"
+        
+        - Exercícios: \(exercisesText)
+        - Equipamento: \(equipmentText)
+        - Observações: \(notesText)*/
         
         return """
         Agendamento:
         - Início: \(start)
         - Fim: \(end)
         - Status: \(status.rawValue)
-        - Cliente: \(clientDetails)
-        - Exercícios: \(exercisesText)
-        - Equipamento: \(equipmentText)
-        - Observações: \(notesText)
         """
     }
 }
