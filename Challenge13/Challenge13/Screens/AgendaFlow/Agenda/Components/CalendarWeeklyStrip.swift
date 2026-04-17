@@ -49,6 +49,7 @@ struct CalendarWeeklyStrip: View {
             .scrollTargetLayout()
         }
         .frame(height: Layout.weekPagerHeight)
+        .scrollClipDisabled()
         .scrollIndicators(.hidden)
         .scrollTargetBehavior(.paging)
         .scrollPosition(id: $visiblePageID)
@@ -73,12 +74,7 @@ struct CalendarWeeklyStrip: View {
                 .frame(maxWidth: .infinity)
                 .contentShape(Rectangle())
                 .onTapGesture {
-                    withAnimation(
-                        .spring(
-                            response: Layout.springResponse,
-                            dampingFraction: Layout.springDamping
-                        )
-                    ) {
+                    withAnimation(Layout.selectionAnimation) {
                         selectedDate = date
                     }
                 }
@@ -105,7 +101,9 @@ struct CalendarWeeklyStrip: View {
         let newWeekStart = pages[visibleIndex].id
         let currentWeekdayOffset = calendar.component(.weekday, from: selectedDate) - 1
         if let newDate = calendar.date(byAdding: .day, value: currentWeekdayOffset, to: newWeekStart) {
-            selectedDate = newDate
+            withAnimation(Layout.selectionAnimation) {
+                selectedDate = newDate
+            }
         }
 
         pages = makeBuffer(around: pages[visibleIndex].id)
@@ -114,7 +112,9 @@ struct CalendarWeeklyStrip: View {
 
     private func shiftWeek(by weekDelta: Int) {
         guard let newDate = calendar.date(byAdding: .weekOfYear, value: weekDelta, to: selectedDate) else { return }
-        selectedDate = newDate
+        withAnimation(Layout.selectionAnimation) {
+            selectedDate = newDate
+        }
         pages = makeBuffer(around: newDate)
         visiblePageID = pages[centeredIndex].id
     }
@@ -153,8 +153,7 @@ struct CalendarWeeklyStrip: View {
         static let paddingTop: CGFloat = 12
         static let paddingBottom: CGFloat = 8
         static let weekPagerHeight: CGFloat = 52
-        static let springResponse: Double = 0.37
-        static let springDamping: Double = 0.85
+        static let selectionAnimation: Animation = .spring(response: 0.37, dampingFraction: 0.85)
     }
 }
 

@@ -28,21 +28,25 @@ struct CalendarWeeklyStripDayCell: View {
                         .matchedGeometryEffect(id: "day-selection", in: namespace)
                 }
 
-                Text(dayNum)
-                    .font(.headline)
-                    .foregroundStyle(isSelected ? Color.white : Color.primary)
-                    .frame(maxWidth: .infinity, minHeight: Layout.cellSize)
+                if isToday && !isSelected {
+                    Text(dayNum)
+                        .font(.headline)
+                        .foregroundStyle(.primaryBlue)
+                        .frame(maxWidth: .infinity, minHeight: Layout.cellSize)
+                } else {
+                    Text(dayNum)
+                        .font(.headline)
+                        .foregroundStyle(isSelected ? Color.white : Color.primary)
+                        .frame(maxWidth: .infinity, minHeight: Layout.cellSize)
+                }
+
             }
+            .scaleEffect(isSelected ? Layout.selectedScale : Layout.unselectedScale)
             .frame(height: Layout.cellSize)
 
             Circle()
-                .fill(isToday ? GlobalConfiguration.primaryBlue : Color.clear)
+                .fill(hasAppointments ? GlobalConfiguration.primaryBlue : Color.clear)
                 .frame(width: Layout.dotSize, height: Layout.dotSize)
-                .overlay {
-                    if hasAppointments && !isToday {
-                        Circle().fill(GlobalConfiguration.primaryBlue.opacity(0.5))
-                    }
-                }
         }
     }
 
@@ -50,5 +54,7 @@ struct CalendarWeeklyStripDayCell: View {
         static let cellSize: CGFloat = 40
         static let dotSize: CGFloat = 5
         static let innerSpacing: CGFloat = 4
+        static let selectedScale: CGFloat = 1.12
+        static let unselectedScale: CGFloat = 0.88
     }
 }

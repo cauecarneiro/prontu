@@ -11,7 +11,7 @@ import Foundation
 final class AgendaViewModel: ObservableObject {
     weak private var coordinator: (any AgendaCoordinateProtocol)?
     private let databaseService: DatabaseService
-    private let settingsStore: SettingsStore
+    private let settingsStore: SettingsStore // TODO: Remover
     private var cancellables: Set<AnyCancellable> = []
     
     @Published var appointments: [Appointment]
@@ -19,6 +19,14 @@ final class AgendaViewModel: ObservableObject {
     
     var formatterDate: String {
         selectedDate.formatterRow()
+    }
+
+    var dailyAppointments: [Appointment] {
+        appointments.filter {
+            Calendar.current.isDate($0.startDate, inSameDayAs: selectedDate) &&
+            $0.status != .cancelled
+        }
+        .sorted(by: { $0.startDate < $1.startDate })
     }
     
     var userAuthenticated: Bool { // TODO: Remover
