@@ -43,4 +43,102 @@ final class Appointment {
         self.equipment = equipment
         self.notes = notes
     }
+    
+    func describe() -> String {
+        return """
+            Start Date: \(startDate)
+            End Date: \(endDate)
+            Status: \(status)
+            Client: \(client?.describe ?? "nil")
+            exercises: String?
+            equipment: String?
+            notes: String?
+            """
+    }
+}
+
+extension Appointment {
+    static func mockData() -> [Appointment] {
+        
+        let calendar = Calendar.current
+        let hoje = Date()
+        
+        // MARK: - Clientes
+        let cliente1 = Client(name: "Maria Silva", contactInfo: "11999990000", observations: "Dor lombar")
+        let cliente2 = Client(name: "João Souza", contactInfo: "11988887777", observations: "Joelho")
+        let cliente3 = Client(name: "Ana Costa", contactInfo: "11977776666", observations: "Cervical")
+        
+        let clientes = [cliente1, cliente2, cliente3]
+        
+        // MARK: - Helper de data
+        func criarData(dia: Int, hora: Int) -> Date {
+            let base = calendar.date(byAdding: .day, value: dia, to: hoje)!
+            return calendar.date(bySettingHour: hora, minute: 0, second: 0, of: base)!
+        }
+        
+        var appointments: [Appointment] = []
+        
+        // MARK: - Dias (0 = hoje, 1 = amanhã...)
+        for dia in 0..<5 {
+            
+            // Horários fixos
+            let horarios = [8, 9, 10, 11, 12, 14, 15, 16, 17]
+            
+            for (index, hora) in horarios.enumerated() {
+                
+                let inicio = criarData(dia: dia, hora: hora)
+                let fim = calendar.date(byAdding: .hour, value: 1, to: inicio)!
+                
+                // MARK: - Regras determinísticas
+                
+                // 🚫 Horários bloqueados (sempre os mesmos)
+                if hora == 12 || hora == 17 && dia % 2 == 0 {
+                    appointments.append(
+                        Appointment(
+                            id: UUID(),
+                            startDate: inicio,
+                            endDate: fim,
+                            status: .blocked,
+                            client: nil,
+                            exercises: nil,
+                            equipment: nil,
+                            notes: "Horário bloqueado"
+                        )
+                    )
+                    continue
+                }
+                
+                // 👤 Cliente fixo baseado no índice
+                let cliente = clientes[index % clientes.count]
+                
+                // 📊 Status fixo baseado no horário
+                let status: AppointmentStatus
+                switch hora {
+                case 8, 9:
+                    status = .confirmed
+                case 10, 11:
+                    status = .pending
+                case 14, 15:
+                    status = .finished
+                default:
+                    status = .cancelled
+                }
+                
+                appointments.append(
+                    Appointment(
+                        id: UUID(),
+                        startDate: inicio,
+                        endDate: fim,
+                        status: status,
+                        client: cliente,
+                        exercises: "Exercício \(index + 1)",
+                        equipment: "Equipamento \(index + 1)",
+                        notes: "Sessão do dia \(dia) às \(hora)h"
+                    )
+                )
+            }
+        }
+        
+        return appointments
+    }
 }
