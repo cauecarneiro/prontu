@@ -33,13 +33,14 @@ final class DatasetService {
     private static func readBundle() -> EquipmentDataset {
         guard
             let url = Bundle.main.url(
-                forResource: Constants.Dataset.nomeArquivo,
-                withExtension: Constants.Dataset.extensaoArquivo
+                forResource: GlobalConfiguration.dataFileName,
+                withExtension: GlobalConfiguration.fileExtension
             ),
             let data = try? Data(contentsOf: url),
             let dataset = try? JSONDecoder().decode(EquipmentDataset.self, from: data)
         else {
-            fatalError("Arquivo \(Constants.Dataset.nomeArquivo).\(Constants.Dataset.extensaoArquivo) não encontrado ou inválido no bundle.")
+            print("Arquivo \(GlobalConfiguration.dataFileName).\(GlobalConfiguration.fileExtension) não encontrado ou inválido no bundle.")
+            return .init(objetivos: [], exercicios: [], regioes: [])
         }
         return dataset
     }

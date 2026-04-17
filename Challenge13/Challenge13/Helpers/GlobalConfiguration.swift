@@ -14,4 +14,7 @@ enum GlobalConfiguration {
     
     static var normalSpacing: CGFloat { 16 }
     static var normalCornerRadius: CGFloat { 12 }
+        
+    static var dataFileName: String { "dados" }
+    static var fileExtension: String { "json" }
 }
