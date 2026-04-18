@@ -19,7 +19,8 @@ struct AgendaView: View {
 
             DailyScheduleCanvas(
                 appointments: viewModel.dailyAppointments,
-                date: viewModel.selectedDate
+                date: viewModel.selectedDate,
+                navigateTo: viewModel.navigateToAppointmentDetails
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             

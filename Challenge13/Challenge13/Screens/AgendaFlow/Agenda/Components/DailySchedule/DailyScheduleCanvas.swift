@@ -10,6 +10,7 @@ import SwiftUI
 struct DailyScheduleCanvas: View {
     let appointments: [Appointment]
     let date: Date
+    let navigateTo: (Appointment) -> Void
 
     @State private var currentTime: Date = .now
 
@@ -60,7 +61,8 @@ struct DailyScheduleCanvas: View {
                             positioned(y: metrics.yOffset(for: appointment.startDate), in: metrics) {
                                 ScheduleCard(
                                     appointment: appointment,
-                                    state: cardState(for: appointment)
+                                    state: cardState(for: appointment),
+                                    navigateTo: navigateTo
                                 )
                                 .padding(.vertical, 4)
                                 .padding(.leading, Layout.leftInset)
@@ -257,7 +259,7 @@ private extension DailyScheduleCanvas {
 // MARK: - Preview
 
 #Preview("DailyScheduleCanvas — vazio") {
-    DailyScheduleCanvas(appointments: [], date: .now)
+    DailyScheduleCanvas(appointments: [], date: .now) { _ in }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
 }
 
@@ -287,7 +289,7 @@ private extension DailyScheduleCanvas {
     DailyScheduleCanvas(
         appointments: [past, active, next, blocked],
         date: .now
-    )
+    ) { _ in }
     .padding(.horizontal)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
 }
