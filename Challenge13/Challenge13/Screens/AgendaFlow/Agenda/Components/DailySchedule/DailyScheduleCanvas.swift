@@ -8,48 +8,6 @@
 import SwiftUI
 import Combine
 
-// MARK: - WorkingWindow
-
-struct WorkingWindow {
-    let start: Date
-    let end: Date
-
-    /// Calculates the time window to render, following the four rules from the design spec:
-    /// - Upper bound: first appointment start - 60 min (recedes if currentTime is earlier)
-    /// - Lower bound: last appointment end + 60 min (expands if currentTime is later)
-    /// - Empty day: 4-hour window centered on currentTime
-    /// - Invariant: currentTime is always within the window
-    static func calculate(
-        appointments: [Appointment],
-        currentTime: Date
-    ) -> WorkingWindow {
-        guard !appointments.isEmpty else {
-            return WorkingWindow(
-                start: currentTime.addingTimeInterval(-emptyDayHalfWindow),
-                end: currentTime.addingTimeInterval(emptyDayHalfWindow)
-            )
-        }
-
-        let firstStart = appointments.min(by: { $0.startDate < $1.startDate })!.startDate
-        let lastEnd = appointments.max(by: { $0.endDate < $1.endDate })!.endDate
-
-        var windowStart = firstStart.addingTimeInterval(-windowPadding)
-        var windowEnd = lastEnd.addingTimeInterval(windowPadding)
-
-        if currentTime < windowStart {
-            windowStart = currentTime.addingTimeInterval(-windowPadding)
-        }
-        if currentTime > windowEnd {
-            windowEnd = currentTime.addingTimeInterval(windowPadding)
-        }
-
-        return WorkingWindow(start: windowStart, end: windowEnd)
-    }
-
-    private static let windowPadding: TimeInterval = 60 * 60
-    private static let emptyDayHalfWindow: TimeInterval = 2 * 60 * 60
-}
-
 // MARK: - DailyScheduleCanvas
 
 struct DailyScheduleCanvas: View {
@@ -57,9 +15,27 @@ struct DailyScheduleCanvas: View {
     let date: Date
 
     @State private var currentTime: Date = .now
+    private var timelineNowID: String { "needle" }
+    
+    private var activeAppointments: [Appointment] {
+        appointments.filter { $0.status != .cancelled }
+            .sorted(by: { $0.startDate < $1.startDate })
+    }
 
-    private let timer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
+    private var timelineNow: Date {
+        let calendar = Calendar.current
+        
+        if calendar.isDateInToday(date) {
+            return currentTime
+        }
 
+        let time = calendar.dateComponents([.hour, .minute], from: currentTime)
+        var day = calendar.dateComponents([.year, .month, .day], from: date)
+        day.hour = time.hour
+        day.minute = time.minute
+        return calendar.date(from: day) ?? date
+    }
+    
     var body: some View {
         GeometryReader { geo in
             ScrollViewReader { proxy in
@@ -73,9 +49,6 @@ struct DailyScheduleCanvas: View {
                 .onChange(of: date) { _, _ in
                     currentTime = Date()
                     focusCanvas(proxy: proxy, animated: true)
-                }
-                .onReceive(timer) { _ in
-                    currentTime = Date()
                 }
             }
         }
@@ -113,31 +86,10 @@ struct DailyScheduleCanvas: View {
             if Calendar.current.isDateInToday(date) {
                 CurrentTimeNeedle(time: timelineNow, width: width, leftInset: Layout.leftInset)
                     .offset(y: yOffset(for: timelineNow, window: window))
-                    .id("needle")
+                    .id(timelineNowID)
                     .zIndex(2)
             }
         }
-    }
-
-    // MARK: - Computed Properties
-
-    private var activeAppointments: [Appointment] {
-        appointments.filter { $0.status != .cancelled }
-            .sorted(by: { $0.startDate < $1.startDate })
-    }
-
-    private var timelineNow: Date {
-        let calendar = Calendar.current
-        
-        if calendar.isDateInToday(date) {
-            return currentTime
-        }
-
-        let time = calendar.dateComponents([.hour, .minute], from: currentTime)
-        var day = calendar.dateComponents([.year, .month, .day], from: date)
-        day.hour = time.hour
-        day.minute = time.minute
-        return calendar.date(from: day) ?? date
     }
 
     private func dayTime(hour: Int, minute: Int) -> Date {
@@ -214,10 +166,10 @@ struct DailyScheduleCanvas: View {
 
         if animated {
             withAnimation(.smooth(duration: Layout.focusAnimationDuration)) {
-                proxy.scrollTo("needle", anchor: anchor)
+                proxy.scrollTo(timelineNowID, anchor: anchor)
             }
         } else {
-            proxy.scrollTo("needle", anchor: anchor)
+            proxy.scrollTo(timelineNowID, anchor: anchor)
         }
     }
 
@@ -235,7 +187,51 @@ struct DailyScheduleCanvas: View {
         static let lateAnchorY: CGFloat = 0.7
         static let focusAnimationDuration: Double = 0.4
     }
+    
+    // MARK: - WorkingWindow
+
+    struct WorkingWindow {
+        let start: Date
+        let end: Date
+
+        /// Calculates the time window to render, following the four rules from the design spec:
+        /// - Upper bound: first appointment start - 60 min (recedes if currentTime is earlier)
+        /// - Lower bound: last appointment end + 60 min (expands if currentTime is later)
+        /// - Empty day: 4-hour window centered on currentTime
+        /// - Invariant: currentTime is always within the window
+        static func calculate(
+            appointments: [Appointment],
+            currentTime: Date
+        ) -> WorkingWindow {
+            guard !appointments.isEmpty else {
+                return WorkingWindow(
+                    start: currentTime.addingTimeInterval(-emptyDayHalfWindow),
+                    end: currentTime.addingTimeInterval(emptyDayHalfWindow)
+                )
+            }
+
+            let firstStart = appointments.min(by: { $0.startDate < $1.startDate })!.startDate
+            let lastEnd = appointments.max(by: { $0.endDate < $1.endDate })!.endDate
+
+            var windowStart = firstStart.addingTimeInterval(-windowPadding)
+            var windowEnd = lastEnd.addingTimeInterval(windowPadding)
+
+            if currentTime < windowStart {
+                windowStart = currentTime.addingTimeInterval(-windowPadding)
+            }
+            if currentTime > windowEnd {
+                windowEnd = currentTime.addingTimeInterval(windowPadding)
+            }
+
+            return WorkingWindow(start: windowStart, end: windowEnd)
+        }
+
+        private static let windowPadding: TimeInterval = 60 * 60
+        private static let emptyDayHalfWindow: TimeInterval = 2 * 60 * 60
+    }
 }
+
+
 
 // MARK: - Preview
 
