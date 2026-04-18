@@ -61,7 +61,7 @@ final class AgendaViewModel: ObservableObject {
         observeAppointments()
     }
     
-    func addedAppointment() {
+    func addedAppointment() { // TODO: Remover
         let appointments = Appointment.mockData()
         for appointment in appointments {
             databaseService.add(element: appointment)
