@@ -43,23 +43,7 @@ final class Appointment {
         self.equipment = equipment
         self.notes = notes
     }
-    
-    func describe() -> String {
-        let formatter = ISO8601DateFormatter()
-        
-        let start = formatter.string(from: startDate)
-        let end = formatter.string(from: endDate)
-        
-        return """
-        Agendamento:
-        - Início: \(start)
-        - Fim: \(end)
-        - Status: \(status.rawValue)
-        """
-    }
 }
-
-import Foundation
 
 private struct SeededGenerator: RandomNumberGenerator {
     private var state: UInt64
