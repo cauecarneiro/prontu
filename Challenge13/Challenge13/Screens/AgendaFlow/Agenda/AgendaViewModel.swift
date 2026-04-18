@@ -61,6 +61,13 @@ final class AgendaViewModel: ObservableObject {
         observeAppointments()
     }
     
+    func addedAppointment() {
+        let appointments = Appointment.mockData()
+        for appointment in appointments {
+            databaseService.add(element: appointment)
+        }
+    }
+    
     func navigateToCreateAppointment() {
         coordinator?.navigateToCreateAppointment()
     }

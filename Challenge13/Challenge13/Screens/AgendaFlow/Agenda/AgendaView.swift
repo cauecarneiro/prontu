@@ -23,6 +23,10 @@ struct AgendaView: View {
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             
+            Button("Added Mock Appointment") { // TODO: Remover
+                viewModel.addedAppointment()
+            }
+            .disabled(!viewModel.appointments.isEmpty)
         }
         .navigationBarTitleDisplayMode(.inline)
         .padding(.horizontal, GlobalConfiguration.normalSpacing)
