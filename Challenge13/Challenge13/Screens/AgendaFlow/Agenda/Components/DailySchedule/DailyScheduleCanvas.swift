@@ -53,24 +53,21 @@ struct DailyScheduleCanvas: View {
                             positioned(y: metrics.yOffset(for: time), in: metrics) {
                                 AnchorTimeMark(time: time)
                                     .padding(.leading)
-                                    .frame(width: metrics.canvasWidth, alignment: .leading)
                             }
                         }
 
                         ForEach(visibleAppointments, id: \.id) { appointment in
                             positioned(y: metrics.yOffset(for: appointment.startDate), in: metrics) {
-                                HStack(alignment: .top, spacing: .zero) {
-                                    ScheduleCard(
-                                        appointment: appointment,
-                                        state: cardState(for: appointment)
-                                    )
-                                    .padding(.leading, Layout.leftInset)
-                                    .frame(
-                                        height: metrics.cardHeight(for: appointment),
-                                        alignment: .topLeading
-                                    )
-
-                                }
+                                ScheduleCard(
+                                    appointment: appointment,
+                                    state: cardState(for: appointment)
+                                )
+                                .padding(.vertical, 4)
+                                .padding(.leading, Layout.leftInset)
+                                .frame(
+                                    height: metrics.cardHeight(for: appointment),
+                                    alignment: .topLeading
+                                )
                             }
                         }
 
@@ -78,10 +75,8 @@ struct DailyScheduleCanvas: View {
                             positioned(y: metrics.yOffset(for: timelineNow), in: metrics) {
                                 CurrentTimeNeedle(
                                     time: timelineNow,
-                                    width: metrics.canvasWidth,
                                     leftInset: Layout.leftInset
                                 )
-                                .frame(width: metrics.canvasWidth, alignment: .leading)
                                 .id(timelineFocusID)
                             }
                         }
@@ -105,13 +100,11 @@ struct DailyScheduleCanvas: View {
         in metrics: Metrics,
         @ViewBuilder content: () -> Content
     ) -> some View {
-        VStack(spacing: 0) {
+        VStack(spacing: .zero) {
             Color.clear
                 .frame(height: max(y, 0))
 
             content()
-
-            Spacer(minLength: 0)
         }
         .frame(
             width: metrics.canvasWidth,
@@ -147,20 +140,16 @@ struct DailyScheduleCanvas: View {
     private func focusCanvas(proxy: ScrollViewProxy) {
         guard isToday else { return }
 
-        DispatchQueue.main.async {
-            withAnimation(.smooth(duration: Layout.focusAnimationDuration)) {
-                proxy.scrollTo(timelineFocusID, anchor: .center)
-            }
+        withAnimation(.smooth) {
+            proxy.scrollTo(timelineFocusID, anchor: .center)
         }
     }
 
     private enum Layout {
         static let pixelsPerMinute: CGFloat = 4
         static let leftInset: CGFloat = 52
-        static let cardTrailingPadding: CGFloat = GlobalConfiguration.normalSpacing
         static let minCardHeight: CGFloat = 24
         static let minCardWidth: CGFloat = 120
-        static let focusAnimationDuration: Double = 0.4
     }
 }
 
@@ -190,7 +179,7 @@ private extension DailyScheduleCanvas {
             self.canvasHeight = CGFloat(minutes) * Layout.pixelsPerMinute
 
             self.cardWidth = max(
-                canvasWidth - Layout.leftInset - Layout.cardTrailingPadding,
+                canvasWidth - Layout.leftInset - GlobalConfiguration.normalSpacing,
                 Layout.minCardWidth
             )
 
@@ -299,5 +288,6 @@ private extension DailyScheduleCanvas {
         appointments: [past, active, next, blocked],
         date: .now
     )
+    .padding(.horizontal)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
 }

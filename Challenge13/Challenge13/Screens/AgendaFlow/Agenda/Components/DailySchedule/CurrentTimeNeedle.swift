@@ -9,13 +9,12 @@ import SwiftUI
 
 struct CurrentTimeNeedle: View {
     let time: Date
-    let width: CGFloat
     let leftInset: CGFloat
 
     var body: some View {
         Rectangle()
             .fill(GlobalConfiguration.primaryBlue)
-            .frame(width: width, height: Layout.lineThickness)
+            .frame(maxWidth: .infinity, maxHeight: Layout.lineThickness)
             .overlay(alignment: .leading) {
                 Circle()
                     .fill(GlobalConfiguration.primaryBlue)
@@ -33,7 +32,7 @@ struct CurrentTimeNeedle: View {
 // MARK: - Preview
 
 #Preview("CurrentTimeNeedle") {
-    CurrentTimeNeedle(time: Date(), width: 350, leftInset: 52)
+    CurrentTimeNeedle(time: Date(), leftInset: 52)
         .padding(.vertical, 40)
         .background(Color(.systemBackground))
 }
