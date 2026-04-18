@@ -59,21 +59,17 @@ struct DailyScheduleCanvas: View {
 
                         ForEach(visibleAppointments, id: \.id) { appointment in
                             positioned(y: metrics.yOffset(for: appointment.startDate), in: metrics) {
-                                HStack(alignment: .top, spacing: 0) {
-                                    Color.clear
-                                        .frame(width: Layout.leftInset)
-
+                                HStack(alignment: .top, spacing: .zero) {
                                     ScheduleCard(
                                         appointment: appointment,
                                         state: cardState(for: appointment)
                                     )
+                                    .padding(.leading, Layout.leftInset)
                                     .frame(
-                                        width: metrics.cardWidth,
                                         height: metrics.cardHeight(for: appointment),
                                         alignment: .topLeading
                                     )
 
-                                    Spacer(minLength: 0)
                                 }
                             }
                         }
