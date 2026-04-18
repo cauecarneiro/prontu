@@ -28,6 +28,7 @@ struct AgendaView: View {
             }
             .disabled(!viewModel.appointments.isEmpty)
         }
+        .id(viewModel.agendaViewID)
         .navigationBarTitleDisplayMode(.inline)
         .padding(.horizontal, GlobalConfiguration.normalSpacing)
     }
@@ -41,7 +42,7 @@ struct AgendaView: View {
         viewModel: .init(
             coordinator: coordinator,
             databaseService: databaseService,
-            settingsStore: .shared
+            screenMonitorService: .shared
         )
     )
 }

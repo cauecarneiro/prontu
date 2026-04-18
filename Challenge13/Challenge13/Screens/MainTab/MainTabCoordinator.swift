@@ -7,7 +7,6 @@
 
 import Combine
 import Foundation
-import SwiftUI
 
 final class MainTabCoordinator: ObservableObject {
     @Published var selectedTab: TabItens
@@ -35,7 +34,7 @@ final class MainTabCoordinator: ObservableObject {
         self.selectedTab = .agenda
         
         self.agendaFlowCoordinator = AgendaFlowCoordinator(
-            factory: .init(databaseService: databaseService, settingsStore: settingsStore)
+            factory: .init(databaseService: databaseService, screenMonitorService: screenMonitor)
         )
         
         self.registerFlowCoordinator = RegisterFlowCoordinator(factory: .init())
