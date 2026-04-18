@@ -20,7 +20,7 @@ struct ClientsListView: View {
             }
             
             Button("Navigate To Edit Client") {
-                viewModel.navigateToEditClient(client: .init())
+                viewModel.navigateToEditClient(client: .init(name: "Caio", contactInfo: "213123"))
             }
         }
     }

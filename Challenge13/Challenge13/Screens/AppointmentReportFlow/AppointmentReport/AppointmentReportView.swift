@@ -16,7 +16,7 @@ struct AppointmentReportView: View {
             Text("Hello, AppointmentReportView!")
 
             Button("Client History") {
-                viewModel.navigateToClientDetails(client: .init())
+                viewModel.navigateToClientDetails(client: .init(name: "Caio", contactInfo: "99999"))
             }
             
             Button("Open Chatbot") {

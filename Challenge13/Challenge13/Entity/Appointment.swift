@@ -18,7 +18,7 @@ final class Appointment {
     var endDate: Date
     var status: AppointmentStatus
     
-    var client: Client? // Opcional pq caso eu crie um bloqueio o client n deve ser setado pq n tem o client para isso
+    var client: Client?
     
     var exercises: String?
     var equipment: String?
@@ -26,14 +26,14 @@ final class Appointment {
     
     init(
         id: UUID = UUID(),
-        startDate: Date = .now,
-        endDate: Date = .now,
+        startDate: Date,
+        endDate: Date,
         status: AppointmentStatus = .pending,
         client: Client? = nil,
         exercises: String? = nil,
         equipment: String? = nil,
         notes: String? = nil
-    ) { // TODO: alterar os init para tirar o valores defaults
+    ) {
         self.id = id
         self.startDate = startDate
         self.endDate = endDate
@@ -49,14 +49,6 @@ final class Appointment {
         
         let start = formatter.string(from: startDate)
         let end = formatter.string(from: endDate)
-        /*let clientDetails = client?.describe() ?? "Sem cliente"
-        let exercisesText = exercises ?? "Não informado"
-        let equipmentText = equipment ?? "Não informado"
-        let notesText = notes ?? "Sem observações"
-        
-        - Exercícios: \(exercisesText)
-        - Equipamento: \(equipmentText)
-        - Observações: \(notesText)*/
         
         return """
         Agendamento:
@@ -66,9 +58,9 @@ final class Appointment {
         """
     }
 }
-//Extension para adicionar funcionalidades extrar ao Appointment
+
 extension Appointment {
-    //Gera um lista de agendamentos falsos para teste
+
     static func mockData() -> [Appointment] {
         
         let calendar = Calendar.current

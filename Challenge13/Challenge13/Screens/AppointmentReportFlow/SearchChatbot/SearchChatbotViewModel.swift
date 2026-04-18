@@ -15,20 +15,15 @@ class SearchChatbotViewModel: ObservableObject {
     //Lista do chat
     @Published var messages: [MessageChat]
     
-    //Texto digitado
     @Published var typedText: String = ""
-    
-    //Indica se a IA está respondendo
     @Published var loading: Bool = false
-    
     @Published var appointments: [Appointment]
-    //Valida botão enviar
+    
     var canSend: Bool{
-        //Só permite enviar se tem texto e se não está carregando
         !typedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !loading
     }
     
-    private var cancelables: Set<AnyCancellable> = []
+    private var cancellable: Set<AnyCancellable> = []
     
     init(appointments: [Appointment]){
         self.messages = [
@@ -47,11 +42,13 @@ class SearchChatbotViewModel: ObservableObject {
         self.appointments = appointments
     }
     
+    
     //MARK: Enviar mensagem para o chat
     func sendFreeMessage(appointments: [Appointment]){
-        //Chamando o mock
+
+        #if DEBUG
         let appointments = Appointment.mockData() // TODO: Remover
-        
+        #endif
         
         let question = typedText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !question.isEmpty else { return }
@@ -116,16 +113,11 @@ class SearchChatbotViewModel: ObservableObject {
     //MARK: Lógica
     private func answer(question: String, appointments: [Appointment]){
         
-        //Ativa o "digitando..."
         loading = true
         
-        //Executa o async
         Task{
             do{
-                //Cria o prompt
                 let prompt = createPrompt(question: question, appointments: appointments)
-                print(prompt)
-                //Chama IA
                 
                 let response = try await IAService.createText(prompt: prompt)
                 

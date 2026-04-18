@@ -8,12 +8,8 @@ import Foundation
 import FoundationModels
 
 struct IAService {
-    
-    /* ### QUICK ACTION LOGIC
-     Caso pergunta sobre horários disponíveis, analise os agendamentos existentes \
-     e liste os intervalos livres dentro do horário comercial (08:00 às 18:00).*/
 
-    static let instrucoes =
+    static let instructions =
     """
     ### ROLE
     Você é o Assistente Pessoal Interno do aplicativo FisioPlus. \
@@ -38,15 +34,10 @@ struct IAService {
 
     static func createText(prompt: String) async throws -> String {
         
-        let session = LanguageModelSession(instructions: instrucoes)
-        print(prompt)
-        do{
-            let response = try await session.respond(to: prompt)
-            print(response.content)
-            return "\(response.content)"
-        }catch{
-          print("Error: \(error.localizedDescription)")
-            return "Error: \(error.localizedDescription)"
-        }
+        let session = LanguageModelSession(instructions: instructions)
+
+        let response = try await session.respond(to: prompt)
+        
+        return "\(response.content)"
     }
 }

@@ -15,7 +15,7 @@ struct AppointmentDetailsView: View {
         Text("Hello, AppointmentDetailsView!")
         
         Button("Edit Appointment") {
-            viewModel.navigateToEditAppointment(appointment: .init())
+            viewModel.navigateToEditAppointment(appointment: .init(startDate: .now, endDate: .now))
         }
     }
 }

@@ -13,60 +13,43 @@ struct SearchChatbotView: View {
     
     //MARK: Layout vertical
     var body: some View {
-        VStack(spacing: 0){
-            listMessages
-        }
-        .navigationTitle("Hero")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-    
-    //MARK: Lista de mensagens
-    private var listMessages: some View {
-        //Permite rolar o chat
-        VStack {
-            ScrollViewReader{ proxy in
-                ScrollView{
-                    LazyVStack(spacing: 12){
-                        //Percorre todas as mensagens do chat
-                        ForEach(viewModel.messages){
-                            message in
-                            //cada mensagem vira uma "bolha"
-                            MessageBubbleView(message: message){
-                                suggestion in viewModel.selectSuggestion(suggestion, appointment: viewModel.appointments)
+        VStack(spacing: .zero){
+            VStack {
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            ForEach(viewModel.messages) { message in
+                                MessageBubbleView(message: message){
+                                    suggestion in viewModel.selectSuggestion(suggestion, appointment: viewModel.appointments)
+                                }
+                                .id(message.id)
+                                
+                                if viewModel.loading{
+                                    TypingIndicatorView()
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .padding(.leading, 16)
+                                        .id("typing")
+                                }
                             }
-                            .id(message.id)
-                            
-                            //Indicar que a IA está pensando
-                            if viewModel.loading{
-                                TypingIndicatorView()
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(.leading, 16)
-                                    .id("typing")
-                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 20)
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 20)
-                    }
-                    //Abaixa o teclado no scroll
-                    .scrollDismissesKeyboard(.interactively)
-                    //Sempre que um nova mensagem chega, rola o chat para baixo automaticamente
-                    .onChange(of: viewModel.messages.count){_, _ in
-                        rollDown(proxy: proxy)
-                    }
-                    //quando o Foundation começar a responder mostra animação de digitação
-                    .onChange(of: viewModel.loading){ _, loading in
-                        if loading{
-                            //faz acontecer a animação
-                            withAnimation(.easeOut(duration: 0.25)){
-                                //deixa o "typing visivel na parte de baixo da tela"
-                                proxy.scrollTo("typing", anchor: .bottom)
+                        .scrollDismissesKeyboard(.interactively)
+                        .onChange(of: viewModel.messages.count) { _, _ in
+                            rollDown(proxy: proxy)
+                        }
+                        .onChange(of: viewModel.loading) { _, loading in
+                            if loading {
+                                withAnimation(.easeOut(duration: 0.25)){
+                                    proxy.scrollTo("typing", anchor: .bottom)
+                                }
                             }
                         }
                     }
                 }
+                
+                inputBar
             }
-            
-            inputBar
         }
     }
     
