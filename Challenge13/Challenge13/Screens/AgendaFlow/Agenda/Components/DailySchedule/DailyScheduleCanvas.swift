@@ -19,26 +19,77 @@ struct DailyScheduleCanvas: View {
     private var visibleAppointments: [Appointment] {
         appointments
             .filter { $0.status != .cancelled }
-            .sorted(by: { $0.startDate < $1.startDate })
+            .sorted { $0.startDate < $1.startDate }
     }
 
     private var timelineNow: Date {
-        guard calendar.isDateInToday(date) else {
-            let time = calendar.dateComponents([.hour, .minute], from: currentTime)
-            var day = calendar.dateComponents([.year, .month, .day], from: date)
-            day.hour = time.hour
-            day.minute = time.minute
-            return calendar.date(from: day) ?? date
-        }
+        guard !calendar.isDateInToday(date) else { return currentTime }
 
-        return currentTime
+        let time = calendar.dateComponents([.hour, .minute], from: currentTime)
+        var day = calendar.dateComponents([.year, .month, .day], from: date)
+        day.hour = time.hour
+        day.minute = time.minute
+        return calendar.date(from: day) ?? date
+    }
+
+    private var isToday: Bool {
+        calendar.isDateInToday(date)
     }
 
     var body: some View {
         GeometryReader { geometry in
+            let metrics = Metrics(
+                appointments: visibleAppointments,
+                currentTime: timelineNow,
+                canvasWidth: geometry.size.width,
+                calendar: calendar
+            )
+
             ScrollViewReader { proxy in
                 ScrollView(.vertical) {
-                    canvas(width: geometry.size.width)
+                    ZStack(alignment: .topLeading) {
+
+                        ForEach(metrics.anchorTimes, id: \.self) { time in
+                            positioned(y: metrics.yOffset(for: time), in: metrics) {
+                                AnchorTimeMark(time: time)
+                                    .padding(.leading)
+                                    .frame(width: metrics.canvasWidth, alignment: .leading)
+                            }
+                        }
+
+                        ForEach(visibleAppointments, id: \.id) { appointment in
+                            positioned(y: metrics.yOffset(for: appointment.startDate), in: metrics) {
+                                HStack(alignment: .top, spacing: 0) {
+                                    Color.clear
+                                        .frame(width: Layout.leftInset)
+
+                                    ScheduleCard(
+                                        appointment: appointment,
+                                        state: cardState(for: appointment)
+                                    )
+                                    .frame(
+                                        width: metrics.cardWidth,
+                                        height: metrics.cardHeight(for: appointment),
+                                        alignment: .topLeading
+                                    )
+
+                                    Spacer(minLength: 0)
+                                }
+                            }
+                        }
+
+                        if isToday {
+                            positioned(y: metrics.yOffset(for: timelineNow), in: metrics) {
+                                CurrentTimeNeedle(
+                                    time: timelineNow,
+                                    width: metrics.canvasWidth,
+                                    leftInset: Layout.leftInset
+                                )
+                                .frame(width: metrics.canvasWidth, alignment: .leading)
+                                .id(timelineFocusID)
+                            }
+                        }
+                    }
                 }
                 .scrollIndicators(.hidden)
                 .onAppear {
@@ -52,145 +103,10 @@ struct DailyScheduleCanvas: View {
         }
     }
 
-    // MARK: - Canvas
-
     @ViewBuilder
-    private func canvas(width: CGFloat) -> some View {
-        let window = WorkingWindow.calculate(
-            appointments: visibleAppointments,
-            currentTime: timelineNow
-        )
-        let canvasHeight = canvasHeight(for: window)
-        let marks = anchorTimes(for: window)
-
-        ZStack(alignment: .topLeading) {
-            Color.clear
-                .frame(width: width, height: canvasHeight)
-
-            anchorMarksLayer(
-                marks: marks,
-                width: width,
-                canvasHeight: canvasHeight,
-                window: window
-            )
-
-            appointmentsLayer(
-                width: width,
-                canvasHeight: canvasHeight,
-                window: window
-            )
-
-            if calendar.isDateInToday(date) {
-                focusAnchorLayer(
-                    width: width,
-                    canvasHeight: canvasHeight,
-                    window: window
-                )
-
-                currentTimeNeedleLayer(
-                    width: width,
-                    canvasHeight: canvasHeight,
-                    window: window
-                )
-            }
-        }
-    }
-
-    // MARK: - Layers
-
-    @ViewBuilder
-    private func anchorMarksLayer(
-        marks: [Date],
-        width: CGFloat,
-        canvasHeight: CGFloat,
-        window: WorkingWindow
-    ) -> some View {
-        ForEach(marks, id: \.self) { time in
-            positionedLayer(
-                y: yOffset(for: time, window: window),
-                canvasHeight: canvasHeight,
-                width: width
-            ) {
-                AnchorTimeMark(time: time, leftInset: Layout.leftInset)
-                    .frame(width: width, alignment: .leading)
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func appointmentsLayer(
-        width: CGFloat,
-        canvasHeight: CGFloat,
-        window: WorkingWindow
-    ) -> some View {
-        ForEach(visibleAppointments, id: \.id) { appointment in
-            positionedLayer(
-                y: yOffset(for: appointment.startDate, window: window),
-                canvasHeight: canvasHeight,
-                width: width
-            ) {
-                HStack(alignment: .top, spacing: 0) {
-                    Color.clear
-                        .frame(width: Layout.leftInset)
-
-                    ScheduleCard(
-                        appointment: appointment,
-                        state: cardState(for: appointment)
-                    )
-                    .frame(
-                        width: cardWidth(for: width),
-                        height: cardHeight(for: appointment),
-                        alignment: .topLeading
-                    )
-
-                    Spacer(minLength: 0)
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func focusAnchorLayer(
-        width: CGFloat,
-        canvasHeight: CGFloat,
-        window: WorkingWindow
-    ) -> some View {
-        positionedLayer(
-            y: yOffset(for: timelineNow, window: window),
-            canvasHeight: canvasHeight,
-            width: width
-        ) {
-            Color.clear
-                .frame(width: width, height: 1)
-                .id(timelineFocusID)
-        }
-    }
-
-    @ViewBuilder
-    private func currentTimeNeedleLayer(
-        width: CGFloat,
-        canvasHeight: CGFloat,
-        window: WorkingWindow
-    ) -> some View {
-        positionedLayer(
-            y: yOffset(for: timelineNow, window: window),
-            canvasHeight: canvasHeight,
-            width: width
-        ) {
-            CurrentTimeNeedle(
-                time: timelineNow,
-                width: width,
-                leftInset: Layout.leftInset
-            )
-            .frame(width: width, alignment: .leading)
-        }
-    }
-
-    @ViewBuilder
-    private func positionedLayer<Content: View>(
+    private func positioned<Content: View>(
         y: CGFloat,
-        canvasHeight: CGFloat,
-        width: CGFloat,
+        in metrics: Metrics,
         @ViewBuilder content: () -> Content
     ) -> some View {
         VStack(spacing: 0) {
@@ -201,86 +117,119 @@ struct DailyScheduleCanvas: View {
 
             Spacer(minLength: 0)
         }
-        .frame(width: width, height: canvasHeight, alignment: .topLeading)
-    }
-
-    // MARK: - Geometry
-
-    private func canvasHeight(for window: WorkingWindow) -> CGFloat {
-        let minutes = window.end.timeIntervalSince(window.start) / 60
-        return CGFloat(minutes) * Layout.pixelsPerMinute
-    }
-
-    private func anchorTimes(for window: WorkingWindow) -> [Date] {
-        let components = calendar.dateComponents([.year, .month, .day, .hour], from: window.start)
-        guard var hourStart = calendar.date(from: components) else { return [] }
-
-        if hourStart < window.start {
-            hourStart = hourStart.addingTimeInterval(3600)
-        }
-
-        var times: [Date] = []
-        var current = hourStart
-
-        while current <= window.end {
-            times.append(current)
-            current = current.addingTimeInterval(3600)
-        }
-
-        return times
-    }
-
-    private func yOffset(for date: Date, window: WorkingWindow) -> CGFloat {
-        let minutes = date.timeIntervalSince(window.start) / 60
-        return CGFloat(minutes) * Layout.pixelsPerMinute
-    }
-
-    private func cardHeight(for appointment: Appointment) -> CGFloat {
-        let minutes = appointment.endDate.timeIntervalSince(appointment.startDate) / 60
-        return max(CGFloat(minutes) * Layout.pixelsPerMinute, Layout.minCardHeight)
-    }
-
-    private func cardWidth(for canvasWidth: CGFloat) -> CGFloat {
-        max(
-            canvasWidth - Layout.leftInset - Layout.cardTrailingPadding,
-            Layout.minCardWidth
+        .frame(
+            width: metrics.canvasWidth,
+            height: metrics.canvasHeight,
+            alignment: .topLeading
         )
     }
 
-    // MARK: - Card State
-
     private func cardState(for appointment: Appointment) -> ScheduleCardState {
-        if timelineNow > appointment.endDate { return .past }
-        if timelineNow >= appointment.startDate { return .active }
+        let now = currentTime
+        let startOfToday = calendar.startOfDay(for: now)
+        let appointmentDay = calendar.startOfDay(for: appointment.startDate)
+
+        if appointmentDay < startOfToday {
+            return .past
+        }
+
+        if appointmentDay > startOfToday {
+            return .standard
+        }
+
+        if now > appointment.endDate {
+            return .past
+        }
+
+        if now >= appointment.startDate {
+            return .active
+        }
+
         return .standard
     }
 
-    // MARK: - Focus
-
     private func focusCanvas(proxy: ScrollViewProxy) {
-        guard calendar.isDateInToday(date) else { return }
-        
-        withAnimation(.smooth(duration: Layout.focusAnimationDuration)) {
-            proxy.scrollTo(timelineFocusID, anchor: .center)
+        guard isToday else { return }
+
+        DispatchQueue.main.async {
+            withAnimation(.smooth(duration: Layout.focusAnimationDuration)) {
+                proxy.scrollTo(timelineFocusID, anchor: .center)
+            }
         }
     }
 
-    // MARK: - Layout
-
     private enum Layout {
-        static let pixelsPerMinute: CGFloat = 4.0
+        static let pixelsPerMinute: CGFloat = 4
         static let leftInset: CGFloat = 52
         static let cardTrailingPadding: CGFloat = GlobalConfiguration.normalSpacing
         static let minCardHeight: CGFloat = 24
         static let minCardWidth: CGFloat = 120
-        static let anchorX: CGFloat = 0.5
-        static let defaultAnchorY: CGFloat = 0.25
-        static let activeAnchorY: CGFloat = 0.3
-        static let lateAnchorY: CGFloat = 0.7
         static let focusAnimationDuration: Double = 0.4
     }
+}
 
-    // MARK: - WorkingWindow
+private extension DailyScheduleCanvas {
+    struct Metrics {
+        let window: WorkingWindow
+        let canvasWidth: CGFloat
+        let canvasHeight: CGFloat
+        let cardWidth: CGFloat
+        let anchorTimes: [Date]
+
+        init(
+            appointments: [Appointment],
+            currentTime: Date,
+            canvasWidth: CGFloat,
+            calendar: Calendar
+        ) {
+            let window = WorkingWindow.calculate(
+                appointments: appointments,
+                currentTime: currentTime
+            )
+
+            self.window = window
+            self.canvasWidth = canvasWidth
+
+            let minutes = window.end.timeIntervalSince(window.start) / 60
+            self.canvasHeight = CGFloat(minutes) * Layout.pixelsPerMinute
+
+            self.cardWidth = max(
+                canvasWidth - Layout.leftInset - Layout.cardTrailingPadding,
+                Layout.minCardWidth
+            )
+
+            self.anchorTimes = Self.makeAnchorTimes(for: window, calendar: calendar)
+        }
+
+        func yOffset(for date: Date) -> CGFloat {
+            let minutes = date.timeIntervalSince(window.start) / 60
+            return CGFloat(minutes) * Layout.pixelsPerMinute
+        }
+
+        func cardHeight(for appointment: Appointment) -> CGFloat {
+            let minutes = appointment.endDate.timeIntervalSince(appointment.startDate) / 60
+            return max(CGFloat(minutes) * Layout.pixelsPerMinute, Layout.minCardHeight)
+        }
+
+        private static func makeAnchorTimes(for window: WorkingWindow, calendar: Calendar) -> [Date] {
+            let components = calendar.dateComponents([.year, .month, .day, .hour], from: window.start)
+            guard var hourStart = calendar.date(from: components) else { return [] }
+
+            if hourStart < window.start {
+                hourStart = hourStart.addingTimeInterval(3600)
+            }
+
+            var times: [Date] = []
+            var current = hourStart
+
+            while current <= window.end {
+                times.append(current)
+                current = current.addingTimeInterval(3600)
+            }
+
+            return times
+        }
+    }
 
     struct WorkingWindow {
         let start: Date
@@ -300,25 +249,24 @@ struct DailyScheduleCanvas: View {
             let firstStart = appointments.min(by: { $0.startDate < $1.startDate })!.startDate
             let lastEnd = appointments.max(by: { $0.endDate < $1.endDate })!.endDate
 
-            var windowStart = firstStart.addingTimeInterval(-windowPadding)
-            var windowEnd = lastEnd.addingTimeInterval(windowPadding)
+            var start = firstStart.addingTimeInterval(-windowPadding)
+            var end = lastEnd.addingTimeInterval(windowPadding)
 
-            if currentTime < windowStart {
-                windowStart = currentTime.addingTimeInterval(-windowPadding)
+            if currentTime < start {
+                start = currentTime.addingTimeInterval(-windowPadding)
             }
 
-            if currentTime > windowEnd {
-                windowEnd = currentTime.addingTimeInterval(windowPadding)
+            if currentTime > end {
+                end = currentTime.addingTimeInterval(windowPadding)
             }
 
-            return WorkingWindow(start: windowStart, end: windowEnd)
+            return WorkingWindow(start: start, end: end)
         }
 
         private static let windowPadding: TimeInterval = 60 * 60
         private static let emptyDayHalfWindow: TimeInterval = 2 * 60 * 60
     }
 }
-
 
 
 // MARK: - Preview
