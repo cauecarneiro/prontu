@@ -19,8 +19,8 @@ struct SearchChatbotView: View {
                     ScrollView {
                         LazyVStack(spacing: 12) {
                             ForEach(viewModel.messages) { message in
-                                MessageBubbleView(message: message){
-                                    suggestion in viewModel.selectSuggestion(suggestion, appointment: viewModel.appointments)
+                                MessageBubbleView(message: message){ suggestion in
+                                    viewModel.sendSuggestion(suggestion)
                                 }
                                 .id(message.id)
                                 
@@ -65,7 +65,7 @@ struct SearchChatbotView: View {
                 .font(.body)
             
             Button{
-                viewModel.sendFreeMessage(appointments: viewModel.appointments)
+                viewModel.sendUserMessage(viewModel.typedText)
             }label: {
                 Image(systemName: "arrow.up.circle.fill")
                     .font(.system(size: 34))
@@ -90,7 +90,14 @@ struct SearchChatbotView: View {
 }
 
 #Preview {
-    SearchChatbotView(viewModel: .init(appointments: []))
+    SearchChatbotView(
+        viewModel: .init(
+            engine: .init(
+                provider: DatabaseService(context: makeMainContext()),
+                classifier: .init()
+            )
+        )
+    )
     
 }
 

@@ -31,6 +31,6 @@ final class AppointmentReportFlowFactory {
     }
     
     func makeSearchChatbotView(appointments: [Appointment]) -> SearchChatbotView {
-        SearchChatbotView(viewModel: .init(appointments: appointments))
+        SearchChatbotView(viewModel: .init(engine: .init(provider: databaseService, classifier: .init())))
     }
 }

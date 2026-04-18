@@ -28,7 +28,7 @@ final class Appointment {
         id: UUID = UUID(),
         startDate: Date,
         endDate: Date,
-        status: AppointmentStatus = .pending,
+        status: AppointmentStatus = .scheduled,
         client: Client? = nil,
         exercises: String? = nil,
         equipment: String? = nil,
@@ -122,7 +122,7 @@ extension Appointment {
                 case 8, 9:
                     status = .confirmed
                 case 10, 11:
-                    status = .pending
+                    status = .scheduled
                 case 14, 15:
                     status = .finished
                 default:
