@@ -370,28 +370,54 @@ extension Appointment {
         
         // MARK: - Geração
         var appointments: [Appointment] = []
-        
+
         // 30 dias centrados em hoje: 10 passados + hoje + 19 futuros
         for dayOffset in -10..<20 {
             let currentDate = calendar.date(byAdding: .day, value: dayOffset, to: today)!
             let weekday = calendar.component(.weekday, from: currentDate)
-            
+
             // domingo sem atendimento
             if weekday == 1 { continue }
-            
-            let hours = (weekday == 7) ? [8, 9, 10, 11] : [8, 9, 10, 11, 12, 14, 15, 16, 17]
-            
-            for hour in hours {
-                let startDate = makeDate(dayOffset: dayOffset, hour: hour)
-                let duration = [50, 60, 60, 60, 90].randomElement(using: &rng)
-                let endDate = calendar.date(byAdding: .minute, value: duration, to: startDate)!
-                
+
+            let slots: [DateInterval] = {
+                if weekday == 7 {
+                    // sábado
+                    return [
+                        DateInterval(start: makeDate(dayOffset: dayOffset, hour: 8), end: makeDate(dayOffset: dayOffset, hour: 9)),
+                        DateInterval(start: makeDate(dayOffset: dayOffset, hour: 9), end: makeDate(dayOffset: dayOffset, hour: 10)),
+                        DateInterval(start: makeDate(dayOffset: dayOffset, hour: 10), end: makeDate(dayOffset: dayOffset, hour: 11)),
+                        DateInterval(start: makeDate(dayOffset: dayOffset, hour: 11), end: makeDate(dayOffset: dayOffset, hour: 12))
+                    ]
+                } else {
+                    // dias úteis
+                    return [
+                        DateInterval(start: makeDate(dayOffset: dayOffset, hour: 8), end: makeDate(dayOffset: dayOffset, hour: 9)),
+                        DateInterval(start: makeDate(dayOffset: dayOffset, hour: 9), end: makeDate(dayOffset: dayOffset, hour: 10)),
+                        DateInterval(start: makeDate(dayOffset: dayOffset, hour: 10), end: makeDate(dayOffset: dayOffset, hour: 11)),
+                        DateInterval(start: makeDate(dayOffset: dayOffset, hour: 11), end: makeDate(dayOffset: dayOffset, hour: 12)),
+                        DateInterval(start: makeDate(dayOffset: dayOffset, hour: 12), end: makeDate(dayOffset: dayOffset, hour: 14)), // almoço
+                        DateInterval(start: makeDate(dayOffset: dayOffset, hour: 14), end: makeDate(dayOffset: dayOffset, hour: 15)),
+                        DateInterval(start: makeDate(dayOffset: dayOffset, hour: 15), end: makeDate(dayOffset: dayOffset, hour: 16)),
+                        DateInterval(start: makeDate(dayOffset: dayOffset, hour: 16), end: makeDate(dayOffset: dayOffset, hour: 17)),
+                        DateInterval(start: makeDate(dayOffset: dayOffset, hour: 17), end: makeDate(dayOffset: dayOffset, hour: 18))
+                    ]
+                }
+            }()
+
+            for slot in slots {
+                let hour = calendar.component(.hour, from: slot.start)
+                let slotDuration = Int(slot.end.timeIntervalSince(slot.start) / 60)
+
+                let allowedDurations = [50, 60, 90].filter { $0 <= slotDuration }
+                let duration = allowedDurations.randomElement(using: &rng) ?? slotDuration
+                let endDate = calendar.date(byAdding: .minute, value: duration, to: slot.start)!
+
                 if shouldBlock(hour: hour, weekday: weekday, using: &rng) {
                     appointments.append(
                         Appointment(
                             id: UUID(),
-                            startDate: startDate,
-                            endDate: endDate,
+                            startDate: slot.start,
+                            endDate: slot.end,
                             status: .blocked,
                             client: nil,
                             exercises: nil,
@@ -401,21 +427,21 @@ extension Appointment {
                     )
                     continue
                 }
-                
+
                 let client = clientProfiles.randomElement(using: &rng)
                 let region = region(from: client)
                 let therapy = makeTherapyData(for: region, using: &rng)
                 let appointmentStatus = status(for: dayOffset, using: &rng)
-                
+
                 let notes = """
                 Sessão com foco em \(therapy.objective) para \(region). \
                 Conduta planejada de acordo com evolução funcional do paciente.
                 """
-                
+
                 appointments.append(
                     Appointment(
                         id: UUID(),
-                        startDate: startDate,
+                        startDate: slot.start,
                         endDate: endDate,
                         status: appointmentStatus,
                         client: client,
@@ -426,7 +452,7 @@ extension Appointment {
                 )
             }
         }
-        
+
         return appointments.sorted { $0.startDate < $1.startDate }
     }
 }

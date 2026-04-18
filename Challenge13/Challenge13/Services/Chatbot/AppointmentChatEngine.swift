@@ -134,7 +134,7 @@ private extension AppointmentChatEngine {
         )
 
         let busy = appointments
-            .filter { $0.status == .scheduled || $0.status == .confirmed }
+            .filter { $0.status == .scheduled || $0.status == .confirmed || $0.status == .blocked }
             .sorted { $0.startDate < $1.startDate }
 
         let slots = freeSlots(
@@ -154,7 +154,12 @@ private extension AppointmentChatEngine {
             "\($0.start.formatted(date: .omitted, time: .shortened)) às \($0.end.formatted(date: .omitted, time: .shortened))"
         }
 
-        let text = "Encontrei estes horários livres hoje: \(top3.joined(separator: ", "))."
+        let text: String
+        if top3.count == 1 {
+            text = "Encontrei \(top3.first!) como horário livre hoje."
+        } else {
+            text = "Encontrei estes horários livres hoje:\n\(top3.joined(separator: "\n"))."
+        }
 
         return await MessageChat(
             author: .hero,
@@ -167,7 +172,7 @@ private extension AppointmentChatEngine {
 
         guard
             let start = calendar.date(bySettingHour: 8, minute: 0, second: 0, of: startOfDay),
-            let end = calendar.date(bySettingHour: 18, minute: 0, second: 0, of: startOfDay)
+            let end = calendar.date(bySettingHour: 23, minute: 59, second: 59, of: startOfDay)
         else {
             throw NSError(domain: "AppointmentChatEngine", code: 1)
         }
@@ -180,26 +185,39 @@ private extension AppointmentChatEngine {
         busyAppointments: [Appointment],
         minimumDurationMinutes: Int
     ) -> [DateInterval] {
+        let now = Date()
         var result: [DateInterval] = []
-        var cursor = workInterval.start
 
-        for appointment in busyAppointments {
+        let effectiveStart = max(workInterval.start, now)
+        guard effectiveStart < workInterval.end else { return [] }
+
+        var cursor = effectiveStart
+
+        let sortedAppointments = busyAppointments.sorted { $0.startDate < $1.startDate }
+
+        for appointment in sortedAppointments {
+            // ignora compromissos totalmente fora da janela útil
+            if appointment.endDate <= cursor { continue }
+            if appointment.startDate >= workInterval.end { break }
+
             if cursor < appointment.startDate {
-                let gap = cursor.distance(to: appointment.startDate) / 60
-                if gap >= Double(minimumDurationMinutes) {
-                    result.append(.init(start: cursor, end: appointment.startDate))
+                let gapMinutes = cursor.distance(to: appointment.startDate) / 60
+                if gapMinutes >= Double(minimumDurationMinutes) {
+                    result.append(DateInterval(start: cursor, end: appointment.startDate))
                 }
             }
+
             cursor = max(cursor, appointment.endDate)
         }
 
         if cursor < workInterval.end {
-            let gap = cursor.distance(to: workInterval.end) / 60
-            if gap >= Double(minimumDurationMinutes) {
-                result.append(.init(start: cursor, end: workInterval.end))
+            let gapMinutes = cursor.distance(to: workInterval.end) / 60
+            if gapMinutes >= Double(minimumDurationMinutes) {
+                result.append(DateInterval(start: cursor, end: workInterval.end))
             }
         }
 
+        print(result)
         return result
     }
 }
