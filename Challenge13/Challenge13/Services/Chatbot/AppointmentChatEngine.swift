@@ -93,27 +93,21 @@ private extension AppointmentChatEngine {
             )
         }
 
-        guard let first = valid.first?.startDate.formatted(date: .omitted, time: .shortened) else {
-            return await MessageChat(
-                author: .hero,
-                text: "Error ao processar sua agenda. Por favor, tente novamente mais tarde."
-            )
-        }
-        
-        guard let last = valid.last?.startDate.formatted(date: .omitted, time: .shortened) else {
-            return await MessageChat(
-                author: .hero,
-                text: "Error ao processar sua agenda. Por favor, tente novamente mais tarde."
-            )
-        }
-
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "pt_BR")
+        formatter.dateFormat = "HH:mm"
+            
         let text: String
-        if valid.count == 1 {
-            let client = valid[0].client?.name ?? "cliente não identificado"
-            text = "Hoje você tem 1 atendimento, às \(first), com \(client)."
-        } else {
-            text = "Hoje você tem \(valid.count) atendimentos. O primeiro começa às \(first) e o último às \(last)."
-        }
+        let lines = valid
+            .sorted { $0.startDate < $1.startDate }
+            .map { appointment in
+                let time = formatter.string(from: appointment.startDate)
+                let client = appointment.client?.name ?? "cliente não identificado"
+                return "\(time) com \(client)"
+            }
+            .joined(separator: "\n")
+        
+        text = "Hoje sua agenda está assim:\n\(lines)"
 
         return await MessageChat(
             author: .hero,
@@ -171,7 +165,7 @@ private extension AppointmentChatEngine {
         let startOfDay = calendar.startOfDay(for: date)
 
         guard
-            let start = calendar.date(bySettingHour: 8, minute: 0, second: 0, of: startOfDay),
+            let start = calendar.date(bySettingHour: 6, minute: 0, second: 0, of: startOfDay), // TODO: Pergunta o horário de trabalho para fazer melhores recomendações
             let end = calendar.date(bySettingHour: 23, minute: 59, second: 59, of: startOfDay)
         else {
             throw NSError(domain: "AppointmentChatEngine", code: 1)
@@ -217,7 +211,6 @@ private extension AppointmentChatEngine {
             }
         }
 
-        print(result)
         return result
     }
 }
