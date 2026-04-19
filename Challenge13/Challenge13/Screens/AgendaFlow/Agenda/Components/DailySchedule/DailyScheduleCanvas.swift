@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct DailyScheduleCanvas: View {
     let appointments: [Appointment]
@@ -36,7 +37,15 @@ struct DailyScheduleCanvas: View {
     private var isToday: Bool {
         calendar.isDateInToday(date)
     }
+    
+    private var timer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
 
+    init(appointments: [Appointment], date: Date, navigateTo: @escaping (Appointment) -> Void) {
+        self.appointments = appointments
+        self.date = date
+        self.navigateTo = navigateTo
+    }
+    
     var body: some View {
         GeometryReader { geometry in
             let metrics = Metrics(
@@ -76,7 +85,6 @@ struct DailyScheduleCanvas: View {
                         if isToday {
                             positioned(y: metrics.yOffset(for: timelineNow), in: metrics) {
                                 CurrentTimeNeedle(
-                                    time: timelineNow,
                                     leftInset: Layout.leftInset
                                 )
                                 .id(timelineFocusID)
@@ -91,6 +99,9 @@ struct DailyScheduleCanvas: View {
                 .onChange(of: date) { _, _ in
                     currentTime = .now
                     focusCanvas(proxy: proxy)
+                }
+                .onReceive(timer) { _ in
+                    currentTime = .now
                 }
             }
         }

@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct CurrentTimeNeedle: View {
-    let time: Date
     let leftInset: CGFloat
 
     var body: some View {
@@ -32,7 +31,7 @@ struct CurrentTimeNeedle: View {
 // MARK: - Preview
 
 #Preview("CurrentTimeNeedle") {
-    CurrentTimeNeedle(time: Date(), leftInset: 52)
+    CurrentTimeNeedle(leftInset: 52)
         .padding(.vertical, 40)
         .background(Color(.systemBackground))
 }
