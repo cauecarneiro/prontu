@@ -24,11 +24,11 @@ struct AgendaView: View {
                 navigateTo: viewModel.navigateToAppointmentDetails
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            
-            Button("Added Mock Appointment") { // TODO: Remover
-                viewModel.addedAppointment()
+        }
+        .overlay(alignment: .bottomTrailing) {
+            FloatingButton(systemImageName: "calendar.badge.plus") {
+                viewModel.navigateToCreateAppointment()
             }
-            .disabled(!viewModel.appointments.isEmpty)
         }
         .id(viewModel.agendaViewID)
         .navigationBarTitleDisplayMode(.inline)
