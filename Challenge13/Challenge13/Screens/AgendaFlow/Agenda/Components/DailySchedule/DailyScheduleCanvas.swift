@@ -73,7 +73,8 @@ struct DailyScheduleCanvas: View {
                                     state: cardState(for: appointment),
                                     navigateTo: navigateTo
                                 )
-                                .padding(.vertical, 4)
+//                                .padding(.top, 4)
+                                .padding(.vertical, 12)
                                 .padding(.leading, Layout.leftInset)
                                 .frame(
                                     height: metrics.cardHeight(for: appointment),

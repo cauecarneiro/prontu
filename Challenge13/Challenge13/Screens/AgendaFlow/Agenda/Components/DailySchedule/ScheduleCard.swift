@@ -61,7 +61,9 @@ struct ScheduleCard: View {
             }
             .opacity(style.opacity)
             .onTapGesture {
-                navigateTo(appointment)
+                if appointment.status != .finished {
+                    navigateTo(appointment)
+                }
             }
     }
 

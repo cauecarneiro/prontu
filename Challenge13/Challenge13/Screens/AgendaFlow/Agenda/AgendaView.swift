@@ -14,6 +14,7 @@ struct AgendaView: View {
         VStack(spacing: GlobalConfiguration.normalSpacing) {
             CalendarWeeklyStrip(
                 selectedDate: $viewModel.selectedDate,
+                refresh: $viewModel.agendaViewID,
                 appointments: viewModel.appointments
             )
 

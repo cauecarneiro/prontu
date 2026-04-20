@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CalendarWeeklyStrip: View {
     @Binding var selectedDate: Date
+    @Binding var refresh: UUID
     let appointments: [Appointment]
 
     @State private var pages: [WeekPageData] = []
@@ -17,6 +18,7 @@ struct CalendarWeeklyStrip: View {
     @Namespace private var selectionNamespace
 
     private let calendar = Calendar.current
+    private var isToday: Bool { calendar.isDateInToday(selectedDate) }
     private let centeredIndex = 2
 
     var body: some View {
@@ -75,6 +77,10 @@ struct CalendarWeeklyStrip: View {
                 .contentShape(Rectangle())
                 .onTapGesture {
                     withAnimation(Layout.selectionAnimation) {
+                        if selectedDate == date && isToday {
+                            refresh = UUID()
+                            return
+                        }
                         selectedDate = date
                     }
                 }
@@ -175,7 +181,7 @@ private struct WeekPageData: Identifiable {
     @Previewable @State var selectedDate = Date()
 
     CalendarWeeklyStrip(
-        selectedDate: $selectedDate,
+        selectedDate: $selectedDate, refresh: .constant(.init()),
         appointments: []
     )
     .padding()
