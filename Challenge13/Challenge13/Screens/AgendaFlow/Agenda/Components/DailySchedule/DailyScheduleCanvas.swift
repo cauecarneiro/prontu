@@ -153,8 +153,11 @@ struct DailyScheduleCanvas: View {
     private func focusCanvas(proxy: ScrollViewProxy) {
         guard isToday else { return }
 
+        var anchor: UnitPoint = .center
+        anchor.y -= 0.2
+        
         withAnimation(.smooth) {
-            proxy.scrollTo(timelineFocusID, anchor: .center)
+            proxy.scrollTo(timelineFocusID, anchor: anchor)
         }
     }
 
