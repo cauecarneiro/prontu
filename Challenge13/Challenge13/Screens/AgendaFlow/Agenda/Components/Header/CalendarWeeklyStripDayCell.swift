@@ -21,7 +21,7 @@ struct CalendarWeeklyStripDayCell: View {
         VStack(spacing: Layout.innerSpacing) {
             ZStack {
                 if isSelected {
-                    RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius, style: .continuous)
+                    RoundedRectangle(cornerRadius: 12)
                         .fill(GlobalConfiguration.primaryBlue)
                         .frame(maxWidth: .infinity)
                         .aspectRatio(1, contentMode: .fit)

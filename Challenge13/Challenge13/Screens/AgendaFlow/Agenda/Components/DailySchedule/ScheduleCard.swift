@@ -18,6 +18,9 @@ struct ScheduleCard: View {
     let state: ScheduleCardState
     let navigateTo: (Appointment) -> Void
     
+    var color: Color {
+        appointment.status == .finished ? GlobalConfiguration.primaryGreen : GlobalConfiguration.primaryBlue
+    }
     private var isBlocked: Bool {
         appointment.status == .blocked
     }
@@ -26,15 +29,21 @@ struct ScheduleCard: View {
         if isBlocked {
             return .blocked
         }
+        
+        return .init(
+            backgroundColor: color.opacity(Layout.standardBackgroundOpacity),
+            borderColor: color.opacity(Layout.standardBorderOpacity),
+            opacity: 1
+        )
 
-        switch state {
-        case .standard:
-            return .standard
-        case .active:
-            return .active
-        case .past:
-            return .past
-        }
+//        switch state {
+//        case .standard:
+//            return .standard
+//        case .active:
+//            return .active
+//        case .past:
+//            return .past
+//        }
     }
 
     var body: some View {
@@ -66,20 +75,38 @@ struct ScheduleCard: View {
     }
 
     private var regularContent: some View {
-        VStack(alignment: .leading, spacing: Layout.contentSpacing) {
-            headerRow(foreground: GlobalConfiguration.primaryBlue)
-
-            if let clientName = appointment.client?.name {
-                Text(clientName)
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(.primary)
-                    .lineLimit(1)
+        VStack(alignment: .leading, spacing: GlobalConfiguration.normalSpacing) {
+            HStack(spacing: Layout.contentSpacing) {
+                
+                if let clientName = appointment.client?.name {
+                    Text(clientName)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.primary)
+                        .lineLimit(1)
+                }
+                
+                Spacer()
+                
+                HStack {
+                    Circle()
+                        .frame(width: 8, height: 8)
+                    
+                    Text(statusLabel)
+                        .font(.caption2)
+                }
+                .fontWeight(.medium)
+                .foregroundStyle(color)
+                .padding(4)
+                .padding(.horizontal, 4)
+                .background {
+                    Capsule()
+                        .fill(color.opacity(0.1))
+                }
             }
-
-            Text(statusLabel)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+            
+            timeRow()
         }
+        .padding(12)
     }
 
     private var blockedContent: some View {
@@ -88,31 +115,36 @@ struct ScheduleCard: View {
                 .font(.caption2)
                 .foregroundStyle(.secondary)
 
-            headerRow(foreground: .secondary)
+            timeRow()
         }
     }
 
-    private func headerRow(foreground: Color) -> some View {
+    private func timeRow() -> some View {
         HStack(spacing: Layout.contentSpacing) {
             Text(startTimeLabel)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(foreground)
 
-            Text(durationLabel)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            Text(" - ")
+            
+            Text(endTimeLabel)
+                
         }
+        .font(.caption)
+        .foregroundStyle(.secondary)
     }
 
     private var startTimeLabel: String {
         Self.timeFormatter.string(from: appointment.startDate)
     }
 
-    private var durationLabel: String {
-        Self.formatDuration(from: appointment.startDate, to: appointment.endDate)
+    private var endTimeLabel: String {
+        Self.timeFormatter.string(from: appointment.endDate)
     }
 
     private var statusLabel: String {
+        if appointment.startDate < Date() && appointment.endDate > Date() {
+            return "Em andamento"
+        }
+        
         switch appointment.status {
         case .scheduled:
             return "Agendado"
@@ -154,6 +186,12 @@ struct ScheduleCard: View {
         let borderColor: Color
         let opacity: Double
 
+        init(backgroundColor: Color, borderColor: Color, opacity: Double) {
+            self.backgroundColor = backgroundColor
+            self.borderColor = borderColor
+            self.opacity = opacity
+        }
+        
         static let standard = ScheduleCardStyle(
             backgroundColor: GlobalConfiguration.primaryBlue.opacity(Layout.standardBackgroundOpacity),
             borderColor: GlobalConfiguration.primaryBlue.opacity(Layout.standardBorderOpacity),
