@@ -136,7 +136,7 @@ struct ScheduleCard: View {
 
     private var statusLabel: String {
         switch appointment.status {
-        case .pending:    return "Aguardando"
+        case .scheduled:    return "Aguardando"
         case .confirmed:  return "Confirmado"
         case .finished:   return "Finalizado"
         case .cancelled:  return "Cancelado"

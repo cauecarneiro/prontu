@@ -16,7 +16,7 @@ struct AppointmentReportView: View {
             Text("Hello, AppointmentReportView!")
 
             Button("Client History") {
-                viewModel.navigateToClientDetails(client: .init())
+                viewModel.navigateToClientDetails(client: .init(name: "Caio", contactInfo: "99999"))
             }
             
             Button("Open Chatbot") {
@@ -27,11 +27,11 @@ struct AppointmentReportView: View {
 }
 
 #Preview {
-    let coordinator = AppointmentReportFlowCoordinator(factory: .init())
+    let coordinator = AppointmentReportFlowCoordinator(factory: .init(databaseService: .init(context: makeMainContext())))
     
     AppointmentReportView(
         viewModel: .init(
-            coordinator: coordinator
+            coordinator: coordinator, databaseService: .init(context: makeMainContext())
         )
     )
 }

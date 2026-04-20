@@ -10,6 +10,7 @@ import Foundation
 import SwiftData
 import Combine
 
+@MainActor
 final class DatabaseService {
     
     private let databaseChange: PassthroughSubject<Void, Never> = .init()
@@ -69,4 +70,14 @@ final class DatabaseService {
         }
     }
     
+}
+
+extension DatabaseService: AppointmentProviding {
+    func fetchAppointments(from start: Date, to end: Date) async throws -> [Appointment] {
+        let predicate = #Predicate<Appointment> { appointment in
+            appointment.startDate >= start && appointment.startDate < end
+        }
+        
+        return getAllElements(predicate: predicate)
+    }
 }

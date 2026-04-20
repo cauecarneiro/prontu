@@ -259,7 +259,7 @@ struct DailyScheduleCanvas: View {
     let next = Appointment(
         startDate: now.addingTimeInterval(5400),
         endDate: now.addingTimeInterval(9000),
-        status: .pending
+        status: .scheduled
     )
     let blocked = Appointment(
         startDate: now.addingTimeInterval(10800),

@@ -10,6 +10,6 @@ import Foundation
 enum AppointmentReportFlowRouter: Hashable, Identifiable {
     var id: String { String(describing: self) }
     
-    case searchChatBot
+    case searchChatBot([Appointment])
     case clientHistory(Client, [Appointment]) // pensar se faz sentido passar o client e os appointments relacionados, ou só passar os appointment
 }

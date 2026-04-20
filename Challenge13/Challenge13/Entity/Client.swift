@@ -9,7 +9,7 @@ import SwiftData
 import Foundation
 
 @Model
-final class Client { // nunca apagar o client, mudar para o isDeleted para true
+final class Client { // nunca apagar o client, mudar para o isDeleted para true, TODO: Se pa teremos q deletar msm
     
     @Attribute(.unique)
     var id: UUID = UUID()
@@ -24,14 +24,15 @@ final class Client { // nunca apagar o client, mudar para o isDeleted para true
     var appointments: [Appointment] = []
     
     init(
-        name: String = "",
-        contactInfo: String = "",
+        name: String,
+        contactInfo: String,
         birthday: Date? = nil,
         observations: String? = nil,
-    ) { // TODO: alterar o init para tirar os valores defaults
+    ) { 
         self.name = name
         self.contactInfo = contactInfo
         self.birthday = birthday
         self.observations = observations
     }
+    
 }

@@ -8,7 +8,7 @@
 import Foundation
 
 enum AppointmentStatus: String, Codable {
-    case pending
+    case scheduled
     case confirmed
     case cancelled
     case finished

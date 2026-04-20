@@ -15,15 +15,15 @@ struct AppointmentDetailsView: View {
         Text("Hello, AppointmentDetailsView!")
         
         Button("Edit Appointment") {
-            viewModel.navigateToEditAppointment(appointment: .init())
+            viewModel.navigateToEditAppointment(appointment: .init(startDate: .now, endDate: .now))
         }
     }
 }
 
+
 #Preview {
     
     let coordinator = makeAgendaFlowCoordinator()
-    let databaseService = DatabaseService(context: makeMainContext())
     
     AppointmentDetailsView(viewModel: .init(coordinator: coordinator))
 }
