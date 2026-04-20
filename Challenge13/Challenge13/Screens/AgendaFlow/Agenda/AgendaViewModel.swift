@@ -11,11 +11,11 @@ import Foundation
 final class AgendaViewModel: ObservableObject {
     weak private var coordinator: (any AgendaCoordinateProtocol)?
     private let databaseService: DatabaseService
-    private let settingsStore: SettingsStore // TODO: Remover
     private var cancellables: Set<AnyCancellable> = []
     
     @Published var appointments: [Appointment]
     @Published var selectedDate: Date
+    @Published var agendaViewID: UUID = .init()
     
     var formatterDate: String {
         selectedDate.formatterRow()
@@ -29,35 +29,17 @@ final class AgendaViewModel: ObservableObject {
         .sorted(by: { $0.startDate < $1.startDate })
     }
     
-    var userAuthenticated: Bool { // TODO: Remover
-        get {
-            settingsStore.isAuthenticationEnabled
-        }
-        set {
-            let authenticationService = AppLockValidatorService()
-            
-            if newValue == false {
-                settingsStore.setAuthenticationEnabled(newValue)
-                return
-            }
-            
-            if authenticationService.validate() == .available {
-                settingsStore.setAuthenticationEnabled(newValue)
-            }
-        }
-    }
-    
     init(
         coordinator: (any AgendaCoordinateProtocol)?,
         databaseService: DatabaseService,
-        settingsStore: SettingsStore
+        screenMonitorService: ScreenMonitorService,
     ) {
         self.coordinator = coordinator
         self.databaseService = databaseService
-        self.settingsStore = settingsStore
         self.appointments = databaseService.getAllElements()
         self.selectedDate = .now
         
+        observeScreenPhase(screenMonitorService: screenMonitorService)
         observeAppointments()
     }
     
@@ -85,6 +67,18 @@ extension AgendaViewModel {
             .sink { [weak self] in
                 guard let self else { return }
                 self.appointments = self.databaseService.getAllElements()
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func observeScreenPhase(screenMonitorService: ScreenMonitorService) {
+        screenMonitorService.sceneDidUpdate
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] screen in
+                guard let self else { return }
+                if screen == .active {
+                    agendaViewID = UUID()
+                }
             }
             .store(in: &cancellables)
     }

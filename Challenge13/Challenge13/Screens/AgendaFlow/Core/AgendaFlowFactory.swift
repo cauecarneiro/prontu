@@ -10,13 +10,13 @@ import Foundation
 final class AgendaFlowFactory {
     
     private let databaseService: DatabaseService
-    private let settingsStore: SettingsStore
+    private let screenMonitorService: ScreenMonitorService
     weak var coordinator: AgendaFlowCoordinator?
     
     private lazy var agendaVM: AgendaViewModel = AgendaViewModel(
         coordinator: coordinator,
         databaseService: databaseService,
-        settingsStore: settingsStore
+        screenMonitorService: screenMonitorService
     )
     
     private lazy var createAppointmentVM: CreateAppointmentViewModel = CreateAppointmentViewModel(
@@ -27,9 +27,9 @@ final class AgendaFlowFactory {
         coordinator: coordinator
     )
     
-    init(databaseService: DatabaseService, settingsStore: SettingsStore) {
+    init(databaseService: DatabaseService, screenMonitorService: ScreenMonitorService) {
         self.databaseService = databaseService
-        self.settingsStore = settingsStore
+        self.screenMonitorService = screenMonitorService
     }
     
     func makeAgendaView() -> AgendaView {

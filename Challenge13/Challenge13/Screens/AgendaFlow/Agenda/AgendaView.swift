@@ -19,7 +19,8 @@ struct AgendaView: View {
 
             DailyScheduleCanvas(
                 appointments: viewModel.dailyAppointments,
-                date: viewModel.selectedDate
+                date: viewModel.selectedDate,
+                navigateTo: viewModel.navigateToAppointmentDetails
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             
@@ -28,6 +29,7 @@ struct AgendaView: View {
             }
             .disabled(!viewModel.appointments.isEmpty)
         }
+        .id(viewModel.agendaViewID)
         .navigationBarTitleDisplayMode(.inline)
         .padding(.horizontal, GlobalConfiguration.normalSpacing)
     }
@@ -41,7 +43,7 @@ struct AgendaView: View {
         viewModel: .init(
             coordinator: coordinator,
             databaseService: databaseService,
-            settingsStore: .shared
+            screenMonitorService: .shared
         )
     )
 }

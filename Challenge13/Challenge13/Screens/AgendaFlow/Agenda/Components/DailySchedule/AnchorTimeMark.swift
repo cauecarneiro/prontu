@@ -9,14 +9,12 @@ import SwiftUI
 
 struct AnchorTimeMark: View {
     let time: Date
-    let leftInset: CGFloat
 
     var body: some View {
         HStack(spacing: Layout.labelPadding) {
             Text(timeLabel)
                 .font(Layout.labelFont)
                 .foregroundStyle(.secondary)
-                .frame(width: leftInset - Layout.labelPadding, alignment: .trailing)
 
             Rectangle()
                 .fill(Color.secondary.opacity(Layout.lineOpacity))
@@ -47,9 +45,9 @@ struct AnchorTimeMark: View {
 
 #Preview("AnchorTimeMark") {
     VStack(spacing: 60) {
-        AnchorTimeMark(time: Date(), leftInset: 52)
-        AnchorTimeMark(time: Date().addingTimeInterval(3600), leftInset: 52)
-        AnchorTimeMark(time: Date().addingTimeInterval(7200), leftInset: 52)
+        AnchorTimeMark(time: Date())
+        AnchorTimeMark(time: Date().addingTimeInterval(3600))
+        AnchorTimeMark(time: Date().addingTimeInterval(7200))
     }
     .padding()
     .background(Color(.systemBackground))

@@ -13,15 +13,21 @@ final class ScreenMonitorService {
     
     static let shared = ScreenMonitorService()
     
-    private var publisher: PassthroughSubject<ScenePhase, Never> = .init()
+    private var publisher: PassthroughSubject<SceneStatus, Never> = .init()
     
-    var sceneDidUpdate: AnyPublisher<ScenePhase, Never> {
+    var sceneDidUpdate: AnyPublisher<SceneStatus, Never> {
         publisher.eraseToAnyPublisher()
     }
     
     private init() {}
     
     func updateScreen(screen: ScenePhase) {
-        publisher.send(screen)
+        let sceneStatus: SceneStatus = screen == .active ? .active : .inactive
+        publisher.send(sceneStatus)
+    }
+    
+    enum SceneStatus {
+        case active
+        case inactive
     }
 }

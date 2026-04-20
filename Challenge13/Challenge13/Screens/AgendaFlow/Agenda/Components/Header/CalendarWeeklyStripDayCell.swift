@@ -58,3 +58,14 @@ struct CalendarWeeklyStripDayCell: View {
         static let unselectedScale: CGFloat = 0.88
     }
 }
+
+#Preview {
+    @Previewable @Namespace var namespace
+    
+    CalendarWeeklyStripDayCell(
+        date: .now,
+        isSelected: true,
+        hasAppointments: true,
+        namespace: namespace
+    )
+}
