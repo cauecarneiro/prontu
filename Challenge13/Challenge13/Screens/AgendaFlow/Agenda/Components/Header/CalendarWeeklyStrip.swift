@@ -107,9 +107,7 @@ struct CalendarWeeklyStrip: View {
         let newWeekStart = pages[visibleIndex].id
         let currentWeekdayOffset = calendar.component(.weekday, from: selectedDate) - 1
         if let newDate = calendar.date(byAdding: .day, value: currentWeekdayOffset, to: newWeekStart) {
-            withAnimation(Layout.selectionAnimation) {
-                selectedDate = newDate
-            }
+            selectedDate = newDate
         }
 
         pages = makeBuffer(around: pages[visibleIndex].id)
