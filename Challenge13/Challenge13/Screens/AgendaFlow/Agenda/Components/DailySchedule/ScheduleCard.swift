@@ -9,11 +9,16 @@ import SwiftUI
 
 struct ScheduleCard: View {
     let appointment: Appointment
+    let lineWidth: CGFloat
     let navigateTo: (Appointment) -> Void
     
     var color: Color {
-        appointment.status == .finished ? GlobalConfiguration.primaryGreen : GlobalConfiguration.primaryBlue
+        if isBlocked {
+            return .gray
+        }
+        return appointment.status == .finished ? GlobalConfiguration.primaryGreen : GlobalConfiguration.primaryBlue
     }
+    
     private var isBlocked: Bool {
         appointment.status == .blocked
     }
@@ -27,24 +32,37 @@ struct ScheduleCard: View {
     }
 
     var body: some View {
-        content
-            .padding(.horizontal, Layout.horizontalPadding)
-            .padding(.vertical, Layout.verticalPadding)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .background {
+        HStack(spacing: GlobalConfiguration.normalSpacing) {
+            ZStack(alignment: .top) {
                 RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius)
-                    .fill(style.backgroundColor)
+                    .foregroundStyle(.secondary.opacity(0.25))
+                    .frame(maxWidth: lineWidth, maxHeight: .infinity)
+                
+                Circle()
+                    .fill(color)
+                    .frame(maxWidth: lineWidth * 2)
+                    .offset(y: 10)
             }
-            .overlay {
-                RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius)
-                    .stroke(style.borderColor, lineWidth: Layout.borderWidth)
-            }
-            .opacity(style.opacity)
-            .onTapGesture {
-                if appointment.status != .finished {
-                    navigateTo(appointment)
+            
+            content
+                .padding(.horizontal, Layout.horizontalPadding)
+                .padding(.vertical, Layout.verticalPadding)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .background {
+                    RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius)
+                        .fill(style.backgroundColor)
                 }
-            }
+                .overlay {
+                    RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius)
+                        .stroke(style.borderColor, lineWidth: Layout.borderWidth)
+                }
+                .opacity(style.opacity)
+                .onTapGesture {
+                    if appointment.status != .finished {
+                        navigateTo(appointment)
+                    }
+                }
+        }
     }
 
     @ViewBuilder
@@ -203,13 +221,13 @@ struct ScheduleCard: View {
     )
 
     VStack(spacing: 16) {
-        ScheduleCard(appointment: appointment) {_ in }
+        ScheduleCard(appointment: appointment, lineWidth: 10) {_ in }
             .frame(height: 80)
-        ScheduleCard(appointment: appointment) {_ in }
+        ScheduleCard(appointment: appointment, lineWidth: 10) {_ in }
             .frame(height: 80)
-        ScheduleCard(appointment: appointment) {_ in }
+        ScheduleCard(appointment: appointment, lineWidth: 10) {_ in }
             .frame(height: 80)
-        ScheduleCard(appointment: blocked) {_ in }
+        ScheduleCard(appointment: blocked, lineWidth: 10) {_ in }
             .frame(height: 40)
     }
     .padding()

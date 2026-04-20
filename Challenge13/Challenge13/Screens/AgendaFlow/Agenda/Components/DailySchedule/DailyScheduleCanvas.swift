@@ -58,7 +58,24 @@ struct DailyScheduleCanvas: View {
             ScrollViewReader { proxy in
                 ScrollView(.vertical) {
                     ZStack(alignment: .topLeading) {
-
+                        
+                        ForEach(metrics.connectionLineSegments) { segment in
+                            positioned(y: metrics.yOffset(for: segment.start), in: metrics) {
+                                HStack(spacing: .zero) {
+                                    RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius)
+                                        .foregroundStyle(.secondary.opacity(0.25))
+                                        .frame(
+                                            width: Layout.lineWidth,
+                                            height: metrics.height(for: segment),
+                                        )
+                                        .padding(.top, 4)
+                                        .padding(.leading, Layout.leftInset + Layout.lineWidth / 2)
+                                    
+                                    Spacer()
+                                }
+                            }
+                        }
+                        
                         ForEach(metrics.anchorTimes, id: \.self) { time in
                             positioned(y: metrics.yOffset(for: time), in: metrics) {
                                 AnchorTimeMark(time: time)
@@ -70,10 +87,10 @@ struct DailyScheduleCanvas: View {
                             positioned(y: metrics.yOffset(for: appointment.startDate), in: metrics) {
                                 ScheduleCard(
                                     appointment: appointment,
+                                    lineWidth: Layout.lineWidth,
                                     navigateTo: navigateTo
                                 )
-//                                .padding(.top, 4)
-                                .padding(.vertical, 12)
+                                .padding(.top, 12)
                                 .padding(.leading, Layout.leftInset)
                                 .frame(
                                     height: metrics.cardHeight(for: appointment),
@@ -85,7 +102,8 @@ struct DailyScheduleCanvas: View {
                         if isToday {
                             positioned(y: metrics.yOffset(for: timelineNow), in: metrics) {
                                 CurrentTimeNeedle(
-                                    leftInset: Layout.leftInset
+                                    leftInset: Layout.leftInset,
+                                    width: Layout.lineWidth * 2
                                 )
                                 .id(timelineFocusID)
                             }
@@ -140,6 +158,7 @@ struct DailyScheduleCanvas: View {
     private enum Layout {
         static let pixelsPerMinute: CGFloat = 4
         static let leftInset: CGFloat = 52
+        static let lineWidth: CGFloat = 5
         static let minCardHeight: CGFloat = 24
         static let minCardWidth: CGFloat = 120
     }
@@ -152,6 +171,7 @@ private extension DailyScheduleCanvas {
         let canvasHeight: CGFloat
         let cardWidth: CGFloat
         let anchorTimes: [Date]
+        let connectionLineSegments: [TimelineLineSegment]
 
         init(
             appointments: [Appointment],
@@ -176,11 +196,16 @@ private extension DailyScheduleCanvas {
             )
 
             self.anchorTimes = Self.makeAnchorTimes(for: window, calendar: calendar)
+            self.connectionLineSegments = Self.makeConnectionLineSegments(for: appointments)
         }
 
         func yOffset(for date: Date) -> CGFloat {
             let minutes = date.timeIntervalSince(window.start) / 60
             return CGFloat(minutes) * Layout.pixelsPerMinute
+        }
+
+        func height(for segment: TimelineLineSegment) -> CGFloat {
+            max(yOffset(for: segment.end) - yOffset(for: segment.start), 0)
         }
 
         func cardHeight(for appointment: Appointment) -> CGFloat {
@@ -206,6 +231,40 @@ private extension DailyScheduleCanvas {
 
             return times
         }
+
+        private static func makeConnectionLineSegments(for appointments: [Appointment]) -> [TimelineLineSegment] {
+            let busyRanges = appointments
+                .sorted { $0.startDate < $1.startDate }
+                .reduce(into: [BusyRange]()) { ranges, appointment in
+                    guard appointment.endDate > appointment.startDate else { return }
+
+                    if let lastRange = ranges.last, appointment.startDate <= lastRange.end {
+                        ranges[ranges.count - 1].end = max(lastRange.end, appointment.endDate)
+                    } else {
+                        ranges.append(BusyRange(start: appointment.startDate, end: appointment.endDate))
+                    }
+                }
+
+            return zip(busyRanges, busyRanges.dropFirst()).compactMap { previous, next in
+                guard next.start > previous.end else { return nil }
+
+                return TimelineLineSegment(start: previous.end, end: next.start)
+            }
+        }
+    }
+
+    struct TimelineLineSegment: Identifiable {
+        let start: Date
+        let end: Date
+
+        var id: String {
+            "\(start.timeIntervalSinceReferenceDate)-\(end.timeIntervalSinceReferenceDate)"
+        }
+    }
+
+    struct BusyRange {
+        let start: Date
+        var end: Date
     }
 
     struct WorkingWindow {
