@@ -70,7 +70,6 @@ struct DailyScheduleCanvas: View {
                             positioned(y: metrics.yOffset(for: appointment.startDate), in: metrics) {
                                 ScheduleCard(
                                     appointment: appointment,
-                                    state: cardState(for: appointment),
                                     navigateTo: navigateTo
                                 )
 //                                .padding(.top, 4)
@@ -125,30 +124,6 @@ struct DailyScheduleCanvas: View {
             height: metrics.canvasHeight,
             alignment: .topLeading
         )
-    }
-
-    private func cardState(for appointment: Appointment) -> ScheduleCardState {
-        let now = currentTime
-        let startOfToday = calendar.startOfDay(for: now)
-        let appointmentDay = calendar.startOfDay(for: appointment.startDate)
-
-        if appointmentDay < startOfToday {
-            return .past
-        }
-
-        if appointmentDay > startOfToday {
-            return .standard
-        }
-
-        if now > appointment.endDate {
-            return .past
-        }
-
-        if now >= appointment.startDate {
-            return .active
-        }
-
-        return .standard
     }
 
     private func focusCanvas(proxy: ScrollViewProxy) {

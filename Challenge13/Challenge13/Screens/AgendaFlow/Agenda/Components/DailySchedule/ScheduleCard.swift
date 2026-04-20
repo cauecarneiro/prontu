@@ -7,15 +7,8 @@
 
 import SwiftUI
 
-enum ScheduleCardState {
-    case standard
-    case active
-    case past
-}
-
 struct ScheduleCard: View {
     let appointment: Appointment
-    let state: ScheduleCardState
     let navigateTo: (Appointment) -> Void
     
     var color: Color {
@@ -26,24 +19,11 @@ struct ScheduleCard: View {
     }
 
     private var style: ScheduleCardStyle {
-        if isBlocked {
-            return .blocked
-        }
-        
-        return .init(
-            backgroundColor: color.opacity(Layout.standardBackgroundOpacity),
-            borderColor: color.opacity(Layout.standardBorderOpacity),
+        .init(
+            backgroundColor: color.opacity(Layout.backgroundOpacity),
+            borderColor: color.opacity(Layout.borderOpacity),
             opacity: 1
         )
-
-//        switch state {
-//        case .standard:
-//            return .standard
-//        case .active:
-//            return .active
-//        case .past:
-//            return .past
-//        }
     }
 
     var body: some View {
@@ -193,30 +173,6 @@ struct ScheduleCard: View {
             self.borderColor = borderColor
             self.opacity = opacity
         }
-        
-        static let standard = ScheduleCardStyle(
-            backgroundColor: GlobalConfiguration.primaryBlue.opacity(Layout.standardBackgroundOpacity),
-            borderColor: GlobalConfiguration.primaryBlue.opacity(Layout.standardBorderOpacity),
-            opacity: 1
-        )
-
-        static let active = ScheduleCardStyle(
-            backgroundColor: GlobalConfiguration.primaryBlue.opacity(Layout.activeBackgroundOpacity),
-            borderColor: GlobalConfiguration.primaryBlue,
-            opacity: 1
-        )
-
-        static let past = ScheduleCardStyle(
-            backgroundColor: GlobalConfiguration.primaryBlue.opacity(Layout.standardBackgroundOpacity),
-            borderColor: GlobalConfiguration.primaryBlue.opacity(Layout.standardBorderOpacity),
-            opacity: Layout.pastOpacity
-        )
-
-        static let blocked = ScheduleCardStyle(
-            backgroundColor: Color.secondary.opacity(Layout.blockedBackgroundOpacity),
-            borderColor: Color.secondary.opacity(Layout.blockedBorderOpacity),
-            opacity: 1
-        )
     }
 
     private enum Layout {
@@ -224,12 +180,8 @@ struct ScheduleCard: View {
         static let verticalPadding: CGFloat = 6
         static let borderWidth: CGFloat = 1
         static let contentSpacing: CGFloat = 2
-        static let pastOpacity: Double = 0.45
-        static let standardBackgroundOpacity: Double = 0.12
-        static let activeBackgroundOpacity: Double = 0.25
-        static let standardBorderOpacity: Double = 0.4
-        static let blockedBackgroundOpacity: Double = 0.08
-        static let blockedBorderOpacity: Double = 0.2
+        static let backgroundOpacity: Double = 0.12
+        static let borderOpacity: Double = 0.4
     }
 }
 
@@ -251,13 +203,13 @@ struct ScheduleCard: View {
     )
 
     VStack(spacing: 16) {
-        ScheduleCard(appointment: appointment, state: .active) {_ in }
+        ScheduleCard(appointment: appointment) {_ in }
             .frame(height: 80)
-        ScheduleCard(appointment: appointment, state: .standard) {_ in }
+        ScheduleCard(appointment: appointment) {_ in }
             .frame(height: 80)
-        ScheduleCard(appointment: appointment, state: .past) {_ in }
+        ScheduleCard(appointment: appointment) {_ in }
             .frame(height: 80)
-        ScheduleCard(appointment: blocked, state: .standard) {_ in }
+        ScheduleCard(appointment: blocked) {_ in }
             .frame(height: 40)
     }
     .padding()
