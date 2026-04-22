@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CurrentTimeNeedle: View {
     let leftInset: CGFloat
+    let width: CGFloat
 
     var body: some View {
         Rectangle()
@@ -17,13 +18,12 @@ struct CurrentTimeNeedle: View {
             .overlay(alignment: .leading) {
                 Circle()
                     .fill(GlobalConfiguration.primaryBlue)
-                    .frame(width: Layout.dotSize, height: Layout.dotSize)
-                    .offset(x: leftInset - Layout.dotSize / 2)
+                    .frame(width: width, height: width)
+                    .offset(x: leftInset)
             }
     }
 
     private enum Layout {
-        static let dotSize: CGFloat = 10
         static let lineThickness: CGFloat = 1.5
     }
 }
@@ -31,7 +31,7 @@ struct CurrentTimeNeedle: View {
 // MARK: - Preview
 
 #Preview("CurrentTimeNeedle") {
-    CurrentTimeNeedle(leftInset: 52)
+    CurrentTimeNeedle(leftInset: 52, width: 10)
         .padding(.vertical, 40)
         .background(Color(.systemBackground))
 }
