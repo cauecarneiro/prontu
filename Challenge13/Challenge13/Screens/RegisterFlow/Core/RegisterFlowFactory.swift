@@ -12,7 +12,7 @@ final class RegisterFlowFactory {
     weak var coordinator: RegisterFlowCoordinator?
     private let databaseService: DatabaseService
 
-    private lazy var clientListVM: ClientsListViewModel = .init(coordinator: coordinator)
+    private lazy var clientListVM: ClientsListViewModel = .init(coordinator: coordinator, databaseService: databaseService)
     private lazy var createClientVM: CreateClientViewModel = .init(databaseService: databaseService, coordinator: coordinator)
 
     init(databaseService: DatabaseService) {
