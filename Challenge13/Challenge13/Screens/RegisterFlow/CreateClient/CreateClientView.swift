@@ -93,6 +93,7 @@ struct CreateClientView: View {
                 }
             }
             .scrollDismissesKeyboard(.interactively)
+            .onTapGesture { focusedField = nil }
             .background(Color(.systemGroupedBackground))
             .background(
                 ContactPickerView(isPresented: $openImportContacts) {
@@ -123,7 +124,11 @@ struct CreateClientView: View {
 
     private var ctaButton: some View {
         Button {
-            viewModel.save()
+            if viewModel.canSave {
+                viewModel.save()
+            } else {
+                UINotificationFeedbackGenerator().notificationOccurred(.error)
+            }
         } label: {
             Text("Criar Cliente")
                 .font(.system(size: Layout.sectionHeaderFontSize, weight: .semibold))
@@ -136,7 +141,6 @@ struct CreateClientView: View {
                 )
                 .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.largeCornerRadius))
         }
-        .disabled(!viewModel.canSave)
         .scaleEffect(viewModel.canSave ? 1 : Layout.ctaDisabledScale)
         .animation(
             .spring(response: Layout.ctaStateAnimationDuration, dampingFraction: 0.7),
@@ -145,7 +149,6 @@ struct CreateClientView: View {
         .padding(.horizontal, GlobalConfiguration.normalSpacing)
         .padding(.top, Layout.footerTopPadding)
         .padding(.bottom, Layout.footerBottomPadding)
-        .background(.ultraThinMaterial)
     }
 
     // MARK: - Contact Info Section
