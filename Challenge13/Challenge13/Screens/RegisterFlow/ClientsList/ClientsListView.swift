@@ -12,94 +12,94 @@ struct ClientsListView: View {
     @ObservedObject var viewModel: ClientsListViewModel
     
     var body: some View {
+        
+        ScrollViewReader { proxy in
+            
+            ZStack {
                 
-                ScrollViewReader { proxy in
+                //EMPTY STATE
+                if viewModel.groupedClients.isEmpty {
+                    EmptyStateView()
+                        .frame(maxWidth: .infinity,
+                               maxHeight: .infinity,
+                               alignment: .top)
+                } else {
                     
-                    ZStack {
-                        
-                        //EMPTY STATE
-                        if viewModel.groupedClients.isEmpty {
-                            EmptyStateView()
-                                .frame(maxWidth: .infinity,
-                                       maxHeight: .infinity,
-                                       alignment: .top)
-                        } else {
+                    //LISTA
+                    ScrollView {
+                        VStack(alignment: .leading) {
                             
-                            //LISTA
-                            ScrollView {
+                            ForEach(viewModel.groupedClients.keys.sorted(), id: \.self) { letter in
+                                
                                 VStack(alignment: .leading) {
                                     
-                                    ForEach(viewModel.groupedClients.keys.sorted(), id: \.self) { letter in
+                                    if let clients = viewModel.groupedClients[letter] {
                                         
-                                        VStack(alignment: .leading) {
+                                        VStack(alignment: .leading, spacing: 0) {
                                             
-                                            if let clients = viewModel.groupedClients[letter] {
+                                            HStack{
+                                                Text(letter)
+                                                    .font(.title2)
+                                                    .foregroundColor(Color.secondary)
+                                                    .bold()
                                                 
-                                                VStack(alignment: .leading, spacing: 0) {
-                                                    
-                                                    HStack{
-                                                        Text(letter)
-                                                            .font(.title2)
-                                                            .foregroundColor(Color.secondary)
-                                                            .bold()
-                                                        
-                                                        Text("(\(clients.count))")
-                                                            .foregroundColor(Color.secondary)
-                                                        
-                                                        Spacer()
-                                                    }
-                                                    .padding()
-                                                    
-                                                    //Lista de clientes
-                                                    ForEach(clients) { client in
-                                                        
-                                                        ClientRow(client: client)
-                                                        
-                                                        if client.id != clients.last?.id {
-                                                            Divider()
-                                                                .padding(.leading, 70)
-                                                                .padding(.trailing, 20)
-                                                        }
-                                                    }
+                                                Text("(\(clients.count))")
+                                                    .foregroundColor(Color.secondary)
+                                                
+                                                Spacer()
+                                            }
+                                            .padding()
+                                            
+                                            //Lista de clientes
+                                            ForEach(clients) { client in
+                                                
+                                                ClientRow(client: client)
+                                                
+                                                if client.id != clients.last?.id {
+                                                    Divider()
+                                                        .padding(.leading, 70)
+                                                        .padding(.trailing, 20)
                                                 }
-                                                .background(Color(.systemGray6))
-                                                .cornerRadius(GlobalConfiguration.normalCornerRadius)
-                                                .padding(.horizontal)
-                                                .padding(.top, 8)
-                                                .id(letter)
                                             }
                                         }
+                                        .background(Color(.systemGray6))
+                                        .cornerRadius(GlobalConfiguration.normalCornerRadius)
+                                        .padding(.horizontal)
+                                        .padding(.top, 8)
+                                        .id(letter)
                                     }
                                 }
                             }
                         }
+                    }
+                }
+                
+                // INDEX LATERAL (COM DRAG)
+                HStack {
+                    Spacer()
+                    
+                    AlphabetIndexView(
+                        letters: viewModel.groupedClients.keys.sorted()
+                    ) { letter in
                         
-                        // INDEX LATERAL (COM DRAG)
-                        HStack {
-                            Spacer()
-                            
-                            AlphabetIndexView(
-                                letters: viewModel.groupedClients.keys.sorted()
-                            ) { letter in
-                                
-                                withAnimation {
-                                    proxy.scrollTo(letter, anchor: .top)
-                                }
-                            }
-                            .padding(.trailing, 4)
+                        withAnimation {
+                            proxy.scrollTo(letter, anchor: .top)
                         }
                     }
-                }//end ScrollView
-                .background(Color(.systemGray5))
-                .navigationTitle("Clientes")
-                .navigationBarTitleDisplayMode(.large)
-                .overlay(alignment: .bottomTrailing) {
-                    FloatingButton(systemImageName: "person.fill.badge.plus") {
-                        viewModel.presentCreateClient()
-                    }
-                    .padding(.horizontal, GlobalConfiguration.normalSpacing)
+                    .padding(.trailing, 4)
                 }
-                .searchable(text: $viewModel.search, placement: .navigationBarDrawer, prompt: "Buscar cliente")
+            }
+        }//end ScrollView
+        .background(Color(.systemGray5))
+        .navigationTitle("Clientes")
+        .navigationBarTitleDisplayMode(.large)
+        .overlay(alignment: .bottomTrailing) {
+            FloatingButton(systemImageName: "person.fill.badge.plus") {
+                viewModel.presentCreateClient()
+            }
+            .padding(.horizontal, GlobalConfiguration.normalSpacing)
+        }
+        .searchable(text: $viewModel.search, placement: .navigationBarDrawer, prompt: "Buscar cliente")
     }//end body
 }//end View
 
