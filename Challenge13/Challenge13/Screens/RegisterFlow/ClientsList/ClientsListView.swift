@@ -27,5 +27,5 @@ struct ClientsListView: View {
 }
 
 #Preview {
-    ClientsListView(viewModel: .init(coordinator: RegisterFlowCoordinator(factory: .init())))
+    ClientsListView(viewModel: .init(coordinator: makeRegisterFlowCoordinator()))
 }

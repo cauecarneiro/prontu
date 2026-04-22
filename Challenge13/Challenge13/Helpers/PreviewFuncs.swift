@@ -22,3 +22,12 @@ func makeAgendaFlowCoordinator() -> AgendaFlowCoordinator {
 func makeMainContext() -> ModelContext {
     try! ModelContainer(for: Client.self, Appointment.self, configurations: .init()).mainContext
 }
+
+func makeRegisterFlowDatabaseService() -> DatabaseService {
+    let container = try! ModelContainer(for: Client.self, Appointment.self, configurations: .init(isStoredInMemoryOnly: true))
+    return DatabaseService(context: ModelContext(container))
+}
+
+func makeRegisterFlowCoordinator() -> RegisterFlowCoordinator {
+    RegisterFlowCoordinator(factory: .init(databaseService: makeRegisterFlowDatabaseService()))
+}

@@ -37,7 +37,7 @@ final class MainTabCoordinator: ObservableObject {
             factory: .init(databaseService: databaseService, screenMonitorService: screenMonitor)
         )
         
-        self.registerFlowCoordinator = RegisterFlowCoordinator(factory: .init())
+        self.registerFlowCoordinator = RegisterFlowCoordinator(factory: .init(databaseService: databaseService))
         self.appointmentReportCoordinator = AppointmentReportFlowCoordinator(
             factory: .init(databaseService: databaseService)
         )

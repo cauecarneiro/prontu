@@ -45,15 +45,18 @@ final class RegisterFlowCoordinator: Coordinator  {
     }
 }
 
-extension RegisterFlowCoordinator: ClientListCoordinatorProtocol  {
+extension RegisterFlowCoordinator: ClientListCoordinatorProtocol {
     func navigateToEditClient(client: Client) {
         navigateTo(.editClient(client))
     }
-    
+
     func presentToCreateClient() {
         presentTo(.createClient)
     }
-    
-    
-    
+}
+
+extension RegisterFlowCoordinator: CreateClientCoordinatorProtocol {
+    func dismissCreateClient() {
+        dismissPresentation()
+    }
 }
