@@ -11,13 +11,7 @@ struct ClientRow: View{
     let client: Client
     
     var avatarColor: Color {
-        let colors: [Color] = [.blue, .green, .orange, .purple, .pink, .teal]
-        //hashValue transforma o nome em um número sempre igual para o mesmo nome
-        //abs = valor absoluto
-        //% = módulo, pega o resto da divisão
-        //color.count = 6, então sempre divide o hash por 6 e o resultado será sempre entre 0 até 5
-        let index = abs(client.name.hashValue) % colors.count
-        return colors[index]
+        GlobalConfiguration.avatarColor(for: client.name)
     }
     
     var body: some View{
@@ -37,7 +31,6 @@ struct ClientRow: View{
                     .font(.headline)
                 
             }
-            
             //Empurra o conteúdo para a esquerda
             Spacer()
         }

@@ -11,9 +11,6 @@ struct ClientsListView: View {
     
     @ObservedObject var viewModel: ClientsListViewModel
     
-//    @State private var selectedLetter: String = ""
-    @State private var showBubble: Bool = false
-    
     var body: some View {
         
         ZStack {
@@ -43,17 +40,24 @@ struct ClientsListView: View {
                                         
                                         VStack(alignment: .leading) {
                                             
-                                            // HEADER LETRA
-                                            Text(letter)
-                                                .font(.headline)
-                                                .padding(.top)
-                                                .padding(.horizontal, 16)
-                                                .id(letter)
-                                            
                                             if let clients = viewModel.groupedClients[letter] {
                                                 
-                                                VStack(spacing: 0) {
+                                                VStack(alignment: .leading, spacing: 0) {
                                                     
+                                                    HStack{
+                                                        Text(letter)
+                                                            .font(.title2)
+                                                            .foregroundColor(Color.secondary)
+                                                            .bold()
+                                                        
+                                                        Text("(\(clients.count))")
+                                                            .foregroundColor(Color.secondary)
+                                                        
+                                                        Spacer()
+                                                    }
+                                                    .padding()
+                                                    
+                                                    //Lista de clientes
                                                     ForEach(clients) { client in
                                                         
                                                         ClientRow(client: client)
@@ -61,12 +65,15 @@ struct ClientsListView: View {
                                                         if client.id != clients.last?.id {
                                                             Divider()
                                                                 .padding(.leading, 70)
+                                                                .padding(.trailing, 20)
                                                         }
                                                     }
                                                 }
                                                 .background(Color(.systemGray6))
-                                                .cornerRadius(20)
+                                                .cornerRadius(GlobalConfiguration.normalCornerRadius)
                                                 .padding(.horizontal)
+                                                .padding(.top, 8)
+                                                .id(letter)
                                             }
                                         }
                                     }
@@ -91,13 +98,24 @@ struct ClientsListView: View {
                     }
                 }
             }
+            
         }
         .overlay(alignment: .bottomTrailing) {
-            CreateClientButton {
-                viewModel.presentCreateClient()
+            FloatingButton(systemImageName: "person.fill.badge.plus") {
+                    viewModel.presentCreateClient()
             }
-            .padding(.trailing, 16)
-            .padding(.bottom, 60)
+            .padding(.horizontal, GlobalConfiguration.normalSpacing)
         }
-    }
-}
+        .navigationBarTitleDisplayMode(.inline)
+     //   .padding(.horizontal, GlobalConfiguration.normalSpacing)
+        
+    }//end body
+}//end View
+
+//#Preview {
+//    ClientsListView(
+//        viewModel: ClientsListViewModel(
+//            coordinator:  RegisterFlowCoordinator(factory: .init(databaseService: .init(context: makeMainContext()))), databaseService: .init(context: makeMainContext())
+//        )
+//    )
+//}

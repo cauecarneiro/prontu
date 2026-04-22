@@ -11,6 +11,7 @@ struct EmptyStateView: View{
     
     var body: some View{
         VStack(spacing: 12){
+            
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 40))
                 .foregroundColor(.gray)

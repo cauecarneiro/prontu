@@ -56,6 +56,7 @@ import Foundation
 //}
 
 struct AlphabetIndexView: View {
+    
     let letters: [String]
     let onSelect: (String) -> Void
 
