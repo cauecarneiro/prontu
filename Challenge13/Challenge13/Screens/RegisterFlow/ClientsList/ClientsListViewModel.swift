@@ -12,6 +12,7 @@ final class ClientsListViewModel: ObservableObject {
     
     @Published var clients: [Client] = []
     @Published var search: String = ""
+    @Published var searching: Bool = false
     
     weak var coordinator: (any ClientListCoordinatorProtocol)?
     private let databaseService: DatabaseService

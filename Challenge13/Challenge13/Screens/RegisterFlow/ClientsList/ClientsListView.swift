@@ -12,13 +12,6 @@ struct ClientsListView: View {
     @ObservedObject var viewModel: ClientsListViewModel
     
     var body: some View {
-        
-        ZStack {
-            Color(.systemGray5).ignoresSafeArea()
-            
-            VStack(alignment: .leading) {
-                
-                HeaderClientsView(search: $viewModel.search)
                 
                 ScrollViewReader { proxy in
                     
@@ -96,19 +89,17 @@ struct ClientsListView: View {
                             .padding(.trailing, 4)
                         }
                     }
+                }//end ScrollView
+                .background(Color(.systemGray5))
+                .navigationTitle("Clientes")
+                .navigationBarTitleDisplayMode(.large)
+                .overlay(alignment: .bottomTrailing) {
+                    FloatingButton(systemImageName: "person.fill.badge.plus") {
+                        viewModel.presentCreateClient()
+                    }
+                    .padding(.horizontal, GlobalConfiguration.normalSpacing)
                 }
-            }
-            
-        }
-        .overlay(alignment: .bottomTrailing) {
-            FloatingButton(systemImageName: "person.fill.badge.plus") {
-                    viewModel.presentCreateClient()
-            }
-            .padding(.horizontal, GlobalConfiguration.normalSpacing)
-        }
-        .navigationBarTitleDisplayMode(.inline)
-     //   .padding(.horizontal, GlobalConfiguration.normalSpacing)
-        
+                .searchable(text: $viewModel.search, placement: .navigationBarDrawer, prompt: "Buscar cliente")
     }//end body
 }//end View
 

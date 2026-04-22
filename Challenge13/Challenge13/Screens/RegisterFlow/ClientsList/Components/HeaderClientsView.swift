@@ -23,10 +23,13 @@ struct HeaderClientsView: View{
                 
                 TextField("Buscar cliente", text: $search) //biding liga UI com variável
             }
-            .padding()
+            .padding(10)
             .background(Color(.systemGray6))
-            .cornerRadius(12)
+            .cornerRadius(100)
+            .padding(.horizontal)
+            .padding(.bottom, 8)
         }
+        .background(Color(.systemGray5))
         .padding()
     }//end body
 }//end View
