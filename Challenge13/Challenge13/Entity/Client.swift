@@ -16,7 +16,6 @@ final class Client { // nunca apagar o client, mudar para o isDeleted para true,
     
     var name: String
     var contactInfo: String
-    var birthday: Date?
     var observations: String?
     var isDeleted: Bool = false
     
@@ -26,12 +25,10 @@ final class Client { // nunca apagar o client, mudar para o isDeleted para true,
     init(
         name: String,
         contactInfo: String,
-        birthday: Date? = nil,
         observations: String? = nil,
     ) { 
         self.name = name
         self.contactInfo = contactInfo
-        self.birthday = birthday
         self.observations = observations
     }
     

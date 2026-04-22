@@ -31,6 +31,7 @@ struct MainTabView: View {
                 CoordinateView(coordinator: coordinator.appointmentReportCoordinator)
             }
         }
+        .tint(GlobalConfiguration.primaryBlue)
     }
 }
 
