@@ -114,7 +114,7 @@ struct CreateClientView: View {
                 .foregroundStyle(.primary)
                 .frame(width: Layout.iconButtonSize, height: Layout.iconButtonSize)
                 .background(Color(.systemFill).opacity(Layout.secondaryButtonOpacity))
-                .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.largeCornerRadius))
+                .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
         }
     }
 
@@ -151,7 +151,7 @@ struct CreateClientView: View {
             .padding(.horizontal, Layout.contactCardHorizontalPadding)
             .padding(.vertical, Layout.contactCardVerticalPadding)
             .background(.white)
-            .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.largeCornerRadius))
+            .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
         }
     }
 
@@ -182,7 +182,7 @@ struct CreateClientView: View {
         }
         .frame(height: Layout.textAreaHeight)
         .background(.white)
-        .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.largeCornerRadius))
+        .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
         .onTapGesture { focusedField = .observations }
     }
 
@@ -201,7 +201,7 @@ struct CreateClientView: View {
                     GlobalConfiguration.primaryBlue
                         .opacity(viewModel.canSave ? 1 : Layout.ctaDisabledOpacity)
                 )
-                .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.largeCornerRadius))
+                .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
         }
         .disabled(!viewModel.canSave)
         .scaleEffect(viewModel.canSave ? 1 : Layout.ctaDisabledScale)

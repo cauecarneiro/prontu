@@ -33,7 +33,7 @@ struct ClientPreviewCard: View {
                 shimmerOverlay
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.largeCornerRadius))
+        .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
         .onAppear { triggerShimmer() }
         .onChange(of: name) { _, _ in triggerShimmer() }
         .onChange(of: contactInfo) { _, _ in triggerShimmer() }
