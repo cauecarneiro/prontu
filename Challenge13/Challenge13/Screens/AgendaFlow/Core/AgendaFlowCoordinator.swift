@@ -76,3 +76,9 @@ extension AgendaFlowCoordinator: CreateAppointmentCoordinatorProtocol {
         presentTo(.createClient)
     }
 }
+
+extension AgendaFlowCoordinator: CreateClientCoordinatorProtocol {
+    func dismissCreateClient() {
+        dismissPresentation()
+    }
+}

@@ -11,3 +11,4 @@ protocol AgendaCoordinateProtocol: AnyObject {
     func navigateToCreateAppointment()
     func navigateToAppointmentDetails(appointment: Appointment)
 }
+
