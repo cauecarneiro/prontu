@@ -139,7 +139,7 @@ struct CreateClientView: View {
                     GlobalConfiguration.primaryBlue
                         .opacity(viewModel.canSave ? 1 : Layout.ctaDisabledOpacity)
                 )
-                .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.largeCornerRadius))
+                .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
         }
         .scaleEffect(viewModel.canSave ? 1 : Layout.ctaDisabledScale)
         .animation(
@@ -170,7 +170,7 @@ struct CreateClientView: View {
                     }
                 }
             }
-            .padding(.trailing, GlobalConfiguration.normalSpacing / 2)
+            .padding(GlobalConfiguration.normalSpacing / 2)
 
             VStack(spacing: 0) {
                 TextField("Nome do Cliente", text: $viewModel.name)
