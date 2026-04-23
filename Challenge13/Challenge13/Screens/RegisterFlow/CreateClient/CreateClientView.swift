@@ -186,7 +186,7 @@ struct CreateClientView: View {
             .padding(.horizontal, Layout.contactCardHorizontalPadding)
             .padding(.vertical, Layout.contactCardVerticalPadding)
             .background(.white)
-            .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.largeCornerRadius))
+            .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
         }
     }
 
@@ -217,10 +217,9 @@ struct CreateClientView: View {
         }
         .frame(height: Layout.textAreaHeight)
         .background(.white)
-        .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.largeCornerRadius))
+        .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
         .onTapGesture { focusedField = .observations }
     }
-
 }
 
 #Preview {

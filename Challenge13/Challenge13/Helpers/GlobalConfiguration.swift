@@ -15,8 +15,7 @@ enum GlobalConfiguration {
 
     // MARK: - Spacing & Radius
     static var normalSpacing: CGFloat { 16 }
-    static var normalCornerRadius: CGFloat { 12 }
-    static var largeCornerRadius: CGFloat { 22 }
+    static var normalCornerRadius: CGFloat { 22 }
 
     // MARK: - Avatar Colors
     static var avatarTeal:   Color { Color(.avatarTeal) }
@@ -34,8 +33,7 @@ enum GlobalConfiguration {
         let index = Int(name.unicodeScalars.first?.value ?? 0) % avatarPalette.count
         return avatarPalette[index]
     }
-
-    // MARK: - Data
+  
     static var dataFileName: String { "dados" }
     static var fileExtension: String { "json" }
 }

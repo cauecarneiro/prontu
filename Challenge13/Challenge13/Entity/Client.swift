@@ -16,7 +16,6 @@ final class Client { // nunca apagar o client, mudar para o isDeleted para true,
     
     var name: String
     var contactInfo: String
-    var birthday: Date?
     var observations: String?
     var isDeleted: Bool = false
     
@@ -26,13 +25,28 @@ final class Client { // nunca apagar o client, mudar para o isDeleted para true,
     init(
         name: String,
         contactInfo: String,
-        birthday: Date? = nil,
         observations: String? = nil,
     ) { 
         self.name = name
         self.contactInfo = contactInfo
-        self.birthday = birthday
         self.observations = observations
     }
     
+}
+
+extension Client {
+    
+    var initials: String {
+        // Divide o nome em partes (ex: "Ana Costa" → ["Ana", "Costa"])
+        let nomes = name.split(separator: " ")
+        
+        // Pega a primeira letra do primeiro nome
+        let primeira = nomes.first?.prefix(1) ?? ""
+        
+        // Pega a primeira letra do segundo nome (se existir)
+        let segunda = nomes.dropFirst().first?.prefix(1) ?? ""
+        
+        // Converte Substring → String e concatena
+        return String(primeira) + String(segunda)
+    }
 }
