@@ -53,7 +53,15 @@ struct ClientsListView: View {
                                             //Lista de clientes
                                             ForEach(clients) { client in
                                                 
-                                                ClientRow(client: client)
+                                                Button {
+                                                    viewModel.navigateToEditClient(client: client)
+                                                    } label: {
+                                                        ClientRow(client: client)
+                                                    }
+                                                    .buttonStyle(.plain)
+                                                
+                                               //ClientRow(client: client)
+                                               //viewModel.navigateToEditClient()
                                                 
                                                 if client.id != clients.last?.id {
                                                     Divider()
@@ -74,7 +82,7 @@ struct ClientsListView: View {
                     }
                 }
                 
-                // INDEX LATERAL (COM DRAG)
+                // Index lateral com drag
                 HStack {
                     Spacer()
                     
