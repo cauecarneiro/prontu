@@ -133,8 +133,12 @@ iOSInjectionProject/
 
 # End of https://www.toptal.com/developers/gitignore/api/swift,macos,xcode
 
-# Claude instructions
+# Claude instructions and config
 CLAUDE.md
+.claude/
+
+# Markdown documentation files (local only)
+*.md
 
 # Local AI-driven development artifacts
 AI-Driven-Development/
