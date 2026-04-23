@@ -20,15 +20,17 @@ struct MessageBubbleView: View{
     var body: some View{
         VStack(alignment: isHero ? .leading : .trailing, spacing: 6){
             //Se for IA, bolha de texto à esquerda
-            HStack(alignment: .bottom, spacing: 0){
+            HStack(alignment: .top, spacing: 10){
                 if isHero{
+                    AvatarView()
                     textBubble
-                    Spacer(minLength: 52)
+                   // Spacer(minLength: 5)
                 } else{
-                    Spacer(minLength: 52)
+                   // Spacer(minLength: 5)
                     textBubble
                 }
             }
+            .padding(10)
             
             if isHero && !message.suggestions.isEmpty{
                 ChipsSuggestionsView(suggestions: message.suggestions, onTap: onSuggestion)
@@ -42,8 +44,11 @@ struct MessageBubbleView: View{
             .font(.body)
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
-            .background(isHero ? Color(.secondarySystemBackground) : Color.accentColor)
-            .foregroundStyle(isHero ? Color.primary : Color.white)
-            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .background(isHero ? Color(.systemFill).opacity(0.55) : Color(GlobalConfiguration.primaryBlue))
+          //  .background(Color(.systemFill).opacity(Layout.secondaryButtonOpacity))
+            .foregroundStyle(isHero ? Color.secondary : Color.white)
+            //.clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
     }
 }
+

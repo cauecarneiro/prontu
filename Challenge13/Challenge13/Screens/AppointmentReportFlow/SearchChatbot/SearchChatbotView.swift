@@ -10,9 +10,37 @@ struct SearchChatbotView: View {
     
     @ObservedObject var viewModel: SearchChatbotViewModel
     
+    private enum Layout {
+        static let topBarHeight: CGFloat = 141
+        static let topBarHorizontalPadding: CGFloat = 24
+        static let iconButtonSize: CGFloat = 44
+        static let inputRowHeight: CGFloat = 56
+        static let textAreaHeight: CGFloat = 173
+        static let footerHeight: CGFloat = 55
+        static let footerBottomPadding: CGFloat = 32
+        static let sectionHeaderFontSize: CGFloat = 16
+        static let importContactFontSize: CGFloat = 14
+        static let contactCardHorizontalPadding: CGFloat = 20
+        static let contactCardVerticalPadding: CGFloat = 4
+        static let textAreaHorizontalPadding: CGFloat = 18
+        static let textAreaVerticalPadding: CGFloat = 16
+        static let animationDuration: Double = 0.25
+        static let entryScale: CGFloat = 0.95
+        static let sectionsSpacing: CGFloat = 24
+        static let sectionSpacing: CGFloat = 8
+        static let textAreaIconSpacing: CGFloat = 4
+        static let secondaryButtonOpacity: Double = 0.55
+        static let ctaDisabledOpacity: Double = 0.35
+        static let ctaDisabledScale: CGFloat = 0.98
+        static let ctaStateAnimationDuration: Double = 0.3
+    }
+    
     //MARK: Layout vertical
     var body: some View {
         VStack(spacing: .zero){
+            
+            topBar
+            
             VStack {
                 ScrollViewReader { proxy in
                     ScrollView {
@@ -51,6 +79,45 @@ struct SearchChatbotView: View {
             }
         }
     }
+    
+    private var topBar: some View {
+        HStack(alignment: .center) {
+            iconButton(systemName: "xmark") {
+               // viewModel.dismiss()
+            }
+            
+            Spacer()
+            
+            HStack(spacing: 8){
+                Image(systemName: "sparkle")
+                    .foregroundColor(GlobalConfiguration.primaryBlue)
+                
+                Text("Assistente")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundColor(Color.secondary)
+            }
+            
+            Spacer()
+            
+            Color.clear
+                .frame(width: Layout.iconButtonSize, height: Layout.iconButtonSize)
+        }
+        .padding(.horizontal, 24)
+        //.frame(height: 141)
+    }
+    
+    
+    private func iconButton(systemName: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: systemName)
+                .font(.system(size: Layout.sectionHeaderFontSize, weight: .semibold))
+                .foregroundStyle(.black)
+                .frame(width: Layout.iconButtonSize, height: Layout.iconButtonSize)
+                .background(Color(.systemFill).opacity(Layout.secondaryButtonOpacity))
+                .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
+        }
+    }
+    
     
     //MARK: Barra de entrada
     private var inputBar: some View{
@@ -100,4 +167,10 @@ struct SearchChatbotView: View {
     
 }
 
-
+//#Preview {
+//    let coordinator = makeRegisterFlowCoordinator()
+//    CreateClientView(viewModel: .init(
+//        databaseService: makeRegisterFlowDatabaseService(),
+//        coordinator: coordinator
+//    ))
+//}

@@ -17,7 +17,7 @@ class SearchChatbotViewModel: ObservableObject {
     @Published var messages: [MessageChat] = [
         MessageChat(
             author: .hero,
-            text: "Olá! Sou o Hero, seu assistente de agendamentos do FisioPlus. Posso te ajudar com informações sobre seus agendamentos. Como posso te ajudar?" // TODO: Ver quando tiver o nome do app e alterar aqui
+            text: "Olá! Sou o Assistente, seu analista de dados. Como posso ajudar?" // TODO: Ver quando tiver o nome do app e alterar aqui
         )
     ]
     
@@ -63,5 +63,9 @@ class SearchChatbotViewModel: ObservableObject {
             sendUserMessage("Como está minha agenda de hoje?")
         }
     }
+    
+//    func dismiss() {
+//        coordinator?.presentSearchChatbot()
+//    }
     
 }
