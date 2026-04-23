@@ -23,13 +23,10 @@ struct CreateClientView: View {
     }
 
     private enum Layout {
-        static let topBarHeight: CGFloat = 141
-        static let topBarHorizontalPadding: CGFloat = 24
         static let iconButtonSize: CGFloat = 44
         static let inputRowHeight: CGFloat = 56
         static let textAreaHeight: CGFloat = 173
         static let footerHeight: CGFloat = 55
-        static let footerBottomPadding: CGFloat = 32
         static let sectionHeaderFontSize: CGFloat = 16
         static let importContactFontSize: CGFloat = 14
         static let contactCardHorizontalPadding: CGFloat = 20
@@ -41,34 +38,51 @@ struct CreateClientView: View {
         static let sectionsSpacing: CGFloat = 24
         static let sectionSpacing: CGFloat = 8
         static let textAreaIconSpacing: CGFloat = 4
-        static let secondaryButtonOpacity: Double = 0.55
         static let ctaDisabledOpacity: Double = 0.35
         static let ctaDisabledScale: CGFloat = 0.98
         static let ctaStateAnimationDuration: Double = 0.3
+        static let topContentPadding: CGFloat = 36
+        static let alterarButtonSpacing: CGFloat = 4
+        static let alterarTrailingPadding: CGFloat = 10
+        static let footerTopPadding: CGFloat = 16
+        static let footerBottomPadding: CGFloat = 32
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            topBar
+        NavigationStack {
             ScrollView {
                 ScrollViewReader { proxy in
                     VStack(spacing: Layout.sectionsSpacing) {
                         if !viewModel.name.isEmpty {
-                            ClientPreviewCard(name: viewModel.name, contactInfo: viewModel.contactInfo)
-                                .transition(
-                                    .asymmetric(
-                                        insertion: .opacity.combined(with: .scale(scale: Layout.entryScale, anchor: .top)),
-                                        removal: .opacity.combined(with: .scale(scale: Layout.entryScale, anchor: .top))
-                                    )
+                            VStack(spacing: Layout.alterarButtonSpacing) {
+                                HStack {
+                                    Spacer()
+                                    Button {
+                                        openImportContacts = true
+                                    } label: {
+                                        Text("Alterar")
+                                            .font(.system(size: Layout.importContactFontSize))
+                                            .foregroundStyle(GlobalConfiguration.primaryBlue)
+                                    }
+                                    .padding(.trailing, Layout.alterarTrailingPadding)
+                                }
+                                ClientPreviewCard(name: viewModel.name, contactInfo: viewModel.contactInfo)
+                            }
+                            .transition(
+                                .asymmetric(
+                                    insertion: .opacity.combined(with: .scale(scale: Layout.entryScale, anchor: .top)),
+                                    removal: .opacity.combined(with: .scale(scale: Layout.entryScale, anchor: .top))
                                 )
+                            )
                         }
                         contactInfoSection
                             .id(ScrollAnchor.contactSection.rawValue)
                         notesSection
                             .id(ScrollAnchor.notesSection.rawValue)
                     }
+                    .padding(.top, Layout.topContentPadding)
                     .padding(.horizontal, GlobalConfiguration.normalSpacing)
-                    .padding(.bottom, Layout.sectionsSpacing)
+                    .padding(.bottom, Layout.sectionsSpacing + Layout.footerTopPadding + Layout.footerHeight)
                     .onChange(of: focusedField) { _, field in
                         guard let field else { return }
                         let anchor: String = field == .observations
@@ -79,43 +93,62 @@ struct CreateClientView: View {
                 }
             }
             .scrollDismissesKeyboard(.interactively)
-            footer
+            .onTapGesture { focusedField = nil }
+            .background(Color(.systemGroupedBackground))
+            .background(
+                ContactPickerView(isPresented: $openImportContacts) {
+                    viewModel.applyImportedContact($0)
+                }
+            )
+            .animation(.easeInOut(duration: Layout.animationDuration), value: viewModel.name.isEmpty)
+            .overlay(alignment: .bottom) {
+                ctaButton
+            }
+            .navigationTitle("Novo Cliente")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        viewModel.dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .fontWeight(.semibold)
+                    }
+                }
+            }
         }
         .background(Color(.systemGroupedBackground))
-        .background(
-            ContactPickerView(isPresented: $openImportContacts) {
-                viewModel.applyImportedContact($0)
-            }
-        )
-        .animation(.easeInOut(duration: Layout.animationDuration), value: viewModel.name.isEmpty)
     }
 
-    // MARK: - TopBar
+    // MARK: - CTA Button
 
-    private var topBar: some View {
-        HStack {
-            iconButton(systemName: "xmark") {
-                viewModel.dismiss()
+    private var ctaButton: some View {
+        Button {
+            if viewModel.canSave {
+                viewModel.save()
+            } else {
+                UINotificationFeedbackGenerator().notificationOccurred(.error)
             }
-            Text("Novo Cliente")
-                .font(.system(size: Layout.sectionHeaderFontSize + 2, weight: .bold))
-                .frame(maxWidth: .infinity)
-            Color.clear
-                .frame(width: Layout.iconButtonSize, height: Layout.iconButtonSize)
-        }
-        .padding(.horizontal, Layout.topBarHorizontalPadding)
-        .frame(height: Layout.topBarHeight)
-    }
-
-    private func iconButton(systemName: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: systemName)
+        } label: {
+            Text("Criar Cliente")
                 .font(.system(size: Layout.sectionHeaderFontSize, weight: .semibold))
-                .foregroundStyle(.primary)
-                .frame(width: Layout.iconButtonSize, height: Layout.iconButtonSize)
-                .background(Color(.systemFill).opacity(Layout.secondaryButtonOpacity))
+                .foregroundStyle(.white.opacity(viewModel.canSave ? 1 : Layout.ctaDisabledOpacity))
+                .frame(maxWidth: .infinity)
+                .frame(height: Layout.footerHeight)
+                .background(
+                    GlobalConfiguration.primaryBlue
+                        .opacity(viewModel.canSave ? 1 : Layout.ctaDisabledOpacity)
+                )
                 .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
         }
+        .scaleEffect(viewModel.canSave ? 1 : Layout.ctaDisabledScale)
+        .animation(
+            .spring(response: Layout.ctaStateAnimationDuration, dampingFraction: 0.7),
+            value: viewModel.canSave
+        )
+        .padding(.horizontal, GlobalConfiguration.normalSpacing)
+        .padding(.top, Layout.footerTopPadding)
+        .padding(.bottom, Layout.footerBottomPadding)
     }
 
     // MARK: - Contact Info Section
@@ -127,15 +160,17 @@ struct CreateClientView: View {
                     .font(.system(size: Layout.sectionHeaderFontSize, weight: .semibold))
                     .foregroundStyle(.primary)
                 Spacer()
-                Button {
-                    openImportContacts = true
-                } label: {
-                    Label("Importar Contato", systemImage: "person.badge.plus")
-                        .font(.system(size: Layout.importContactFontSize))
-                        .foregroundStyle(GlobalConfiguration.primaryBlue)
+                if viewModel.name.isEmpty {
+                    Button {
+                        openImportContacts = true
+                    } label: {
+                        Label("Importar Contato", systemImage: "person.badge.plus")
+                            .font(.system(size: Layout.importContactFontSize))
+                            .foregroundStyle(GlobalConfiguration.primaryBlue)
+                    }
                 }
             }
-            .padding(.trailing, GlobalConfiguration.normalSpacing / 2)
+            .padding(GlobalConfiguration.normalSpacing / 2)
 
             VStack(spacing: 0) {
                 TextField("Nome do Cliente", text: $viewModel.name)
@@ -185,35 +220,6 @@ struct CreateClientView: View {
         .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
         .onTapGesture { focusedField = .observations }
     }
-
-    // MARK: - Footer
-
-    private var footer: some View {
-        Button {
-            viewModel.save()
-        } label: {
-            Text("Criar Cliente")
-                .font(.system(size: Layout.sectionHeaderFontSize, weight: .semibold))
-                .foregroundStyle(.white.opacity(viewModel.canSave ? 1 : Layout.ctaDisabledOpacity))
-                .frame(maxWidth: .infinity)
-                .frame(height: Layout.footerHeight)
-                .background(
-                    GlobalConfiguration.primaryBlue
-                        .opacity(viewModel.canSave ? 1 : Layout.ctaDisabledOpacity)
-                )
-                .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
-        }
-        .disabled(!viewModel.canSave)
-        .scaleEffect(viewModel.canSave ? 1 : Layout.ctaDisabledScale)
-        .animation(
-            .spring(response: Layout.ctaStateAnimationDuration, dampingFraction: 0.7),
-            value: viewModel.canSave
-        )
-        .padding(.horizontal, GlobalConfiguration.normalSpacing)
-        .padding(.top, GlobalConfiguration.normalSpacing)
-        .padding(.bottom, Layout.footerBottomPadding)
-        .background(Color(.systemGroupedBackground))
-    }
 }
 
 #Preview {
@@ -222,4 +228,15 @@ struct CreateClientView: View {
         databaseService: makeRegisterFlowDatabaseService(),
         coordinator: coordinator
     ))
+}
+
+#Preview("Com Contato") {
+    let coordinator = makeRegisterFlowCoordinator()
+    let vm = CreateClientViewModel(
+        databaseService: makeRegisterFlowDatabaseService(),
+        coordinator: coordinator
+    )
+    vm.name = "Cauê Crillanovick"
+    vm.contactInfo = "61 9999-9999"
+    return CreateClientView(viewModel: vm)
 }
