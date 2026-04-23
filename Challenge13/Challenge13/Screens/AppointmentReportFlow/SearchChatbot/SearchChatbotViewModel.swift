@@ -24,11 +24,13 @@ class SearchChatbotViewModel: ObservableObject {
     var canSend: Bool {
         !typedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !loading
     }
+    
     private let engine: AppointmentChatEngine
+    private weak var coordinator: (any SeachChatBotCoordinatorProtocol)?
     
-    
-    init(engine: AppointmentChatEngine) {
+    init(engine: AppointmentChatEngine, coordinator: (any SeachChatBotCoordinatorProtocol)?) {
         self.engine = engine
+        self.coordinator = coordinator
     }
     
     func sendUserMessage(_ text: String) {
@@ -64,8 +66,8 @@ class SearchChatbotViewModel: ObservableObject {
         }
     }
     
-//    func dismiss() {
-//        coordinator?.presentSearchChatbot()
-//    }
+    func dismiss() {
+        coordinator?.dismissSearchChatBot()
+    }
     
 }

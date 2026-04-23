@@ -26,8 +26,8 @@ struct MessageBubbleView: View{
                     textBubble
                    // Spacer(minLength: 5)
                 } else{
-                   // Spacer(minLength: 5)
                     textBubble
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                 }
             }
             .padding(10)

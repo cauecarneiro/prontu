@@ -10,31 +10,6 @@ struct SearchChatbotView: View {
     
     @ObservedObject var viewModel: SearchChatbotViewModel
     
-    private enum Layout {
-        static let topBarHeight: CGFloat = 141
-        static let topBarHorizontalPadding: CGFloat = 24
-        static let iconButtonSize: CGFloat = 44
-        static let inputRowHeight: CGFloat = 56
-        static let textAreaHeight: CGFloat = 173
-        static let footerHeight: CGFloat = 55
-        static let footerBottomPadding: CGFloat = 32
-        static let sectionHeaderFontSize: CGFloat = 16
-        static let importContactFontSize: CGFloat = 14
-        static let contactCardHorizontalPadding: CGFloat = 20
-        static let contactCardVerticalPadding: CGFloat = 4
-        static let textAreaHorizontalPadding: CGFloat = 18
-        static let textAreaVerticalPadding: CGFloat = 16
-        static let animationDuration: Double = 0.25
-        static let entryScale: CGFloat = 0.95
-        static let sectionsSpacing: CGFloat = 24
-        static let sectionSpacing: CGFloat = 8
-        static let textAreaIconSpacing: CGFloat = 4
-        static let secondaryButtonOpacity: Double = 0.55
-        static let ctaDisabledOpacity: Double = 0.35
-        static let ctaDisabledScale: CGFloat = 0.98
-        static let ctaStateAnimationDuration: Double = 0.3
-    }
-    
     //MARK: Layout vertical
     var body: some View {
         VStack(spacing: .zero){
@@ -83,7 +58,7 @@ struct SearchChatbotView: View {
     private var topBar: some View {
         HStack(alignment: .center) {
             iconButton(systemName: "xmark") {
-               // viewModel.dismiss()
+                viewModel.dismiss()
             }
             
             Spacer()
@@ -100,7 +75,7 @@ struct SearchChatbotView: View {
             Spacer()
             
             Color.clear
-                .frame(width: Layout.iconButtonSize, height: Layout.iconButtonSize)
+                .frame(width: 44, height: 44)
         }
         .padding(.horizontal, 24)
         //.frame(height: 141)
@@ -110,10 +85,10 @@ struct SearchChatbotView: View {
     private func iconButton(systemName: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: systemName)
-                .font(.system(size: Layout.sectionHeaderFontSize, weight: .semibold))
+                .font(.system(size: 16, weight: .semibold))
                 .foregroundStyle(.black)
-                .frame(width: Layout.iconButtonSize, height: Layout.iconButtonSize)
-                .background(Color(.systemFill).opacity(Layout.secondaryButtonOpacity))
+                .frame(width: 44, height: 44)
+                .background(Color(.systemFill).opacity(0.55))
                 .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
         }
     }
@@ -161,7 +136,7 @@ struct SearchChatbotView: View {
             engine: .init(
                 provider: DatabaseService(context: makeMainContext()),
                 classifier: .init()
-            )
+            ), coordinator: nil
         )
     )
     
