@@ -22,32 +22,41 @@ struct MessageBubbleView: View{
             //Se for IA, bolha de texto à esquerda
             HStack(alignment: .top, spacing: 10){
                 if isHero{
+                    
                     AvatarView()
+                    
                     textBubble
-                   // Spacer(minLength: 5)
+                        .frame(maxWidth: 500, alignment: .leading)
+                    
+                   // Spacer(minLength: 0)
                 } else{
+                    
+                    Spacer(minLength: 0)
+                    
                     textBubble
-                        .frame(maxWidth: .infinity, alignment: .trailing)
+                       // .padding(.trailing, 0)
+                        .frame(maxWidth: 300, alignment: .trailing)
                 }
             }
-            .padding(10)
+            .padding(.vertical, 10)
             
             if isHero && !message.suggestions.isEmpty{
                 ChipsSuggestionsView(suggestions: message.suggestions, onTap: onSuggestion)
-                    .padding(.leading, 36)
+                   .padding(.leading, 36)
             }
         }
+        .frame(maxWidth: .infinity)
     }
     
     private var textBubble: some View{
         Text(message.text)
             .font(.body)
-            .padding(.horizontal, 14)
+            .padding(.horizontal, 16)
             .padding(.vertical, 10)
+//            .frame(maxWidth: .infinity, alignment: isHero ? .leading : .trailing)
+//            .fixedSize(horizontal: false, vertical: true)
             .background(isHero ? Color(.systemFill).opacity(0.55) : Color(GlobalConfiguration.primaryBlue))
-          //  .background(Color(.systemFill).opacity(Layout.secondaryButtonOpacity))
             .foregroundStyle(isHero ? Color.secondary : Color.white)
-            //.clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius, style: .continuous))
             .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
     }
 }

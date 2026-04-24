@@ -26,15 +26,16 @@ struct SearchChatbotView: View {
                                 }
                                 .id(message.id)
                                 
-                                if viewModel.loading{
-                                    TypingIndicatorView()
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .padding(.leading, 16)
-                                        .id("typing")
-                                }
                             }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 20)
+                            .padding(.horizontal, 25)
+                            //.padding(.vertical, 10)
+                            
+                            if viewModel.loading{
+                                TypingIndicatorView()
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.leading, 16)
+                                    .id("typing")
+                            }
                         }
                         .scrollDismissesKeyboard(.interactively)
                         .onChange(of: viewModel.messages.count) { _, _ in
@@ -78,7 +79,9 @@ struct SearchChatbotView: View {
                 .frame(width: 44, height: 44)
         }
         .padding(.horizontal, 24)
-        //.frame(height: 141)
+       // .padding(.vertical, 100)
+        .frame(height: 60)
+        
     }
     
     

@@ -36,6 +36,8 @@ class SearchChatbotViewModel: ObservableObject {
     func sendUserMessage(_ text: String) {
         messages.append(.init(author: .user, text: text))
         
+        loading = true
+        
         Task {
             do {
                 let response = try await engine.reply(to: text)
@@ -50,6 +52,7 @@ class SearchChatbotViewModel: ObservableObject {
                             text: "Não consegui consultar a agenda agora."
                         )
                     )
+                    self.loading = false
                 }
             }
         }
