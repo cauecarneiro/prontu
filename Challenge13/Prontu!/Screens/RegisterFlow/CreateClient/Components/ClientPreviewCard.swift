@@ -57,7 +57,7 @@ struct ClientPreviewCard: View {
                 .fill(GlobalConfiguration.avatarColor(for: name))
                 .frame(width: Layout.avatarSize, height: Layout.avatarSize)
             Text(initials(from: name))
-                .font(.custom("SFCompactRounded-Semibold", size: Layout.avatarFontSize))
+                .font(.system(size: 24, weight: .semibold, design: .rounded))
                 .foregroundStyle(.white)
         }
     }

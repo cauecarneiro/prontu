@@ -23,7 +23,7 @@ struct ClientRow: View{
                 .overlay(
                     Text(client.initials)
                         .foregroundColor(.white)
-                        .font(.custom("SFCompactRounded-Regular", size: 17))
+                        .font(.system(size: 17, weight: .semibold, design: .rounded))
                 )
             
             VStack(alignment: .leading){
