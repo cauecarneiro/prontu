@@ -51,8 +51,9 @@ struct MessageBubbleView: View{
     private var textBubble: some View{
         Text(message.text)
             .font(.body)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
+            .padding(.horizontal, 14)
+            .padding(.top, 10)
+            .padding(.bottom, 16)
 //            .frame(maxWidth: .infinity, alignment: isHero ? .leading : .trailing)
 //            .fixedSize(horizontal: false, vertical: true)
             .background(isHero ? Color(.systemFill).opacity(0.55) : Color(GlobalConfiguration.primaryBlue))

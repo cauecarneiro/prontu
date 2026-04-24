@@ -80,7 +80,7 @@ struct SearchChatbotView: View {
         }
         .padding(.horizontal, 24)
        // .padding(.vertical, 100)
-        .frame(height: 60)
+        .frame(height: 70)
         
     }
     

@@ -18,12 +18,12 @@ struct ClientRow: View{
         HStack(spacing: 12){
             Circle()
                 .fill(avatarColor)
-                .frame(width: 50, height: 50)
+                .frame(width: 44, height: 44)
                 //Overlay coloca as iniciais por cima do circulo
                 .overlay(
                     Text(client.initials)
                         .foregroundColor(.white)
-                        .font(.custom("SFCompactRounded-Semibold", size: 24))
+                        .font(.custom("SFCompactRounded-Regular", size: 17))
                 )
             
             VStack(alignment: .leading){

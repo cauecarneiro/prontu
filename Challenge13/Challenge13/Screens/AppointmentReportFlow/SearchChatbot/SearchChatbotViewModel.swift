@@ -43,6 +43,7 @@ class SearchChatbotViewModel: ObservableObject {
                 let response = try await engine.reply(to: text)
                 await MainActor.run {
                     self.messages.append(response)
+                    self.loading = false
                 }
             } catch {
                 await MainActor.run {
