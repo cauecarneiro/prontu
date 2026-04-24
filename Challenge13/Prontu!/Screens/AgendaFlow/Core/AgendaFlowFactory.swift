@@ -20,11 +20,7 @@ final class AgendaFlowFactory {
     )
     
     private lazy var createAppointmentVM: CreateAppointmentViewModel = CreateAppointmentViewModel(
-        coordinator: coordinator
-    )
-    
-    private lazy var appointmentDetailsVM: AppointmentDetailsViewModel = AppointmentDetailsViewModel(
-        coordinator: coordinator
+        coordinator: coordinator, databaseService: databaseService
     )
 
     private lazy var createClientVM: CreateClientViewModel = CreateClientViewModel(
@@ -53,7 +49,11 @@ final class AgendaFlowFactory {
         EditCardAppointmentView()
     }
     
-    func makeAppointmentDetailsView() -> AppointmentDetailsView {
-        AppointmentDetailsView(viewModel: appointmentDetailsVM)
+    func makeAppointmentDetailsView(appointment: Appointment) -> AppointmentDetailsView {
+        AppointmentDetailsView(viewModel: .init(coordinator: coordinator, appointment: appointment))
+    }
+    
+    func makeSelectedClientSheet() -> SelectClientSheet {
+        SelectClientSheet(viewModel: createAppointmentVM)
     }
 }

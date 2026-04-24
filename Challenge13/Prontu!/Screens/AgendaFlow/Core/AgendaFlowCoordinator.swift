@@ -31,7 +31,9 @@ final class AgendaFlowCoordinator: Coordinator {
         case .editAppointment(let appointment): // TODO: Possível que vai precisar passar para essa tela qual appointment deve ser editado
             factory.makeEditAppointment()
         case .appointmentDetails(let appointment): // TODO: Mesma coisa, passar para essa tela qual o appointment que deve ser mostrado
-            factory.makeEditAppointment()
+            factory.makeAppointmentDetailsView(appointment: appointment)
+        case .selectedClient:
+            factory.makeSelectedClientSheet()
         }
     }
     
@@ -72,9 +74,13 @@ extension AgendaFlowCoordinator: AppointmentDetailsCoordinateProtocol {
 }
 
 extension AgendaFlowCoordinator: CreateAppointmentCoordinatorProtocol {
-    func presentCreateClient() {
-        presentTo(.createClient)
+    func presentSelectedClient() {
+        presentTo(.selectedClient)
     }
+    
+    func dismissCreateAppointment() {
+           dismissPresentation()
+       }
 }
 
 extension AgendaFlowCoordinator: CreateClientCoordinatorProtocol {

@@ -8,5 +8,6 @@
 import Foundation
 
 protocol CreateAppointmentCoordinatorProtocol: AnyObject {
-    func presentCreateClient()
+    func presentSelectedClient()
+    func dismissCreateAppointment()
 }
