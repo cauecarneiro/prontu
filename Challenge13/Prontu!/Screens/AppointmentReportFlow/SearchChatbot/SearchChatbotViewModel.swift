@@ -26,9 +26,9 @@ class SearchChatbotViewModel: ObservableObject {
     }
     
     private let engine: AppointmentChatEngine
-    private weak var coordinator: (any SeachChatBotCoordinatorProtocol)?
+    private weak var coordinator: (any SearchChatBotCoordinatorProtocol)?
     
-    init(engine: AppointmentChatEngine, coordinator: (any SeachChatBotCoordinatorProtocol)?) {
+    init(engine: AppointmentChatEngine, coordinator: (any SearchChatBotCoordinatorProtocol)?) {
         self.engine = engine
         self.coordinator = coordinator
     }

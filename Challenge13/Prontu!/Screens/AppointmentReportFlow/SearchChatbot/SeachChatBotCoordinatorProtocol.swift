@@ -7,6 +7,6 @@
 
 import Foundation
 
-protocol SeachChatBotCoordinatorProtocol: AnyObject {
+protocol SearchChatBotCoordinatorProtocol: AnyObject {
     func dismissSearchChatBot()
 }

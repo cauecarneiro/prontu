@@ -56,7 +56,7 @@ extension AppointmentReportFlowCoordinator: AppointmentReportCoordinatorProtocol
     
 }
 
-extension AppointmentReportFlowCoordinator: SeachChatBotCoordinatorProtocol {
+extension AppointmentReportFlowCoordinator: SearchChatBotCoordinatorProtocol {
     func dismissSearchChatBot() {
         dismissPresentation()
     }
