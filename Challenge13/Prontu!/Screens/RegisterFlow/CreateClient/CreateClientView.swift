@@ -1,0 +1,243 @@
+////
+////  CreateClientView.swift
+////  Challenge13
+////
+////  Created by Cauê Carneiro on 21/04/26.
+////
+
+import SwiftUI
+
+struct CreateClientView: View {
+
+    @ObservedObject var viewModel: CreateClientViewModel
+    @State private var openImportContacts: Bool = false
+    @FocusState private var focusedField: FocusField?
+
+    private enum FocusField: Hashable {
+        case name, contactInfo, observations
+    }
+
+    private enum ScrollAnchor: String {
+        case contactSection
+        case notesSection
+    }
+
+    private enum Layout {
+        static let iconButtonSize: CGFloat = 44
+        static let inputRowHeight: CGFloat = 56
+        static let textAreaHeight: CGFloat = 173
+        static let footerHeight: CGFloat = 55
+        static let sectionHeaderFontSize: CGFloat = 16
+        static let importContactFontSize: CGFloat = 14
+        static let contactCardHorizontalPadding: CGFloat = 20
+        static let contactCardVerticalPadding: CGFloat = 4
+        static let textAreaHorizontalPadding: CGFloat = 18
+        static let textAreaVerticalPadding: CGFloat = 16
+        static let animationDuration: Double = 0.25
+        static let entryScale: CGFloat = 0.95
+        static let sectionsSpacing: CGFloat = 24
+        static let sectionSpacing: CGFloat = 8
+        static let textAreaIconSpacing: CGFloat = 4
+        static let ctaDisabledOpacity: Double = 0.35
+        static let ctaDisabledScale: CGFloat = 0.98
+        static let ctaStateAnimationDuration: Double = 0.3
+        static let topContentPadding: CGFloat = 36
+        static let alterarButtonSpacing: CGFloat = 4
+        static let alterarTrailingPadding: CGFloat = 10
+        static let footerTopPadding: CGFloat = 16
+        static let footerBottomPadding: CGFloat = 32
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                ScrollViewReader { proxy in
+                    VStack(spacing: Layout.sectionsSpacing) {
+                        if !viewModel.name.isEmpty {
+                            VStack(spacing: Layout.alterarButtonSpacing) {
+                                HStack {
+                                    Spacer()
+                                    Button {
+                                        openImportContacts = true
+                                    } label: {
+                                        Text("Alterar")
+                                            .font(.system(size: Layout.importContactFontSize))
+                                            .foregroundStyle(GlobalConfiguration.primaryBlue)
+                                    }
+                                    .padding(.trailing, Layout.alterarTrailingPadding)
+                                }
+                                ClientPreviewCard(name: viewModel.name, contactInfo: viewModel.contactInfo)
+                            }
+                            .transition(
+                                .asymmetric(
+                                    insertion: .opacity.combined(with: .scale(scale: Layout.entryScale, anchor: .top)),
+                                    removal: .opacity.combined(with: .scale(scale: Layout.entryScale, anchor: .top))
+                                )
+                            )
+                        }
+                        contactInfoSection
+                            .id(ScrollAnchor.contactSection.rawValue)
+                        notesSection
+                            .id(ScrollAnchor.notesSection.rawValue)
+                    }
+                    .padding(.top, Layout.topContentPadding)
+                    .padding(.horizontal, GlobalConfiguration.normalSpacing)
+                    .padding(.bottom, Layout.sectionsSpacing + Layout.footerTopPadding + Layout.footerHeight)
+                    .onChange(of: focusedField) { _, field in
+                        guard let field else { return }
+                        let anchor: String = field == .observations
+                            ? ScrollAnchor.notesSection.rawValue
+                            : ScrollAnchor.contactSection.rawValue
+                        withAnimation { proxy.scrollTo(anchor, anchor: .bottom) }
+                    }
+                }
+            }
+            .scrollDismissesKeyboard(.interactively)
+            .onTapGesture { focusedField = nil }
+            .background(Color(.systemGroupedBackground))
+            .background(
+                ContactPickerView(isPresented: $openImportContacts) {
+                    viewModel.applyImportedContact($0)
+                }
+            )
+            .animation(.easeInOut(duration: Layout.animationDuration), value: viewModel.name.isEmpty)
+            .overlay(alignment: .bottom) {
+                ctaButton
+            }
+            .navigationTitle("Novo Cliente")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        viewModel.dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .fontWeight(.semibold)
+                    }
+                    .tint(.black)
+                }
+            }
+        }
+        .background(Color(.systemGroupedBackground))
+    }
+
+    // MARK: - CTA Button
+
+    private var ctaButton: some View {
+        Button {
+            if viewModel.canSave {
+                viewModel.save()
+            } else {
+                UINotificationFeedbackGenerator().notificationOccurred(.error)
+            }
+        } label: {
+            Text("Criar Cliente")
+                .font(.system(size: Layout.sectionHeaderFontSize, weight: .semibold))
+                .foregroundStyle(.white.opacity(viewModel.canSave ? 1 : Layout.ctaDisabledOpacity))
+                .frame(maxWidth: .infinity)
+                .frame(height: Layout.footerHeight)
+                .background(
+                    GlobalConfiguration.primaryBlue
+                        .opacity(viewModel.canSave ? 1 : Layout.ctaDisabledOpacity)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
+        }
+        .scaleEffect(viewModel.canSave ? 1 : Layout.ctaDisabledScale)
+        .animation(
+            .spring(response: Layout.ctaStateAnimationDuration, dampingFraction: 0.7),
+            value: viewModel.canSave
+        )
+        .padding(.horizontal, GlobalConfiguration.normalSpacing)
+        .padding(.top, Layout.footerTopPadding)
+        .padding(.bottom, Layout.footerBottomPadding)
+    }
+
+    // MARK: - Contact Info Section
+
+    private var contactInfoSection: some View {
+        VStack(spacing: Layout.sectionSpacing) {
+            HStack(alignment: .center) {
+                Text("Informações de Contato")
+                    .font(.system(size: Layout.sectionHeaderFontSize, weight: .semibold))
+                    .foregroundStyle(.primary)
+                Spacer()
+                if viewModel.name.isEmpty {
+                    Button {
+                        openImportContacts = true
+                    } label: {
+                        Label("Importar Contato", systemImage: "person.badge.plus")
+                            .font(.system(size: Layout.importContactFontSize))
+                            .foregroundStyle(GlobalConfiguration.primaryBlue)
+                    }
+                }
+            }
+            .padding(GlobalConfiguration.normalSpacing / 2)
+
+            VStack(spacing: 0) {
+                TextField("Nome do Cliente", text: $viewModel.name)
+                    .font(.system(size: Layout.sectionHeaderFontSize, weight: .semibold))
+                    .focused($focusedField, equals: .name)
+                    .frame(height: Layout.inputRowHeight)
+                Divider()
+                TextField("Informação de Contato", text: $viewModel.contactInfo)
+                    .font(.system(size: Layout.sectionHeaderFontSize, weight: .semibold))
+                    .focused($focusedField, equals: .contactInfo)
+                    .frame(height: Layout.inputRowHeight)
+            }
+            .padding(.horizontal, Layout.contactCardHorizontalPadding)
+            .padding(.vertical, Layout.contactCardVerticalPadding)
+            .background(.white)
+            .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
+        }
+    }
+
+    // MARK: - Notes Section
+
+    private var notesSection: some View {
+        ZStack(alignment: .topLeading) {
+            TextEditor(text: $viewModel.observations)
+                .scrollContentBackground(.hidden)
+                .font(.system(size: Layout.sectionHeaderFontSize))
+                .focused($focusedField, equals: .observations)
+                .padding(.horizontal, Layout.textAreaHorizontalPadding)
+                .padding(.vertical, Layout.textAreaVerticalPadding)
+
+            if focusedField != .observations && viewModel.observations.isEmpty {
+                HStack(alignment: .top, spacing: Layout.textAreaIconSpacing) {
+                    Image(systemName: "list.bullet")
+                        .font(.system(size: Layout.sectionHeaderFontSize, weight: .bold))
+                        .foregroundStyle(.primary)
+                    Text("Anotações sobre o cliente...")
+                        .font(.system(size: Layout.sectionHeaderFontSize))
+                        .foregroundStyle(.placeholder)
+                }
+                .padding(.horizontal, Layout.textAreaHorizontalPadding)
+                .padding(.vertical, Layout.textAreaVerticalPadding)
+                .allowsHitTesting(false)
+            }
+        }
+        .frame(height: Layout.textAreaHeight)
+        .background(.white)
+        .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
+        .onTapGesture { focusedField = .observations }
+    }
+}
+
+#Preview {
+    let coordinator = makeRegisterFlowCoordinator()
+    CreateClientView(viewModel: .init(
+        databaseService: makeRegisterFlowDatabaseService(),
+        coordinator: coordinator
+    ))
+}
+
+#Preview("Com Contato") {
+    let coordinator = makeRegisterFlowCoordinator()
+    let vm = CreateClientViewModel(
+        databaseService: makeRegisterFlowDatabaseService(),
+        coordinator: coordinator
+    )
+    vm.name = "Cauê Crillanovick"
+    vm.contactInfo = "61 9999-9999"
+    return CreateClientView(viewModel: vm)
+}
