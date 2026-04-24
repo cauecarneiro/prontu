@@ -10,6 +10,7 @@ import SwiftUI
 struct ClientsListView: View {
     
     @ObservedObject var viewModel: ClientsListViewModel
+    @State private var isGrouped: Bool = false
     
     var body: some View {
         
@@ -25,78 +26,41 @@ struct ClientsListView: View {
                                alignment: .top)
                 } else {
                     
-                    //LISTA
-                    ScrollView {
-                        VStack(alignment: .leading) {
-                            
-                            ForEach(viewModel.groupedClients.keys.sorted(), id: \.self) { letter in
+                    if isGrouped{
+                        GroupedListView(
+                            groupedClients: viewModel.groupedClients,
+                            onTap: {
+                                client in viewModel.navigateToEditClient(client: client)
+                            }
+                        )
+                    }else{
+                        FlatListView(
+                            clients: viewModel.allClientsSorted,
+                            onTap: { client in
+                                viewModel.navigateToEditClient(client: client)
                                 
-                                VStack(alignment: .leading) {
-                                    
-                                    if let clients = viewModel.groupedClients[letter] {
-                                        
-                                        VStack(alignment: .leading, spacing: 0) {
-                                            
-                                            HStack{
-                                                Text(letter)
-                                                    .font(.title2)
-                                                    .foregroundColor(Color.secondary)
-                                                    .bold()
-                                                
-                                                Text("(\(clients.count))")
-                                                    .foregroundColor(Color.secondary)
-                                                
-                                                Spacer()
-                                            }
-                                            .padding()
-                                            
-                                            //Lista de clientes
-                                            ForEach(clients) { client in
-                                                
-                                                Button {
-                                                    viewModel.navigateToEditClient(client: client)
-                                                    } label: {
-                                                        ClientRow(client: client)
-                                                    }
-                                                    .buttonStyle(.plain)
-                                                
-                                               //ClientRow(client: client)
-                                               //viewModel.navigateToEditClient()
-                                                
-                                                if client.id != clients.last?.id {
-                                                    Divider()
-                                                        .padding(.leading, 70)
-                                                        .padding(.trailing, 20)
-                                                }
-                                            }
-                                        }
-                                        .background(Color(.systemGray6))
-                                        .cornerRadius(GlobalConfiguration.normalCornerRadius)
-                                        .padding(.horizontal)
-                                        .padding(.top, 8)
-                                        .id(letter)
-                                    }
-                                }
+                            }
+                        )
+                    }
+                    
+                    // Index lateral com drag
+                    HStack {
+                        Spacer()
+                        
+                        AlphabetIndexView(
+                            letters: viewModel.groupedClients.keys.sorted()
+                        ) { letter in
+                            if !isGrouped {
+                                isGrouped = true
+                            }
+                            withAnimation {
+                                proxy.scrollTo(letter, anchor: .top)
                             }
                         }
+                        .padding(.trailing, 4)
                     }
-                }
-                
-                // Index lateral com drag
-                HStack {
-                    Spacer()
-                    
-                    AlphabetIndexView(
-                        letters: viewModel.groupedClients.keys.sorted()
-                    ) { letter in
-                        
-                        withAnimation {
-                            proxy.scrollTo(letter, anchor: .top)
-                        }
-                    }
-                    .padding(.trailing, 4)
-                }
-            }
+                }//fecha else grande
+            }//fecha Ztack
         }//end ScrollView
         .background(Color(.systemGray5))
         .navigationTitle("Clientes")
@@ -108,13 +72,27 @@ struct ClientsListView: View {
             .padding(.horizontal, GlobalConfiguration.normalSpacing)
         }
         .searchable(text: $viewModel.search, placement: .navigationBarDrawer, prompt: "Buscar cliente")
+        .onChange(of: viewModel.search){
+            if viewModel.search.isEmpty{
+                isGrouped = false
+            }
+        }
+        .onAppear{
+            isGrouped = false
+        }
     }//end body
 }//end View
 
-//#Preview {
-//    ClientsListView(
-//        viewModel: ClientsListViewModel(
-//            coordinator:  RegisterFlowCoordinator(factory: .init(databaseService: .init(context: makeMainContext()))), databaseService: .init(context: makeMainContext())
-//        )
-//    )
-//}
+#Preview {
+    let context = makeMainContext()
+    let databaseService = DatabaseService(context: context)
+    
+    ClientsListView(
+        viewModel: ClientsListViewModel(
+            coordinator: RegisterFlowCoordinator(
+                factory: .init(databaseService: databaseService)
+            ),
+            databaseService: databaseService
+        )
+    )
+}
