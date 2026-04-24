@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import UIKit
 
 enum GlobalConfiguration {
     // MARK: - Colors
@@ -34,6 +35,13 @@ enum GlobalConfiguration {
         return avatarPalette[index]
     }
   
+    // MARK: - Semantic Backgrounds
+    static var cardBackground: Color { Color(uiColor: .systemBackground) }
+    static var groupedBackground: Color { Color(uiColor: .systemGroupedBackground) }
+
+    // MARK: - Chart
+    static var chartBarInactive: Color { Color(uiColor: .systemGray5) }
+
     static var dataFileName: String { "dados" }
     static var fileExtension: String { "json" }
 }

@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		DA97D9D62F7D909200C4B2A9 /* Challenge13.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Challenge13.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DA97D9D62F7D909200C4B2A9 /* Prontu!.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Prontu!.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		DA97D9D82F7D909200C4B2A9 /* Challenge13 */ = {
+		DA97D9D82F7D909200C4B2A9 /* Prontu! */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Challenge13;
+			path = "Prontu!";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,7 +32,7 @@
 		DA97D9CD2F7D909200C4B2A9 = {
 			isa = PBXGroup;
 			children = (
-				DA97D9D82F7D909200C4B2A9 /* Challenge13 */,
+				DA97D9D82F7D909200C4B2A9 /* Prontu! */,
 				DA97D9D72F7D909200C4B2A9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -40,7 +40,7 @@
 		DA97D9D72F7D909200C4B2A9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DA97D9D62F7D909200C4B2A9 /* Challenge13.app */,
+				DA97D9D62F7D909200C4B2A9 /* Prontu!.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,9 +48,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		DA97D9D52F7D909200C4B2A9 /* Challenge13 */ = {
+		DA97D9D52F7D909200C4B2A9 /* Prontu! */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DA97D9E12F7D909200C4B2A9 /* Build configuration list for PBXNativeTarget "Challenge13" */;
+			buildConfigurationList = DA97D9E12F7D909200C4B2A9 /* Build configuration list for PBXNativeTarget "Prontu!" */;
 			buildPhases = (
 				DA97D9D22F7D909200C4B2A9 /* Sources */,
 				DA97D9D32F7D909200C4B2A9 /* Frameworks */,
@@ -61,13 +61,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				DA97D9D82F7D909200C4B2A9 /* Challenge13 */,
+				DA97D9D82F7D909200C4B2A9 /* Prontu! */,
 			);
-			name = Challenge13;
+			name = "Prontu!";
 			packageProductDependencies = (
 			);
 			productName = Challenge13;
-			productReference = DA97D9D62F7D909200C4B2A9 /* Challenge13.app */;
+			productReference = DA97D9D62F7D909200C4B2A9 /* Prontu!.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -85,7 +85,7 @@
 					};
 				};
 			};
-			buildConfigurationList = DA97D9D12F7D909200C4B2A9 /* Build configuration list for PBXProject "Challenge13" */;
+			buildConfigurationList = DA97D9D12F7D909200C4B2A9 /* Build configuration list for PBXProject "Prontu!" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -99,7 +99,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				DA97D9D52F7D909200C4B2A9 /* Challenge13 */,
+				DA97D9D52F7D909200C4B2A9 /* Prontu! */,
 			);
 		};
 /* End PBXProject section */
@@ -317,7 +317,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		DA97D9D12F7D909200C4B2A9 /* Build configuration list for PBXProject "Challenge13" */ = {
+		DA97D9D12F7D909200C4B2A9 /* Build configuration list for PBXProject "Prontu!" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DA97D9DF2F7D909200C4B2A9 /* Debug */,
@@ -326,7 +326,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DA97D9E12F7D909200C4B2A9 /* Build configuration list for PBXNativeTarget "Challenge13" */ = {
+		DA97D9E12F7D909200C4B2A9 /* Build configuration list for PBXNativeTarget "Prontu!" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DA97D9E22F7D909200C4B2A9 /* Debug */,

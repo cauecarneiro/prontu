@@ -139,6 +139,7 @@ CLAUDE.md
 
 # Markdown documentation files (local only)
 *.md
+!AGENTS.md
 
 # Local AI-driven development artifacts
 AI-Driven-Development/
