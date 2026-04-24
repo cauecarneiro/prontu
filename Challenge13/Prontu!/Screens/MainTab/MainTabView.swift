@@ -13,8 +13,8 @@ struct MainTabView: View {
     
     struct StringValues {
         static var agenda: String { "Agenda" }
-        static var register: String { "Register" }
-        static var report: String { "Report" }
+        static var register: String { "Clientes" }
+        static var report: String { "Relatórios" }
     }
     
     var body: some View {
@@ -23,11 +23,11 @@ struct MainTabView: View {
                 CoordinateView(coordinator: coordinator.agendaFlowCoordinator)
             }
             
-            Tab(StringValues.register, systemImage: "person", value: .register) {
+            Tab(StringValues.register, systemImage: "person.2.fill", value: .register) {
                 CoordinateView(coordinator: coordinator.registerFlowCoordinator)
             }
             
-            Tab(StringValues.report, systemImage: "calendar", value: .report) {
+            Tab(StringValues.report, systemImage: "chart.bar.xaxis", value: .report) {
                 CoordinateView(coordinator: coordinator.appointmentReportCoordinator)
             }
         }

@@ -114,6 +114,7 @@ struct CreateClientView: View {
                         Image(systemName: "xmark")
                             .fontWeight(.semibold)
                     }
+                    .tint(.black)
                 }
             }
         }
