@@ -51,7 +51,7 @@ struct SearchChatbotView: View {
                     }
                 }
                 
-                inputBar
+              //  inputBar
             }
         }
     }
