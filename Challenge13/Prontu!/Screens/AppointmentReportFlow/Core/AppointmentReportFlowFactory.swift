@@ -31,6 +31,14 @@ final class AppointmentReportFlowFactory {
     }
     
     func makeSearchChatbotView(appointments: [Appointment]) -> SearchChatbotView {
-        SearchChatbotView(viewModel: .init(engine: .init(provider: databaseService, classifier: .init())))
+        SearchChatbotView(
+            viewModel: .init(
+                engine: .init(
+                    provider: databaseService,
+                    classifier: .init()
+                ),
+                coordinator: coordinator
+            )
+        )
     }
 }

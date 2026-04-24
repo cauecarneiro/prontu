@@ -20,30 +20,45 @@ struct MessageBubbleView: View{
     var body: some View{
         VStack(alignment: isHero ? .leading : .trailing, spacing: 6){
             //Se for IA, bolha de texto à esquerda
-            HStack(alignment: .bottom, spacing: 0){
+            HStack(alignment: .top, spacing: 10){
                 if isHero{
+                    
+                    AvatarView()
+                    
                     textBubble
-                    Spacer(minLength: 52)
+                        .frame(maxWidth: 500, alignment: .leading)
+                    
+                   // Spacer(minLength: 0)
                 } else{
-                    Spacer(minLength: 52)
+                    
+                    Spacer(minLength: 0)
+                    
                     textBubble
+                       // .padding(.trailing, 0)
+                        .frame(maxWidth: 300, alignment: .trailing)
                 }
             }
+            .padding(.vertical, 10)
             
             if isHero && !message.suggestions.isEmpty{
                 ChipsSuggestionsView(suggestions: message.suggestions, onTap: onSuggestion)
-                    .padding(.leading, 36)
+                   .padding(.leading, 36)
             }
         }
+        .frame(maxWidth: .infinity)
     }
     
     private var textBubble: some View{
         Text(message.text)
             .font(.body)
             .padding(.horizontal, 14)
-            .padding(.vertical, 10)
-            .background(isHero ? Color(.secondarySystemBackground) : Color.accentColor)
-            .foregroundStyle(isHero ? Color.primary : Color.white)
-            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .padding(.top, 10)
+            .padding(.bottom, 16)
+//            .frame(maxWidth: .infinity, alignment: isHero ? .leading : .trailing)
+//            .fixedSize(horizontal: false, vertical: true)
+            .background(isHero ? Color(.systemFill).opacity(0.55) : Color(GlobalConfiguration.primaryBlue))
+            .foregroundStyle(isHero ? Color.secondary : Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
     }
 }
+

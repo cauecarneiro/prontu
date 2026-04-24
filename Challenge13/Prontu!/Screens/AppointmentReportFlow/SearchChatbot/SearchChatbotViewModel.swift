@@ -17,28 +17,33 @@ class SearchChatbotViewModel: ObservableObject {
     @Published var messages: [MessageChat] = [
         MessageChat(
             author: .hero,
-            text: "Olá! Sou o Hero, seu assistente de agendamentos do FisioPlus. Posso te ajudar com informações sobre seus agendamentos. Como posso te ajudar?" // TODO: Ver quando tiver o nome do app e alterar aqui
+            text: "Olá! Sou o Assistente, seu analista de dados. Como posso ajudar?" // TODO: Ver quando tiver o nome do app e alterar aqui
         )
     ]
     
     var canSend: Bool {
         !typedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !loading
     }
+    
     private let engine: AppointmentChatEngine
+    private weak var coordinator: (any SearchChatBotCoordinatorProtocol)?
     
-    
-    init(engine: AppointmentChatEngine) {
+    init(engine: AppointmentChatEngine, coordinator: (any SearchChatBotCoordinatorProtocol)?) {
         self.engine = engine
+        self.coordinator = coordinator
     }
     
     func sendUserMessage(_ text: String) {
         messages.append(.init(author: .user, text: text))
+        
+        loading = true
         
         Task {
             do {
                 let response = try await engine.reply(to: text)
                 await MainActor.run {
                     self.messages.append(response)
+                    self.loading = false
                 }
             } catch {
                 await MainActor.run {
@@ -48,6 +53,7 @@ class SearchChatbotViewModel: ObservableObject {
                             text: "Não consegui consultar a agenda agora."
                         )
                     )
+                    self.loading = false
                 }
             }
         }
@@ -62,6 +68,10 @@ class SearchChatbotViewModel: ObservableObject {
         case .todayAgenda:
             sendUserMessage("Como está minha agenda de hoje?")
         }
+    }
+    
+    func dismiss() {
+        coordinator?.dismissSearchChatBot()
     }
     
 }
