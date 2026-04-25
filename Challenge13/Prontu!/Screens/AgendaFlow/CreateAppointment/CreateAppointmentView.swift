@@ -65,16 +65,26 @@ struct CreateAppointmentView: View {
                     title: "Agendar",
                     isEnabled: viewModel.selectedClient != nil,
                     action: {
-                        viewModel.saveAppointment()                    }
+                        viewModel.saveAppointment()
+                    }
                 )
             }
         }
         .navigationBarTitle("Agendamento")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden()
         .background(Color(.systemGroupedBackground))
         .onTapGesture {
             // Fecha o teclado ao tocar fora
             focusedField = nil
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigation) {
+                Button("", systemImage: "chevron.backward") {
+                    viewModel.dismissCreateAppointment()
+                }
+                .buttonStyle(.plain)
+            }
         }
     }
 }
