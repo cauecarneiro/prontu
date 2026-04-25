@@ -17,12 +17,17 @@ struct PickerClientButton: View {
         Button(action: action) {
             
                 if let client = client {
-                    ClientRow(client: client)
-//                        .padding(.horizontal)
-//                        .background {
-//                            RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius)
-//                                .foregroundStyle(.white)
-//                        }
+                    
+                    HStack {
+                        ClientRow(client: client)
+                        
+                        Image(systemName: "chevron.forward")
+                    }
+                    .padding(.horizontal)
+                    .background {
+                        RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius)
+                            .foregroundStyle(.white)
+                    }
                     
                 }else{
                     
@@ -41,13 +46,14 @@ struct PickerClientButton: View {
                     .padding()
                     .background(.white)
                     .cornerRadius(16)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.red, lineWidth: 2)
+                    )
 
                 }
             }
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(Color.blue, lineWidth: 2)
-            )
-    }
+        }
 }
+
 

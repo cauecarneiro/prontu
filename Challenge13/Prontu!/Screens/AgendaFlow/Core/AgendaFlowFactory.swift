@@ -22,12 +22,12 @@ final class AgendaFlowFactory {
     private lazy var createAppointmentVM: CreateAppointmentViewModel = CreateAppointmentViewModel(
         coordinator: coordinator, databaseService: databaseService
     )
-
+    
     private lazy var createClientVM: CreateClientViewModel = CreateClientViewModel(
         databaseService: databaseService,
         coordinator: coordinator
     )
-
+    
     init(databaseService: DatabaseService, screenMonitorService: ScreenMonitorService) {
         self.databaseService = databaseService
         self.screenMonitorService = screenMonitorService
@@ -56,4 +56,9 @@ final class AgendaFlowFactory {
     func makeSelectedClientSheet() -> SelectClientSheet {
         SelectClientSheet(viewModel: createAppointmentVM)
     }
+    
+    func makeGenerateEquipamentSheet() -> GenerateEquipamentSheet {
+        GenerateEquipamentSheet(viewModel: createAppointmentVM)
+    }
 }
+

@@ -10,7 +10,12 @@ import SwiftUI
 struct AddEquipament: View {
     
     var title: String = "Recursos da Sessão"
-    var buttonString: String = "Gerar Sugestão"
+    var resultado: String
+    var action: () -> Void
+    
+    var buttonText: String {
+        resultado.isEmpty ? "Gerar Sugestão" : resultado
+    }
     
     var body: some View {
         
@@ -20,12 +25,12 @@ struct AddEquipament: View {
                 .font(.headline)
                 .fontWeight(.semibold)
             
-            Button(action: {
-                print("Adicionar recurso clicado")
-            }) {
+            Button(action: action) {
                 HStack {
-                    Image(systemName: "plus")
-                    Text(buttonString)
+                    if resultado.isEmpty {
+                        Image(systemName: "plus")
+                    }
+                    Text(buttonText)
                         .fontWeight(.semibold)
                 }
                 .frame(maxWidth: .infinity)
@@ -42,8 +47,4 @@ struct AddEquipament: View {
         .cornerRadius(16)
         .padding()
     }
-}
-
-#Preview {
-    AddEquipament()
 }

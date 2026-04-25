@@ -74,6 +74,7 @@ struct AppointmentPickerList: View {
                 }
             }
         }
+        .tint(.gray)
         .fontWeight(.semibold)
         .padding()
         .background{

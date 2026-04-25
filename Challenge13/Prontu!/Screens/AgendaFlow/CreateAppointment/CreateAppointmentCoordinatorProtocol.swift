@@ -10,4 +10,6 @@ import Foundation
 protocol CreateAppointmentCoordinatorProtocol: AnyObject {
     func presentSelectedClient()
     func dismissCreateAppointment()
+    func presentGenerateEquipamentSheet()
+
 }

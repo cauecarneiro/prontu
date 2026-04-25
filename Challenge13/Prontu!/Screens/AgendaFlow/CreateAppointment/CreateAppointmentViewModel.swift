@@ -41,6 +41,10 @@ final class CreateAppointmentViewModel: ObservableObject {
         coordinator?.presentSelectedClient()
     }
     
+    func presentGenerateEquipamentSheet() {
+        coordinator?.presentGenerateEquipamentSheet()
+    }
+    
     func calcularEquipamento() {
         let input = EquipamentMLService.ExerciseInput(
             objetivo: objetivo,
@@ -51,7 +55,7 @@ final class CreateAppointmentViewModel: ObservableObject {
         resultado = EquipamentMLService.shared.predict(input: input)
     }
     
-    func dismiss() {
+    func dismissCreateAppointment() {
         coordinator?.dismissCreateAppointment()
     }
     

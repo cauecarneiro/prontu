@@ -39,6 +39,17 @@ struct SelectClientSheet: View {
             }
             .navigationTitle("Selecionar cliente")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                    dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .fontWeight(.semibold)
+                    }
+                    .tint(.black)
+                }
+            }
         }
     }
 }

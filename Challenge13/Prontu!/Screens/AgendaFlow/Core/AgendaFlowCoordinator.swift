@@ -34,6 +34,8 @@ final class AgendaFlowCoordinator: Coordinator {
             factory.makeAppointmentDetailsView(appointment: appointment)
         case .selectedClient:
             factory.makeSelectedClientSheet()
+        case .generateEquipaments:
+            factory.makeGenerateEquipamentSheet()
         }
     }
     
@@ -77,6 +79,11 @@ extension AgendaFlowCoordinator: CreateAppointmentCoordinatorProtocol {
     func presentSelectedClient() {
         presentTo(.selectedClient)
     }
+    
+    func presentGenerateEquipamentSheet() {
+        presentTo(.generateEquipaments)
+    }
+
     
     func dismissCreateAppointment() {
            dismissPresentation()
