@@ -37,8 +37,12 @@ struct CreateAppointmentView: View {
                 }
                 .padding()
                 
-                AppointmentPickerList()
-                    .padding()
+                AppointmentPickerList(
+                    selectedDate: $viewModel.selectedDate,
+                    selectedStartTime: $viewModel.selectedStartTime,
+                    selectedDuration: $viewModel.selectedDuration,
+                    selectedFrequency: $viewModel.selectedFrequency
+                ).padding()
                 
                 AddEquipament(
                     resultado: viewModel.resultado,
@@ -61,8 +65,7 @@ struct CreateAppointmentView: View {
                     title: "Agendar",
                     isEnabled: viewModel.selectedClient != nil,
                     action: {
-                        print("salvar")
-                    }
+                        viewModel.saveAppointment()                    }
                 )
             }
         }

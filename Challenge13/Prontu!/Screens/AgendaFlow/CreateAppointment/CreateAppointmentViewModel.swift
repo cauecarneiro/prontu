@@ -16,6 +16,10 @@ final class CreateAppointmentViewModel: ObservableObject {
     
     let dataset = DatasetService.shared
 
+    @Published var selectedDate: Date = Date()
+    @Published var selectedStartTime: Date = Date()
+    @Published var selectedDuration: Int = 60
+    @Published var selectedFrequency: AppointmentPickerList.Frequency = .nunca
     @Published var objetivo: String = ""
     @Published var exercicio: String = ""
     @Published var regiao: String = ""
@@ -70,6 +74,50 @@ final class CreateAppointmentViewModel: ObservableObject {
             }
             .store(in: &cancellables)
         
+    }
+    
+    func saveAppointment() {
+        
+        guard let client = selectedClient else {
+            print("Cliente não selecionado")
+            return
+        }
+        
+        let startDateTime = combine(date: selectedDate, time: selectedStartTime)
+        
+        let endDateTime = Calendar.current.date(
+            byAdding: .minute,
+            value: selectedDuration,
+            to: startDateTime
+        ) ?? startDateTime
+        
+        let appointment = Appointment(
+            startDate: startDateTime,
+            endDate: endDateTime,
+            status: .scheduled,
+            client: client,
+            exercises: exercicio,
+            equipment: resultado,
+            notes: observations
+        )
+        
+        databaseService.add(element: appointment)
+    }
+    
+    func combine(date: Date, time: Date) -> Date {
+        let calendar = Calendar.current
+        
+        let dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+        let timeComponents = calendar.dateComponents([.hour, .minute], from: time)
+        
+        var final = DateComponents()
+        final.year = dateComponents.year
+        final.month = dateComponents.month
+        final.day = dateComponents.day
+        final.hour = timeComponents.hour
+        final.minute = timeComponents.minute
+        
+        return calendar.date(from: final) ?? date
     }
     
 }

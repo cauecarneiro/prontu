@@ -25,10 +25,11 @@ struct AppointmentPickerList: View {
         case mensal = "Mensal"
         
     }
-    @State private var selectedDate = Date()
-    @State private var selectedStartTime = Date()
-    @State private var selectedDuration = 60
-    @State private var selectedFrequency: Frequency = .nunca
+    
+    @Binding var selectedDate: Date
+    @Binding var selectedStartTime: Date
+    @Binding var selectedDuration: Int
+    @Binding var selectedFrequency: Frequency
     
     let durationOptions = [30,60,90,120]
     
@@ -84,6 +85,3 @@ struct AppointmentPickerList: View {
     }
 }
 
-#Preview {
-    AppointmentPickerList()
-}
