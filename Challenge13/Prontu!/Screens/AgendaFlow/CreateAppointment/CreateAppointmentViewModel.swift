@@ -61,6 +61,7 @@ final class CreateAppointmentViewModel: ObservableObject {
     
     func dismissCreateAppointment() {
         coordinator?.dismissCreateAppointment()
+        reset()
     }
     
     
@@ -102,6 +103,8 @@ final class CreateAppointmentViewModel: ObservableObject {
         )
         
         databaseService.add(element: appointment)
+        
+        dismissCreateAppointment()
     }
     
     func combine(date: Date, time: Date) -> Date {
@@ -120,4 +123,14 @@ final class CreateAppointmentViewModel: ObservableObject {
         return calendar.date(from: final) ?? date
     }
     
+    private func reset() {
+        selectedDate = Date()
+        selectedStartTime = Date()
+        selectedDuration = 0
+        selectedDuration = 60
+        selectedFrequency = .nunca
+        resultado = ""
+        observations = ""
+        selectedClient = nil
+    }
 }

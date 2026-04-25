@@ -86,8 +86,8 @@ extension AgendaFlowCoordinator: CreateAppointmentCoordinatorProtocol {
 
     
     func dismissCreateAppointment() {
-           dismissPresentation()
-       }
+        dismissNavigation()
+    }
 }
 
 extension AgendaFlowCoordinator: CreateClientCoordinatorProtocol {
