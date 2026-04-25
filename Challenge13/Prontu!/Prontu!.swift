@@ -20,6 +20,8 @@ struct Challenge13App: App {
     init() {
         
         let container = try! ModelContainer(for: Appointment.self, Client.self, configurations: .init())
+        container.mainContext.autosaveEnabled = false
+
         self.container = container
         databaseService = .init(context: container.mainContext)
         let settingsStore = SettingsStore.shared

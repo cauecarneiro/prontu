@@ -28,9 +28,9 @@ struct CreateAppointmentView: View {
     
     var body: some View {
         
-        VStack(spacing:0){
+        VStack(spacing:0) {
             
-            ScrollView{
+            ScrollView {
                 
                 PickerClientButton(client: viewModel.selectedClient) {
                     viewModel.presentSelectedClient()
@@ -42,7 +42,8 @@ struct CreateAppointmentView: View {
                     selectedStartTime: $viewModel.selectedStartTime,
                     selectedDuration: $viewModel.selectedDuration,
                     selectedFrequency: $viewModel.selectedFrequency
-                ).padding()
+                )
+                .padding()
                 
                 AddEquipament(
                     resultado: viewModel.resultado,
@@ -77,6 +78,11 @@ struct CreateAppointmentView: View {
         .onTapGesture {
             // Fecha o teclado ao tocar fora
             focusedField = nil
+        }
+        .alert("Conflito de horários", isPresented: .init(value: $viewModel.alertMessage)) {
+            
+        } message: {
+            Text(viewModel.alertMessage ?? "")
         }
         .toolbar {
             ToolbarItem(placement: .navigation) {

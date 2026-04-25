@@ -27,6 +27,7 @@ final class CreateAppointmentViewModel: ObservableObject {
     @Published var observations: String = ""
     @Published var clients: [Client]
     @Published var selectedClient: Client?
+    @Published var alertMessage: String?
     
     private var cancellables: Set<AnyCancellable> = []
     
@@ -64,19 +65,6 @@ final class CreateAppointmentViewModel: ObservableObject {
         reset()
     }
     
-    
-    private func observableDataBase(){
-        databaseService.databaseChangePublisher
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                if let self {
-                    self.clients = databaseService.getAllElements()
-                }
-            }
-            .store(in: &cancellables)
-        
-    }
-    
     func saveAppointment() {
         
         guard let client = selectedClient else {
@@ -91,6 +79,11 @@ final class CreateAppointmentViewModel: ObservableObject {
             value: selectedDuration,
             to: startDateTime
         ) ?? startDateTime
+        
+        guard verifyConflicts(from: startDateTime, to: endDateTime) else {
+            alertMessage = "Não é possível agendar em horários que já possuem agendamentos."
+            return
+        }
         
         let appointment = Appointment(
             startDate: startDateTime,
@@ -107,7 +100,7 @@ final class CreateAppointmentViewModel: ObservableObject {
         dismissCreateAppointment()
     }
     
-    func combine(date: Date, time: Date) -> Date {
+    private func combine(date: Date, time: Date) -> Date {
         let calendar = Calendar.current
         
         let dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
@@ -132,5 +125,21 @@ final class CreateAppointmentViewModel: ObservableObject {
         resultado = ""
         observations = ""
         selectedClient = nil
+    }
+    
+    private func observableDataBase(){
+        databaseService.databaseChangePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                if let self {
+                    self.clients = databaseService.getAllElements()
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func verifyConflicts(from startDate: Date, to endDate: Date) -> Bool {
+        let conflicts = databaseService.fetchOverlappingAppointments(from: startDate, to: endDate)
+        return conflicts.isEmpty
     }
 }
