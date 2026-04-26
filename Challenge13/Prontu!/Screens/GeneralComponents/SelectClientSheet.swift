@@ -7,18 +7,29 @@
 
 import SwiftUI
 
-struct SelectClientSheet: View {
-    
-    @ObservedObject var viewModel: CreateAppointmentViewModel
+@MainActor
+protocol ClientSelectionViewModel: ObservableObject {
+    var clients: [Client] { get }
+    var selectedClient: Client? { get set }
+}
+
+struct SelectClientSheet<ViewModel: ClientSelectionViewModel>: View {
+
+    @ObservedObject var viewModel: ViewModel
     @Environment(\.dismiss) private var dismiss
+
+    private struct Layout {
+        let listSpacing: CGFloat = 0
+        let dividerLeadingPadding: CGFloat = 70
+    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 0) {
-                    
+                VStack(spacing: Layout().listSpacing) {
+
                     ForEach(viewModel.clients) { client in
-                        
+
                         Button {
                             viewModel.selectedClient = client
                             dismiss()
@@ -26,14 +37,14 @@ struct SelectClientSheet: View {
                             ClientRow(client: client)
                         }
                         .buttonStyle(.plain)
-                        
+
                         if client.id != viewModel.clients.last?.id {
                             Divider()
-                                .padding(.leading, 70)
+                                .padding(.leading, Layout().dividerLeadingPadding)
                         }
                     }
                 }
-                .background(Color(.systemGray6))
+                .background(GlobalConfiguration.secondaryGroupedBackground)
                 .cornerRadius(GlobalConfiguration.normalCornerRadius)
                 .padding()
             }
@@ -42,7 +53,7 @@ struct SelectClientSheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
-                    dismiss()
+                        dismiss()
                     } label: {
                         Image(systemName: "xmark")
                             .fontWeight(.semibold)
@@ -53,3 +64,5 @@ struct SelectClientSheet: View {
         }
     }
 }
+
+extension CreateAppointmentViewModel: ClientSelectionViewModel {}
