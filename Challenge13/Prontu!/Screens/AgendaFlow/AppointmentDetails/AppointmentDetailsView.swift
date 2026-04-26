@@ -10,74 +10,97 @@ import SwiftUI
 struct AppointmentDetailsView: View {
     
     @ObservedObject var viewModel: AppointmentDetailsViewModel
+    @FocusState private var focusedField: FocusField?
+    
+    private enum FocusField {
+        case active
+    }
     
     var body: some View {
-        VStack(spacing: GlobalConfiguration.normalSpacing) {
-            
-            AppointmentDetailsStatusPicker(selectedStatus: $viewModel.currentStatus)
-                .frame(maxWidth: .infinity, alignment: .trailing)
-            
-            if let client = viewModel.client {
-                Button(action: viewModel.onClientClick) {
-                    HStack {
-                        ClientRow(client: client)
+        ScrollView {
+            VStack(spacing: GlobalConfiguration.normalSpacing) {
+                
+                AppointmentDetailsStatusPicker(selectedStatus: $viewModel.currentStatus)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                
+                if let client = viewModel.client {
+                    Button(action: viewModel.onClientClick) {
+                        HStack {
+                            ClientRow(client: client)
+                            
+                            Image(systemName: "chevron.forward")
+                        }
+                        .padding(.horizontal)
+                        .background {
+                            RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius)
+                                .foregroundStyle(.white)
+                        }
                         
-                        Image(systemName: "chevron.forward")
                     }
-                    .padding(.horizontal)
-                    .background {
-                        RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius)
-                            .foregroundStyle(.white)
+                    .buttonStyle(.plain)
+                }
+                
+                VStack(alignment: .leading) {
+                    AppointmentDetailsCardRow(title: "Data") {
+                        HStack {
+                            Image(systemName: "calendar")
+                            
+                            Text(viewModel.dateText)
+                        }
+                        .fontWeight(.medium)
+                        .foregroundStyle(.secondary)
                     }
                     
-                }
-                .buttonStyle(.plain)
-            }
-            
-            VStack(alignment: .leading) {
-                AppointmentDetailsCardRow(title: "Data") {
-                    HStack {
-                        Image(systemName: "calendar")
-                        
-                        Text(viewModel.dateText)
+                    Divider()
+                    
+                    AppointmentDetailsCardRow(title: "Horário") {
+                        HStack {
+                            Image(systemName: "calendar")
+                            
+                            Text(viewModel.timeText)
+                        }
+                        .fontWeight(.medium)
+                        .foregroundStyle(.secondary)
                     }
-                    .fontWeight(.medium)
-                    .foregroundStyle(.secondary)
-                }
-                
-                Divider()
-                
-                AppointmentDetailsCardRow(title: "Horário") {
-                    HStack {
-                        Image(systemName: "calendar")
-                        
-                        Text(viewModel.timeText)
+                    
+                    Divider()
+                    
+                    AppointmentDetailsCardRow(title: "Duração") {
+                        HStack {
+                            Image(systemName: "clock.arrow.trianglehead.clockwise.rotate.90.path.dotted")
+                            
+                            Text(viewModel.durationText)
+                        }
+                        .fontWeight(.medium)
+                        .foregroundStyle(.secondary)
                     }
-                    .fontWeight(.medium)
-                    .foregroundStyle(.secondary)
+                }
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background {
+                    RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius)
+                        .foregroundStyle(.white)
                 }
                 
-                Divider()
-                
-                AppointmentDetailsCardRow(title: "Duração") {
-                    HStack {
-                        Image(systemName: "clock.arrow.trianglehead.clockwise.rotate.90.path.dotted")
-                        
-                        Text(viewModel.durationText)
+                AddEquipament(
+                    resultado: viewModel.result,
+                    action: {
+                        //                    viewModel.presentGenerateEquipamentSheet()
                     }
-                    .fontWeight(.medium)
-                    .foregroundStyle(.secondary)
-                }
+                )
+                
+                NotesTextArea(
+                    text: $viewModel.observation,
+                    placeholder: "Escreva mais detalhes...",
+                    icon: "list.bullet",
+                    focusedField: $focusedField,
+                    field: .active
+                )
+                
+                Spacer()
             }
-            .padding()
-            .frame(maxWidth: .infinity)
-            .background {
-                RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius)
-                    .foregroundStyle(.white)
-            }
-            
-            Spacer()
         }
+        .scrollIndicators(.hidden)
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemGroupedBackground))
@@ -101,6 +124,7 @@ struct AppointmentDetailsView: View {
                 .tint(.black)
             }
         }
+
     }
 }
 

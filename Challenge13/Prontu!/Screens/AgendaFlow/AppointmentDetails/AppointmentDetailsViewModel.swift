@@ -12,6 +12,7 @@ import Foundation
 final class AppointmentDetailsViewModel: ObservableObject {
     
     @Published var currentStatus: AppointmentStatus
+    @Published var observation: String
     
     weak private var coordinator: (any AppointmentDetailsCoordinateProtocol)?
     private let databaseService: DatabaseService
@@ -32,6 +33,10 @@ final class AppointmentDetailsViewModel: ObservableObject {
     var durationText: String {
         appointment.startDate.distance(to: appointment.endDate).formattedDuration
     }
+    
+    var result: String {
+        appointment.equipment ?? ""
+    }
 
     init(
         coordinator: (any AppointmentDetailsCoordinateProtocol)?,
@@ -39,9 +44,10 @@ final class AppointmentDetailsViewModel: ObservableObject {
         appointment: Appointment
     ) {
         self.coordinator = coordinator
+        self.databaseService = databaseService
         self.appointment = appointment
         self.currentStatus = appointment.status
-        self.databaseService = databaseService
+        self.observation = appointment.notes ?? ""
     }
 
     func navigateToEditAppointment() {

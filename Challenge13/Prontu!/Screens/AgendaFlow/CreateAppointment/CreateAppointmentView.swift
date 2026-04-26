@@ -51,6 +51,7 @@ struct CreateAppointmentView: View {
                         viewModel.presentGenerateEquipamentSheet()
                     }
                 )
+                .padding()
                 
                 NotesTextArea(
                     text: $viewModel.observations,
