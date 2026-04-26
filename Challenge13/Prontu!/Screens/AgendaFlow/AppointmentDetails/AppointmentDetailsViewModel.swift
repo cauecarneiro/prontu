@@ -14,7 +14,8 @@ final class AppointmentDetailsViewModel: ObservableObject {
     @Published var currentStatus: AppointmentStatus
     
     weak private var coordinator: (any AppointmentDetailsCoordinateProtocol)?
-    private let appointment: Appointment
+    let appointment: Appointment
+    private var cancellables: Set<AnyCancellable> = []
 
     var client: Client? {
         appointment.client
@@ -39,10 +40,22 @@ final class AppointmentDetailsViewModel: ObservableObject {
         self.coordinator = coordinator
         self.appointment = appointment
         self.currentStatus = appointment.status
+        
+        observableStatus()
     }
 
     func navigateToEditAppointment() {
         coordinator?.navigateToEditAppointment(appointment: appointment)
+    }
+    
+    func observableStatus() {
+        $currentStatus
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in
+                guard let self else { return }
+                self.appointment.status = status
+            }
+            .store(in: &cancellables)
     }
     
     func onClientClick() {

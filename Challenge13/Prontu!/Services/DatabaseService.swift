@@ -60,6 +60,14 @@ final class DatabaseService {
             return []
         }
     }
+
+    func getAppointment(id: UUID) -> Appointment? {
+        let predicate = #Predicate<Appointment> { appointment in
+            appointment.id == id
+        }
+
+        return getAllElements(predicate: predicate).first
+    }
     
     private func saveContext() {
         do {

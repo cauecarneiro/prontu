@@ -28,6 +28,8 @@ final class AgendaFlowFactory {
         coordinator: coordinator
     )
     
+    private var detailsAppointmentVM: AppointmentDetailsViewModel?
+    
     init(databaseService: DatabaseService, screenMonitorService: ScreenMonitorService) {
         self.databaseService = databaseService
         self.screenMonitorService = screenMonitorService
@@ -48,9 +50,22 @@ final class AgendaFlowFactory {
     func makeEditAppointment() -> EditCardAppointmentView {
         EditCardAppointmentView()
     }
-    
-    func makeAppointmentDetailsView(appointment: Appointment) -> AppointmentDetailsView {
-        AppointmentDetailsView(viewModel: .init(coordinator: coordinator, appointment: appointment))
+
+    func makeAppointmentDetailsView(appointmentID: UUID) -> AppointmentDetailsView {
+        
+        if detailsAppointmentVM?.appointment.id != appointmentID {
+            
+            guard let appointment = databaseService.getAppointment(id: appointmentID) else {
+                fatalError("Error: appointment not found with id \(appointmentID)")
+            }
+            
+            detailsAppointmentVM = AppointmentDetailsViewModel(
+                coordinator: coordinator,
+                appointment: appointment
+            )
+        }
+        
+        return AppointmentDetailsView(viewModel: detailsAppointmentVM!)
     }
     
     func makeSelectedClientSheet() -> SelectClientSheet {
@@ -61,4 +76,3 @@ final class AgendaFlowFactory {
         GenerateEquipamentSheet(viewModel: createAppointmentVM)
     }
 }
-

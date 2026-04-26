@@ -30,8 +30,8 @@ final class AgendaFlowCoordinator: Coordinator {
             factory.makeCreateAppointmentView()
         case .editAppointment(let appointment): // TODO: Possível que vai precisar passar para essa tela qual appointment deve ser editado
             factory.makeEditAppointment()
-        case .appointmentDetails(let appointment): // TODO: Mesma coisa, passar para essa tela qual o appointment que deve ser mostrado
-            factory.makeAppointmentDetailsView(appointment: appointment)
+        case .appointmentDetails(let appointmentID): // TODO: Mesma coisa, passar para essa tela qual o appointment que deve ser mostrado
+            factory.makeAppointmentDetailsView(appointmentID: appointmentID)
         case .selectedClient:
             factory.makeSelectedClientSheet()
         case .generateEquipaments:
@@ -63,7 +63,7 @@ extension AgendaFlowCoordinator: AgendaCoordinateProtocol {
     }
     
     func navigateToAppointmentDetails(appointment: Appointment) {
-        navigateTo(.appointmentDetails(appointment))
+        navigateTo(.appointmentDetails(appointment.id))
     }
     
     
