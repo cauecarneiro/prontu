@@ -208,7 +208,8 @@ struct EditClientView: View {
                     .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(Color.primary)
             }
-            .buttonStyle(.plain)
+            .frame(maxWidth: 30)
+            .tint(.black)
         }
     }
 
@@ -239,7 +240,8 @@ struct EditClientView: View {
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(Color.primary)
                 }
-                .buttonStyle(.plain)
+                .frame(maxWidth: 30)
+                .tint(.black)
             }
         }
     }
