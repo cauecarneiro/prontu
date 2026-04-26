@@ -46,7 +46,6 @@ struct AppointmentDetailsStatusView: View {
             circleMark
 
             Text(title)
-                .fontWeight(.semibold)
                 .foregroundStyle(color)
         }
         .padding(.horizontal, GlobalConfiguration.Layout.sectionSpacing)

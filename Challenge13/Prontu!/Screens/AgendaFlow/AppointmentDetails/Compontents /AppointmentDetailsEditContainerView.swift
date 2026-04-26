@@ -41,7 +41,7 @@ struct AppointmentDetailsEditContainerView<Field: Hashable>: View {
 
             FooterButton(
                 title: "Salvar alterações",
-                isEnabled: true,
+                isEnabled: viewModel.hasChanges,
                 action: {
                     focusedField = nil
                     viewModel.saveChanges()

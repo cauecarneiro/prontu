@@ -45,6 +45,15 @@ final class AppointmentDetailsViewModel: ObservableObject {
         appointment.startDate.distance(to: appointment.endDate).formattedDuration
     }
 
+    var hasChanges: Bool {
+        currentStatus != appointment.status ||
+        observation != (appointment.notes ?? "") ||
+        Self.equipmentValueToSave(result) != appointment.equipment ||
+        selectedClient?.id != appointment.client?.id ||
+        editedStartDate != appointment.startDate ||
+        editedEndDate != appointment.endDate
+    }
+
     init(
         coordinator: (any AppointmentDetailsCoordinateProtocol)?,
         databaseService: DatabaseService,
@@ -83,15 +92,8 @@ final class AppointmentDetailsViewModel: ObservableObject {
     }
 
     func saveChanges() {
-        let startDateTime = AppointmentScheduleValidator.combine(
-            date: selectedDate,
-            time: selectedStartTime
-        )
-
-        let endDateTime = AppointmentScheduleValidator.endDate(
-            startDate: startDateTime,
-            duration: selectedDuration
-        )
+        let startDateTime = editedStartDate
+        let endDateTime = editedEndDate
 
         guard verifyConflicts(from: startDateTime, to: endDateTime) else {
             alertMessage = "Não é possível editar para horários que já possuem agendamentos."
@@ -151,6 +153,20 @@ final class AppointmentDetailsViewModel: ObservableObject {
             from: startDate,
             to: endDate,
             ignoring: appointment.id
+        )
+    }
+
+    private var editedStartDate: Date {
+        AppointmentScheduleValidator.combine(
+            date: selectedDate,
+            time: selectedStartTime
+        )
+    }
+
+    private var editedEndDate: Date {
+        AppointmentScheduleValidator.endDate(
+            startDate: editedStartDate,
+            duration: selectedDuration
         )
     }
 
