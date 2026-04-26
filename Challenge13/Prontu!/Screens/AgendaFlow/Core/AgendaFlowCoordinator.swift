@@ -65,11 +65,13 @@ extension AgendaFlowCoordinator: AgendaCoordinateProtocol {
     func navigateToAppointmentDetails(appointment: Appointment) {
         navigateTo(.appointmentDetails(appointment.id))
     }
-    
-    
 }
 
 extension AgendaFlowCoordinator: AppointmentDetailsCoordinateProtocol {
+    func dismissAppointmentDetails() {
+        dismissNavigation()
+    }
+    
     func navigateToEditAppointment(appointment: Appointment) {
         presentTo(.editAppointment(appointment))
     }

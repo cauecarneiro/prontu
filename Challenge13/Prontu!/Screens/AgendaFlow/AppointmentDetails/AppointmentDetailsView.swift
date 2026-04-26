@@ -83,12 +83,22 @@ struct AppointmentDetailsView: View {
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Sessão")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden()
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Edit", systemImage: "pencil") {
                     viewModel.navigateToEditAppointment()
                 }
-                .buttonStyle(.plain)
+                .frame(maxWidth: 30)
+                .tint(.black)
+            }
+            
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Voltar", systemImage: "chevron.backward") {
+                    viewModel.dismiss()
+                }
+                .frame(maxWidth: 30)
+                .tint(.black)
             }
         }
     }
