@@ -13,7 +13,10 @@ enum GlobalConfiguration {
     // MARK: - Colors
     static var primaryGreen: Color { Color(.primaryGreen) }
     static var primaryBlue: Color { Color(.primaryBlue) }
-
+    static var destructiveRed: Color { .red }
+    static var neutralGray: Color { .gray }
+    static var secondaryGroupedBackground: Color { Color(uiColor: .systemGray6) }
+    
     // MARK: - Spacing & Radius
     static var normalSpacing: CGFloat { 16 }
     static var normalCornerRadius: CGFloat { 22 }
