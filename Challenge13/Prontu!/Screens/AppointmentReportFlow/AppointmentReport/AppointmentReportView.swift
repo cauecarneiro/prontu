@@ -53,9 +53,6 @@ struct AppointmentReportView: View {
             ToolbarItem(placement: .topBarLeading) {
                 toolbarButton(icon: "person")
             }
-            ToolbarItem(placement: .topBarTrailing) {
-                toolbarButton(icon: "ellipsis")
-            }
         }
     }
 
