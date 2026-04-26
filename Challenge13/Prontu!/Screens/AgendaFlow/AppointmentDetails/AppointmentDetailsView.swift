@@ -113,6 +113,12 @@ struct AppointmentDetailsView: View {
             client: .init(name: "Caio", contactInfo: "999999")
         )
         
-        AppointmentDetailsView(viewModel: .init(coordinator: coordinator, appointment: appointment))
+        AppointmentDetailsView(
+            viewModel: .init(
+                coordinator: coordinator,
+                databaseService: .init(context: makeMainContext()),
+                appointment: appointment
+            )
+        )
     }
 }

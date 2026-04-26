@@ -43,7 +43,7 @@ final class DatabaseService {
     /**
      Atualiza um elemento do banco de dados
      */
-    func update<T: PersistentModel>(element: T) {
+    func save() {
         saveContext()
     }
     

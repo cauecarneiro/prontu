@@ -14,6 +14,7 @@ final class AppointmentDetailsViewModel: ObservableObject {
     @Published var currentStatus: AppointmentStatus
     
     weak private var coordinator: (any AppointmentDetailsCoordinateProtocol)?
+    private let databaseService: DatabaseService
     let appointment: Appointment
 
     var client: Client? {
@@ -34,11 +35,13 @@ final class AppointmentDetailsViewModel: ObservableObject {
 
     init(
         coordinator: (any AppointmentDetailsCoordinateProtocol)?,
+        databaseService: DatabaseService,
         appointment: Appointment
     ) {
         self.coordinator = coordinator
         self.appointment = appointment
         self.currentStatus = appointment.status
+        self.databaseService = databaseService
     }
 
     func navigateToEditAppointment() {
@@ -50,6 +53,11 @@ final class AppointmentDetailsViewModel: ObservableObject {
     }
     
     func dismiss() { // TODO: Implement save
+        if appointment.status != currentStatus {
+            appointment.status = currentStatus
+            databaseService.save()
+        }
+        
         coordinator?.dismissAppointmentDetails()
     }
 }

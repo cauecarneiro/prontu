@@ -61,6 +61,7 @@ final class AgendaFlowFactory {
             
             detailsAppointmentVM = AppointmentDetailsViewModel(
                 coordinator: coordinator,
+                databaseService: databaseService,
                 appointment: appointment
             )
         }
