@@ -27,7 +27,12 @@ final class RegisterFlowFactory {
         CreateClientView(viewModel: createClientVM)
     }
 
-    func makeEditClientView() -> EditClientView {
-        EditClientView()
+    func makeEditClientView(client: Client) -> EditClientView {
+        let vm = EditClientViewModel(
+            client: client,
+            databaseService: databaseService,
+            coordinator: coordinator
+        )
+        return EditClientView(viewModel: vm)
     }
 }

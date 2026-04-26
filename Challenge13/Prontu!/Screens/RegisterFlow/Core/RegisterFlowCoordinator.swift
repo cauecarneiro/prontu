@@ -23,8 +23,8 @@ final class RegisterFlowCoordinator: Coordinator  {
         switch route {
         case .createClient:
             factory.makeCreateClientView()
-        case .editClient(let client): // TODO: Possível precisar passar qual o client a ser editado
-            factory.makeEditClientView()
+        case .editClient(let client):
+            factory.makeEditClientView(client: client)
         }
     }
     
@@ -58,5 +58,11 @@ extension RegisterFlowCoordinator: ClientListCoordinatorProtocol {
 extension RegisterFlowCoordinator: CreateClientCoordinatorProtocol {
     func dismissCreateClient() {
         dismissPresentation()
+    }
+}
+
+extension RegisterFlowCoordinator: EditClientCoordinatorProtocol {
+    func dismissEditClient() {
+        dismissNavigation()
     }
 }
