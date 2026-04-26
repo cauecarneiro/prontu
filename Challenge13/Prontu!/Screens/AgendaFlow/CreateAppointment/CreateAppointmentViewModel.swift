@@ -72,13 +72,15 @@ final class CreateAppointmentViewModel: ObservableObject {
             return
         }
         
-        let startDateTime = combine(date: selectedDate, time: selectedStartTime)
+        let startDateTime = AppointmentScheduleValidator.combine(
+            date: selectedDate,
+            time: selectedStartTime
+        )
         
-        let endDateTime = Calendar.current.date(
-            byAdding: .minute,
-            value: selectedDuration,
-            to: startDateTime
-        ) ?? startDateTime
+        let endDateTime = AppointmentScheduleValidator.endDate(
+            startDate: startDateTime,
+            duration: selectedDuration
+        )
         
         guard verifyConflicts(from: startDateTime, to: endDateTime) else {
             alertMessage = "Não é possível agendar em horários que já possuem agendamentos."
@@ -98,22 +100,6 @@ final class CreateAppointmentViewModel: ObservableObject {
         databaseService.add(element: appointment)
         
         dismissCreateAppointment()
-    }
-    
-    private func combine(date: Date, time: Date) -> Date {
-        let calendar = Calendar.current
-        
-        let dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
-        let timeComponents = calendar.dateComponents([.hour, .minute], from: time)
-        
-        var final = DateComponents()
-        final.year = dateComponents.year
-        final.month = dateComponents.month
-        final.day = dateComponents.day
-        final.hour = timeComponents.hour
-        final.minute = timeComponents.minute
-        
-        return calendar.date(from: final) ?? date
     }
     
     private func reset() {
@@ -145,7 +131,10 @@ final class CreateAppointmentViewModel: ObservableObject {
     }
     
     private func verifyConflicts(from startDate: Date, to endDate: Date) -> Bool {
-        let conflicts = databaseService.fetchOverlappingAppointments(from: startDate, to: endDate)
-        return conflicts.isEmpty
+        !AppointmentScheduleValidator.hasConflict(
+            databaseService: databaseService,
+            from: startDate,
+            to: endDate
+        )
     }
 }
