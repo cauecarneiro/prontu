@@ -11,6 +11,7 @@ struct ClientsListView: View {
     
     @ObservedObject var viewModel: ClientsListViewModel
     @State private var isGrouped: Bool = false
+    @State private var scrollTargetLetter: String? = nil
     
     var body: some View {
         
@@ -36,6 +37,7 @@ struct ClientsListView: View {
                     }else{
                         FlatListView(
                             clients: viewModel.allClientsSorted,
+                            scrollTargetLetter: scrollTargetLetter, //passa a letra
                             onTap: { client in
                                 viewModel.navigateToEditClient(client: client)
                                 
@@ -48,17 +50,25 @@ struct ClientsListView: View {
                         Spacer()
                         
                         AlphabetIndexView(
-                            letters: viewModel.groupedClients.keys.sorted()
-                        ) { letter in
-                            if !isGrouped {
-                                isGrouped = true
+                            letters: viewModel.groupedClients.keys.sorted(),
+                            onSelect: { letter in
+                                if !isGrouped {
+                                    isGrouped = true
+                                }
+                                withAnimation {
+                                    proxy.scrollTo(letter, anchor: .top)
+                                }
+                            },
+                            onReleased: { letter in
+                                scrollTargetLetter = letter//guarda a primeira letra
+                                withAnimation {
+                                    isGrouped = false  //volta para flat
+                                }
                             }
-                            withAnimation {
-                                proxy.scrollTo(letter, anchor: .top)
-                            }
-                        }
-                        .padding(.trailing, 4)
+                        
+                        )
                     }
+                    .padding(.trailing, 4)
                 }//fecha else grande
             }//fecha Ztack
         }//end ScrollView

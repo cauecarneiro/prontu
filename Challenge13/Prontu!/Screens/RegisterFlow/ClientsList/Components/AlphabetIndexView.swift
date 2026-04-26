@@ -59,6 +59,7 @@ struct AlphabetIndexView: View {
     
     let letters: [String]
     let onSelect: (String) -> Void
+    let onReleased: ((String) -> Void)?
 
     @State private var activeLetter: String? = nil
 
@@ -97,6 +98,9 @@ struct AlphabetIndexView: View {
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 }
                 .onEnded { _ in
+                    if let letter = activeLetter{
+                        onReleased?(letter)
+                    }
                     withAnimation(.spring(response: 0.2)) { activeLetter = nil }
                 }
         )
