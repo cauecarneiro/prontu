@@ -24,7 +24,7 @@ final class EditClientViewModel: ObservableObject {
 
     var sortedAppointments: [Appointment] {
         client.appointments
-            .filter { $0.status != .blocked && $0.status != .cancelled }
+            .filter { $0.status != .blocked }
             .sorted { $0.startDate > $1.startDate }
     }
 
@@ -43,7 +43,7 @@ final class EditClientViewModel: ObservableObject {
         guard canSave else { return }
         client.name = name.trimmingCharacters(in: .whitespaces)
         client.contactInfo = contactInfo.trimmingCharacters(in: .whitespaces)
-        databaseService.update(element: client)
+        databaseService.save()
         isEditing = false
     }
 

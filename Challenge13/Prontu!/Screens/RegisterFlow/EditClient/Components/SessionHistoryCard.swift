@@ -23,8 +23,9 @@ struct SessionHistoryCard: View {
 
     private var statusColor: Color {
         switch appointment.status {
-        case .finished:  return Color(red: 0.33, green: 0.77, blue: 0.07)
+        case .finished:  return GlobalConfiguration.primaryGreen
         case .confirmed: return GlobalConfiguration.primaryBlue
+        case .cancelled: return GlobalConfiguration.destructiveRed
         case .scheduled: return Color(uiColor: .systemGray)
         default:         return Color(uiColor: .systemGray2)
         }
