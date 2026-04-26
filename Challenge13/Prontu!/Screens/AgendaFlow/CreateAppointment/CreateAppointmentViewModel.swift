@@ -10,12 +10,20 @@ import Foundation
 
 @MainActor
 final class CreateAppointmentViewModel: ObservableObject {
-    
+
+    enum ScheduleType: String, CaseIterable, Identifiable {
+        case appointment = "Agendamento"
+        case block = "Bloqueio"
+
+        var id: String { rawValue }
+    }
+
     weak private var coordinator: (any CreateAppointmentCoordinatorProtocol)?
     private let databaseService: DatabaseService
     
     let dataset = DatasetService.shared
 
+    @Published var scheduleType: ScheduleType = .appointment
     @Published var selectedDate: Date = Date()
     @Published var selectedStartTime: Date = Date()
     @Published var selectedDuration: Int = 60
@@ -28,7 +36,29 @@ final class CreateAppointmentViewModel: ObservableObject {
     @Published var clients: [Client]
     @Published var selectedClient: Client?
     @Published var alertMessage: String?
-    
+
+    var shouldShowAppointmentFields: Bool {
+        scheduleType == .appointment
+    }
+
+    var footerTitle: String {
+        switch scheduleType {
+        case .appointment:
+            return "Agendar"
+        case .block:
+            return "Bloquear"
+        }
+    }
+
+    var canSave: Bool {
+        switch scheduleType {
+        case .appointment:
+            return selectedClient != nil
+        case .block:
+            return true
+        }
+    }
+
     private var cancellables: Set<AnyCancellable> = []
     
     init(coordinator: (any CreateAppointmentCoordinatorProtocol)?, databaseService: DatabaseService) {
@@ -66,8 +96,7 @@ final class CreateAppointmentViewModel: ObservableObject {
     }
     
     func saveAppointment() {
-        
-        guard let client = selectedClient else {
+        guard canSave else {
             print("Cliente não selecionado")
             return
         }
@@ -90,10 +119,10 @@ final class CreateAppointmentViewModel: ObservableObject {
         let appointment = Appointment(
             startDate: startDateTime,
             endDate: endDateTime,
-            status: .scheduled,
-            client: client,
-            exercises: exercicio,
-            equipment: resultado,
+            status: appointmentStatus,
+            client: appointmentClient,
+            exercises: appointmentExercises,
+            equipment: appointmentEquipment,
             notes: observations
         )
         
@@ -107,6 +136,7 @@ final class CreateAppointmentViewModel: ObservableObject {
             await Task.yield()
             
             await MainActor.run {
+                scheduleType = .appointment
                 selectedDate = Date()
                 selectedStartTime = Date()
                 selectedDuration = 0
@@ -136,5 +166,41 @@ final class CreateAppointmentViewModel: ObservableObject {
             from: startDate,
             to: endDate
         )
+    }
+
+    private var appointmentStatus: AppointmentStatus {
+        switch scheduleType {
+        case .appointment:
+            return .scheduled
+        case .block:
+            return .blocked
+        }
+    }
+
+    private var appointmentClient: Client? {
+        switch scheduleType {
+        case .appointment:
+            return selectedClient
+        case .block:
+            return nil
+        }
+    }
+
+    private var appointmentExercises: String? {
+        switch scheduleType {
+        case .appointment:
+            return exercicio
+        case .block:
+            return nil
+        }
+    }
+
+    private var appointmentEquipment: String? {
+        switch scheduleType {
+        case .appointment:
+            return resultado
+        case .block:
+            return nil
+        }
     }
 }
