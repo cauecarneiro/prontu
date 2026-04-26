@@ -117,14 +117,20 @@ final class CreateAppointmentViewModel: ObservableObject {
     }
     
     private func reset() {
-        selectedDate = Date()
-        selectedStartTime = Date()
-        selectedDuration = 0
-        selectedDuration = 60
-        selectedFrequency = .nunca
-        resultado = ""
-        observations = ""
-        selectedClient = nil
+        Task {
+            await Task.yield()
+            
+            await MainActor.run {
+                selectedDate = Date()
+                selectedStartTime = Date()
+                selectedDuration = 0
+                selectedDuration = 60
+                selectedFrequency = .nunca
+                resultado = ""
+                observations = ""
+                selectedClient = nil
+            }
+        }
     }
     
     private func observableDataBase(){

@@ -74,6 +74,7 @@ struct CreateAppointmentView: View {
         .navigationBarTitle("Agendamento")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden()
+        .scrollDismissesKeyboard(.interactively)
         .background(Color(.systemGroupedBackground))
         .onTapGesture {
             // Fecha o teclado ao tocar fora
@@ -85,14 +86,13 @@ struct CreateAppointmentView: View {
             Text(viewModel.alertMessage ?? "")
         }
         .toolbar {
-            ToolbarItem(placement: .navigation) {
-                Button("", systemImage: "chevron.backward") {
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Voltar", systemImage: "chevron.backward") {
                     viewModel.dismissCreateAppointment()
                 }
-                .buttonStyle(.plain)
+                .frame(maxWidth: 30)
+                .tint(.black)
             }
         }
     }
 }
-
-
