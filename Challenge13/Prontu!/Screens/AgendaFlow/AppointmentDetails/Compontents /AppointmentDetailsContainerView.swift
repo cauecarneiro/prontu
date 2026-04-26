@@ -31,12 +31,14 @@ struct AppointmentDetailsContainerView<Field: Hashable>: View {
 
             appointmentScheduleCard
 
-            AddEquipament(
-                resultado: viewModel.result,
-                action: {}
-            )
-            .allowsHitTesting(false)
-
+            if viewModel.appointment.status != .blocked {
+                AddEquipament(
+                    resultado: viewModel.result,
+                    action: {}
+                )
+                .allowsHitTesting(false)
+            }
+            
             NotesTextArea(
                 text: $viewModel.observation,
                 placeholder: "Escreva mais detalhes...",

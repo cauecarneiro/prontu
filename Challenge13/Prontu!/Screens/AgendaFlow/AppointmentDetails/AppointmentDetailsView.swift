@@ -52,16 +52,18 @@ struct AppointmentDetailsView: View {
             Text(viewModel.alertMessage ?? "")
         }
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button(
-                    viewModel.isEditing ? "Cancelar edição" : "Editar",
-                    systemImage: viewModel.isEditing ? "pencil.slash" : "pencil"
-                ) {
-                    focusedField = nil
-                    viewModel.toggleEditing()
+            if viewModel.appointment.status != .blocked {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(
+                        viewModel.isEditing ? "Cancelar edição" : "Editar",
+                        systemImage: viewModel.isEditing ? "pencil.slash" : "pencil"
+                    ) {
+                        focusedField = nil
+                        viewModel.toggleEditing()
+                    }
+                    .frame(maxWidth: Layout.toolbarButtonMaxWidth)
+                    .tint(.black)
                 }
-                .frame(maxWidth: Layout.toolbarButtonMaxWidth)
-                .tint(.black)
             }
 
             ToolbarItem(placement: .topBarLeading) {
