@@ -13,6 +13,7 @@ enum AgendaFlowRouter: Hashable & Identifiable {
     case createAppointment
     case createClient
     case selectedClient
+    case selectedClientForAppointmentDetails
     case generateEquipaments
     case editAppointment(Appointment)
     case appointmentDetails(UUID)

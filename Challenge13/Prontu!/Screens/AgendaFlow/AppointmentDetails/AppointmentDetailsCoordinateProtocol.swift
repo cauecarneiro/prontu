@@ -9,5 +9,6 @@ import Foundation
 
 protocol AppointmentDetailsCoordinateProtocol: AnyObject {
     func navigateToEditAppointment(appointment: Appointment)
+    func presentSelectedClientDetails()
     func dismissAppointmentDetails()
 }
