@@ -8,7 +8,7 @@
 import Foundation
 
 protocol AppointmentProviding: Sendable {
-    func fetchAppointments(from start: Date, to end: Date) async throws -> [Appointment]
+    func fetchAppointments(from start: Date, to end: Date) -> [Appointment]
 }
 
 actor AppointmentChatEngine {
@@ -51,7 +51,7 @@ actor AppointmentChatEngine {
 private extension AppointmentChatEngine {
     private func makeNextAppointmentMessage(now: Date = .now) async throws -> MessageChat {
         let end = calendar.date(byAdding: .day, value: 30, to: now) ?? now
-        let appointments = try await provider.fetchAppointments(from: now, to: end)
+        let appointments = await provider.fetchAppointments(from: now, to: end)
 
         let next = appointments
             .filter { $0.endDate > now }
@@ -81,7 +81,7 @@ private extension AppointmentChatEngine {
         let startOfDay = calendar.startOfDay(for: now)
         let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? now
 
-        let appointments = try await provider.fetchAppointments(from: startOfDay, to: endOfDay)
+        let appointments = await provider.fetchAppointments(from: startOfDay, to: endOfDay)
         let valid = appointments
             .filter { $0.status == .scheduled || $0.status == .confirmed }
             .sorted { $0.startDate < $1.startDate }
@@ -122,7 +122,7 @@ private extension AppointmentChatEngine {
         minimumDurationMinutes: Int = 60
     ) async throws -> MessageChat {
         let workInterval = try makeWorkInterval(for: now)
-        let appointments = try await provider.fetchAppointments(
+        let appointments = await provider.fetchAppointments(
             from: workInterval.start,
             to: workInterval.end
         )

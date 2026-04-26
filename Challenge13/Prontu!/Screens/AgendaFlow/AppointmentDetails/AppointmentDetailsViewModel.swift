@@ -6,15 +6,46 @@
 //
 
 import Combine
+import Foundation
 
+@MainActor
 final class AppointmentDetailsViewModel: ObservableObject {
-    weak private var coordinator: (any AppointmentDetailsCoordinateProtocol)?
     
-    init(coordinator: (any AppointmentDetailsCoordinateProtocol)?) {
-        self.coordinator = coordinator
+    @Published var currentStatus: AppointmentStatus
+    
+    weak private var coordinator: (any AppointmentDetailsCoordinateProtocol)?
+    private let appointment: Appointment
+
+    var client: Client? {
+        appointment.client
+    }
+
+    var dateText: String {
+        appointment.startDate.detailsDayText
+    }
+
+    var timeText: String {
+        "\(appointment.startDate.detailsHourText) - \(appointment.endDate.detailsHourText)"
     }
     
-    func navigateToEditAppointment(appointment: Appointment) {
+    var durationText: String {
+        appointment.startDate.distance(to: appointment.endDate).formattedDuration
+    }
+
+    init(
+        coordinator: (any AppointmentDetailsCoordinateProtocol)?,
+        appointment: Appointment
+    ) {
+        self.coordinator = coordinator
+        self.appointment = appointment
+        self.currentStatus = appointment.status
+    }
+
+    func navigateToEditAppointment() {
         coordinator?.navigateToEditAppointment(appointment: appointment)
+    }
+    
+    func onClientClick() {
+        
     }
 }

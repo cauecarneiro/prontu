@@ -43,4 +43,23 @@ extension Date {
         
         return "\(capitalizedWeekday), \(dayMonth)"
     }
+    
+    var detailsDayText: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "pt_BR")
+        formatter.dateFormat = "EEE, MMM d"
+
+        return formatter.string(from: self)
+            .replacingOccurrences(of: ".", with: "").capitalized(with: Locale(identifier: "pt_BR"))
+    }
+    
+    var detailsHourText: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "pt_BR")
+        formatter.dateFormat = "HH:mm"
+        
+        return formatter.string(from: self)
+    }
+    
+
 }
