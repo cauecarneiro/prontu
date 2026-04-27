@@ -16,7 +16,7 @@ extension OnBoardingPage {
     
     static let mock: [OnBoardingPage] = [
         OnBoardingPage(
-            image: "icone",
+            image: "icon",
             title: "Bem-vindo ao Prontu!",
             description: "Organize seus atendimentos, gerencie seus clientes e acompanhe seus resultados, tudo em um só lugar"
         ),
