@@ -7,57 +7,88 @@
 import SwiftUI
 
 struct OnBoardingView: View{
-    let pages: 
+    
     @State private var currentPage = 0
+    @State private var progress: Double = 0
+    
+    private let pages = OnBoardingPage.mock
+    private var total: Int { pages.count }
     
     var body: some View{
-        //Conteúdo das páginas
-        TabView(selection: $currentPage){
-            
-            //Páginas normais
-            ForEach(pages.indices, id: \.self){ i in
-                OnBoardingPageView(page:pages[i]){
-                    nextPage()
-                }
-                .tag(i)
-            }
-        }
-        .tabViewStyle(.page)
         
-    }//end body
+        VStack{
+            
+            //Botão voltar e barra de progresso
+            HStack{
+                
+                Button{
+                    previousPage()
+                }label: {
+                    Image(systemName: "chevron.left")
+                        .font(.title3)
+                        .foregroundStyle(.primary)
+                }
+                .opacity(currentPage == 0 ? 0 : 1)
+                
+                //Barra de progresso
+                ProgressBarView(
+                    total: total,
+                    currentPage: currentPage,
+                    progress: progress
+                )
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+            
+            //Conteúdo das páginas
+            TabView(selection: $currentPage){
+                
+                //Páginas normais
+                ForEach(pages.indices, id: \.self){ i in
+                    OnBoardingPageView(page:pages[i]){
+                        nextPage()
+                    }
+                    .tag(i)
+                }
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .animation(.easeInOut, value: currentPage)
+            
+        }//Timer para auto avanço + animaçao da barra
+        .onReceive(
+            Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
+        ){ _ in
+            tick()
+        }
+        
+        //Reset do progresso ao trocar de página
+        .onChange(of: currentPage) { _ in
+            progress = 0
+        }
+        
+    }
+    //Funçao tick para lógica do tempo de 5 seg
     
+    
+    //Funçao para passar a página
     private func nextPage() {
-        if currentPage < pages.count - 1 {
+        if currentPage < total - 1 {
             currentPage += 1
         }
     }
+    
+    //Funçao para voltar a página
+    private func previousPage(){
+        if currentPage > 0 {
+            currentPage -= 1
+        }
+    }
+    
 }
 
-    
-//    //Lógica do timer
-//    
-//    //Chamada a cada tick de 0.05s
-//    private func tick(){
-//        
-//        //Última tela nao tem auto-avanço
-//        guard currentPage < pages.count else { return }
-//        
-//        // 5 segundos / 0.05 por tick = 100 ticks → incremento de 0.01 por tick
-//        let increment = 0.05 / 5.0
-//        
-//        if progress + increment >= 1.0{
-//            progress = 0
-//            advance()
-//        }else{
-//            withAnimation(.linear(duration: 0.05)){
-//                progress += increment
-//            }
-//        }
-//    }
-//    
-//    private func advance(){
-//        guard currentPage < total - 1 else { return }
-//        withAnimation { currentPage += 1 }
-//    }
-//    
-//}//end View
+
+
+
+
+
+

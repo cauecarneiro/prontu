@@ -8,7 +8,7 @@ import SwiftUI
 
 struct OnBoardingPageView: View{
     
-    let page: PageData
+    let page: OnBoardingPage
     let action: () -> Void
     
     var body: some View{
