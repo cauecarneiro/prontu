@@ -18,11 +18,11 @@ struct ProgressBarView: View{
                 Capsule()
                     .fill(Color(.systemGray4))
                     .overlay(alignment: .leading){
-                        //Segmento cheio se já passou, parcial se é o atual
                         GeometryReader{ geo in
                             Capsule()
                                 .fill(Color(GlobalConfiguration.primaryBlue))
                                 .frame(width: geo.size.width * segmentFill(for: i))
+                                .animation(.linear(duration: 0.05), value: progress)
                         }
                     }
                     .frame(height: 4)
@@ -30,10 +30,9 @@ struct ProgressBarView: View{
         }//end HStack barra de progresso
     }//end body
     
-    //Quanto o segmento i deve estar preenchido
-    private func segmentFill(foi i: Int) -> Double{
-        if i < currentPage {return 1.0}  //Já passou: cheio
-        if i == currentPage {return progress} //Atual: parcial
-        return 0.0 //Futuro: vazio
+    private func segmentFill(for i: Int) -> Double {
+        if i < currentPage { return 1.0 }
+        if i == currentPage { return progress }
+        return 0.0
     }
 }//end View

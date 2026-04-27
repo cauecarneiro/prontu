@@ -67,9 +67,15 @@ struct OnBoardingView: View{
         }
         
     }
-    //Funçao tick para lógica do tempo de 5 seg
-    
-    
+    private func tick() {
+        let step = 0.05 / 5.0  // timer dispara a cada 0.05s, fill em 5s
+        if progress < 1.0 {
+            progress = min(progress + step, 1.0)
+        } else if currentPage < total - 1 {
+            nextPage()
+        }
+    }
+
     //Funçao para passar a página
     private func nextPage() {
         if currentPage < total - 1 {
