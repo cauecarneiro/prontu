@@ -6,26 +6,58 @@
 //
 import SwiftUI
 
-//Dados de cada tela
-private struct PageData{
-    let image: String
-    let title: String
-    let description: String
+struct OnBoardingView: View{
+    let pages: 
+    @State private var currentPage = 0
+    
+    var body: some View{
+        //Conteúdo das páginas
+        TabView(selection: $currentPage){
+            
+            //Páginas normais
+            ForEach(pages.indices, id: \.self){ i in
+                OnBoardingPageView(page:pages[i]){
+                    nextPage()
+                }
+                .tag(i)
+            }
+        }
+        .tabViewStyle(.page)
+        
+    }//end body
+    
+    private func nextPage() {
+        if currentPage < pages.count - 1 {
+            currentPage += 1
+        }
+    }
 }
 
-private let pages: [PageData] = [
-    PageData(image: "icone",
-             title: "Bem-vindo ao Prontu!",
-             description: "Organize seus atendimentos, gerencie seus clientes e acompanhe ses resultados, tudo em um só lugar"),
-    PageData(image: "calendar.badge.checkmark",
-             title: "Sua agenda organizada",
-             description: "Visualize, acompanhe e organize seus atendimentos de forma simples e rápida."),
-    PageData(image: "message.badge.waveform",
-             title: "Seus clientes à mão",
-             description: "Cadastre, busque e visualize as informações de contato dos seus clientes com facilidade."),
-    PageData(image: "chart.bar.xaxis",
-             title: "Acompanhe seus resultados",
-             description: "Controle suas horas de atendimento e o número de clientes atendidos por semana, mês ou ano.")
-]
-
-
+    
+//    //Lógica do timer
+//    
+//    //Chamada a cada tick de 0.05s
+//    private func tick(){
+//        
+//        //Última tela nao tem auto-avanço
+//        guard currentPage < pages.count else { return }
+//        
+//        // 5 segundos / 0.05 por tick = 100 ticks → incremento de 0.01 por tick
+//        let increment = 0.05 / 5.0
+//        
+//        if progress + increment >= 1.0{
+//            progress = 0
+//            advance()
+//        }else{
+//            withAnimation(.linear(duration: 0.05)){
+//                progress += increment
+//            }
+//        }
+//    }
+//    
+//    private func advance(){
+//        guard currentPage < total - 1 else { return }
+//        withAnimation { currentPage += 1 }
+//    }
+//    
+//}//end View
