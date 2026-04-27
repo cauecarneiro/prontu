@@ -9,13 +9,12 @@ import SwiftUI
 
 struct FloatingButton: View {
     let systemImageName: String
-    var iconSize: CGFloat = 30
     let action: () -> Void
-
+    
     var body: some View {
         Button(action: action) {
             Image(systemName: systemImageName)
-                .font(.system(size: iconSize, weight: .semibold))
+                .font(.system(size: 30, weight: .semibold))
                 .foregroundStyle(.white)
                 .frame(maxWidth: 32, maxHeight: 32)
                 .padding(12)

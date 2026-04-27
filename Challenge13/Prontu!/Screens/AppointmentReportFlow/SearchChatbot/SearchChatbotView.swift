@@ -13,6 +13,9 @@ struct SearchChatbotView: View {
     //MARK: Layout vertical
     var body: some View {
         VStack(spacing: .zero){
+            
+            topBar
+            
             VStack {
                 ScrollViewReader { proxy in
                     ScrollView {
@@ -23,15 +26,16 @@ struct SearchChatbotView: View {
                                 }
                                 .id(message.id)
                                 
-                                if viewModel.loading{
-                                    TypingIndicatorView()
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .padding(.leading, 16)
-                                        .id("typing")
-                                }
                             }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 20)
+                            .padding(.horizontal, 25)
+                            //.padding(.vertical, 10)
+                            
+                            if viewModel.loading{
+                                TypingIndicatorView()
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.leading, 16)
+                                    .id("typing")
+                            }
                         }
                         .scrollDismissesKeyboard(.interactively)
                         .onChange(of: viewModel.messages.count) { _, _ in
@@ -47,10 +51,51 @@ struct SearchChatbotView: View {
                     }
                 }
                 
-                inputBar
+              //  inputBar
             }
         }
     }
+    
+    private var topBar: some View {
+        HStack(alignment: .center) {
+            iconButton(systemName: "xmark") {
+                viewModel.dismiss()
+            }
+            
+            Spacer()
+            
+            HStack(spacing: 8){
+                Image(systemName: "sparkle")
+                    .foregroundColor(GlobalConfiguration.primaryBlue)
+                
+                Text("Assistente")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundColor(Color.secondary)
+            }
+            
+            Spacer()
+            
+            Color.clear
+                .frame(width: 44, height: 44)
+        }
+        .padding(.horizontal, 24)
+       // .padding(.vertical, 100)
+        .frame(height: 70)
+        
+    }
+    
+    
+    private func iconButton(systemName: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: systemName)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(.black)
+                .frame(width: 44, height: 44)
+                .background(Color(.systemFill).opacity(0.55))
+                .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
+        }
+    }
+    
     
     //MARK: Barra de entrada
     private var inputBar: some View{
@@ -94,10 +139,16 @@ struct SearchChatbotView: View {
             engine: .init(
                 provider: DatabaseService(context: makeMainContext()),
                 classifier: .init()
-            )
+            ), coordinator: nil
         )
     )
     
 }
 
-
+//#Preview {
+//    let coordinator = makeRegisterFlowCoordinator()
+//    CreateClientView(viewModel: .init(
+//        databaseService: makeRegisterFlowDatabaseService(),
+//        coordinator: coordinator
+//    ))
+//}

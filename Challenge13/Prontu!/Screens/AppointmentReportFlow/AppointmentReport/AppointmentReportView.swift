@@ -42,7 +42,7 @@ struct AppointmentReportView: View {
         }
         .background(GlobalConfiguration.groupedBackground)
         .overlay(alignment: .bottomTrailing) {
-            FloatingButton(systemImageName: "message.fill", iconSize: Layout.fabIconSize) {
+            FloatingButton(systemImageName: "message.fill") {
                 viewModel.presentToChatbot()
             }
             .padding(.horizontal, GlobalConfiguration.normalSpacing)
@@ -52,9 +52,6 @@ struct AppointmentReportView: View {
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 toolbarButton(icon: "person")
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                toolbarButton(icon: "ellipsis")
             }
         }
     }

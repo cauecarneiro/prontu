@@ -6,30 +6,40 @@
 //
 import SwiftUI
 import SwiftData
+
 struct ChipsSuggestionsView: View{
     
+    //Conteúdo dos botões/array de sugestões
     let suggestions: [HeroSuggestion]
+    
+    //Closure/funçao que a View recebe um HeroSuggestion e serve para indicar em qual sugestão clicaram
     let onTap: (HeroSuggestion) -> Void
     
     var body: some View{
-        //Scroll horizontal das sugestões
-        ScrollView(.horizontal, showsIndicators: false){
-            //Cada sugestão vira um botão
-            HStack(spacing: 8){
-                ForEach(suggestions){ suggestion in
-                    Button(suggestion.title){
-                        onTap(suggestion)
-                    }
-                    .font(.subheadline)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 7)
-                    .background(Color.accentColor.opacity(0.08))
-                    .foregroundStyle(Color.accentColor)
-                    .clipShape(Capsule())
-                    .overlay(Capsule().strokeBorder(Color.accentColor.opacity(0.25), lineWidth: 1))
+        
+        //Grid das linhas
+        //Lazy: só renderiza o que aparece
+        FlowLayout(spacing: 8, lineSpacing: 8){
+            //Percorre o array e para cada item do array cria uma View
+            ForEach(suggestions){ suggestion in
+                //Cria um botão
+                Button(suggestion.title){
+                    //Quando clicar no botão chama a funçao passando a sugestão clicada
+                    onTap(suggestion)
                 }
+                .font(.subheadline)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 7)
+                .foregroundColor(GlobalConfiguration.primaryBlue)
+                .background(Color.clear)
+                //Formato oval para o botão
+                .clipShape(Capsule())
+                .overlay(
+                    Capsule().strokeBorder(Color((GlobalConfiguration.primaryBlue)), lineWidth: 1.2)
+                )
             }
-            .padding(.vertical, 2)
         }
-    }
-}
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 2)
+    }//end body
+}//end View

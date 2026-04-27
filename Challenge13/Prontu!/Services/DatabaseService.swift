@@ -73,9 +73,17 @@ final class DatabaseService {
 }
 
 extension DatabaseService: AppointmentProviding {
-    func fetchAppointments(from start: Date, to end: Date) async throws -> [Appointment] {
+    func fetchAppointments(from start: Date, to end: Date) -> [Appointment] {
         let predicate = #Predicate<Appointment> { appointment in
             appointment.startDate >= start && appointment.startDate < end
+        }
+        
+        return getAllElements(predicate: predicate)
+    }
+    
+    func fetchOverlappingAppointments(from start: Date, to end: Date) -> [Appointment] {
+        let predicate = #Predicate<Appointment> { appointment in
+            appointment.startDate < end && appointment.endDate > start
         }
         
         return getAllElements(predicate: predicate)

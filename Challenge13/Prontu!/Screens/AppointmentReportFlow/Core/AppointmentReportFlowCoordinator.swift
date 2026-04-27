@@ -54,5 +54,11 @@ extension AppointmentReportFlowCoordinator: AppointmentReportCoordinatorProtocol
         navigateTo(.clientHistory(client, appointments))
     }
     
+}
+
+extension AppointmentReportFlowCoordinator: SearchChatBotCoordinatorProtocol {
+    func dismissSearchChatBot() {
+        dismissPresentation()
+    }
     
 }

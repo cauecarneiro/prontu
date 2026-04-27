@@ -44,4 +44,25 @@ enum GlobalConfiguration {
 
     static var dataFileName: String { "dados" }
     static var fileExtension: String { "json" }
+    
+    enum Layout {
+        
+        //Func iconButton ContactInfoSection
+        static let sectionHeaderFontSize: CGFloat = 16
+        static let iconButtonSize: CGFloat = 44
+
+        //ContactInfoSection
+        static let importContactFontSize: CGFloat = 14
+        static let inputRowHeight: CGFloat = 56
+        static let contactCardHorizontalPadding: CGFloat = 20
+        static let contactCardVerticalPadding: CGFloat = 4
+        
+        //VStack CreateClientView
+        static let animationDuration: Double = 0.25
+        static let entryScale: CGFloat = 0.95
+        static let sectionsSpacing: CGFloat = 24
+        
+        static let sectionSpacing: CGFloat = 8
+        
+    }
 }

@@ -10,49 +10,89 @@ import SwiftUI
 struct CreateAppointmentView: View {
     
     @ObservedObject var viewModel: CreateAppointmentViewModel
+    @FocusState private var focusedField: FocusField?
     
-    struct StringValues {
-        static var pickerObjetivo : String  { "Objetivo" }
-        static var pickerExercicio: String  { "Exercício" }
-        static var pickerRegiao   : String  { "Região" }
-        static var buttonPrever   : String  { "Prever equipamento" }
-        static var resultadoPrefix: String  { "Resultado: " }
+    init(viewModel: CreateAppointmentViewModel) {
+        self.viewModel = viewModel
+    }
+    
+    
+    enum FocusField: Hashable {
+        case name, contactInfo, observations
+    }
+    
+    private enum ScrollAnchor: String {
+        case contactSection
+        case notesSection
     }
     
     var body: some View {
-        VStack {
-            Text("Hello, CreateAppointmentView!")
+        
+        VStack(spacing:0) {
             
-            Button("Create Client") {
-                viewModel.presentCreateClient()
+            ScrollView {
+                
+                PickerClientButton(client: viewModel.selectedClient) {
+                    viewModel.presentSelectedClient()
+                }
+                .padding()
+                
+                AppointmentPickerList(
+                    selectedDate: $viewModel.selectedDate,
+                    selectedStartTime: $viewModel.selectedStartTime,
+                    selectedDuration: $viewModel.selectedDuration,
+                    selectedFrequency: $viewModel.selectedFrequency
+                )
+                .padding()
+                
+                AddEquipament(
+                    resultado: viewModel.resultado,
+                    action: {
+                        viewModel.presentGenerateEquipamentSheet()
+                    }
+                )
+                
+                NotesTextArea(
+                    text: $viewModel.observations,
+                    placeholder: "Escreva mais detalhes...",
+                    icon: "list.bullet",
+                    focusedField: $focusedField,
+                    field: .observations
+                )
+                .id(ScrollAnchor.notesSection.rawValue)
+                .padding()
+                
+                FooterButton(
+                    title: "Agendar",
+                    isEnabled: viewModel.selectedClient != nil,
+                    action: {
+                        viewModel.saveAppointment()
+                    }
+                )
             }
-
-                Picker(StringValues.pickerObjetivo, selection: $viewModel.objetivo) {
-                    ForEach(viewModel.dataset.objetivos, id: \.self) { Text($0) }
+        }
+        .navigationBarTitle("Agendamento")
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden()
+        .scrollDismissesKeyboard(.interactively)
+        .background(Color(.systemGroupedBackground))
+        .onTapGesture {
+            // Fecha o teclado ao tocar fora
+            focusedField = nil
+        }
+        .alert("Conflito de horários", isPresented: .init(value: $viewModel.alertMessage)) {
+            
+        } message: {
+            Text(viewModel.alertMessage ?? "")
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Voltar", systemImage: "chevron.backward") {
+                    viewModel.dismissCreateAppointment()
                 }
-
-                Picker(StringValues.pickerExercicio, selection: $viewModel.exercicio) {
-                    ForEach(viewModel.dataset.exercicios, id: \.self) { Text($0) }
-                }
-
-                Picker(StringValues.pickerRegiao, selection: $viewModel.regiao) {
-                    ForEach(viewModel.dataset.regioes, id: \.self) { Text($0) }
-                }
-
-                Button(StringValues.buttonPrever) {
-                    viewModel.calcularEquipamento()
-                }
-
-                Text("\(StringValues.resultadoPrefix)\(viewModel.resultado)")
-                    .font(.headline)
+                .frame(maxWidth: 30)
+                .tint(.black)
             }
-            .padding()
         }
     }
-
-
-#Preview {
-    let coordinator = makeAgendaFlowCoordinator()
-
-    CreateAppointmentView(viewModel: .init(coordinator: coordinator))
 }

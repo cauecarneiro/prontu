@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 @Observable final class NavigationController {
     var navigationPath: NavigationPath = .init()
     var sheetPath: SheetPath = .init()
