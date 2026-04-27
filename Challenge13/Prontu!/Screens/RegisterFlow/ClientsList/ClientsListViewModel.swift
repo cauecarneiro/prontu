@@ -37,6 +37,13 @@ final class ClientsListViewModel: ObservableObject {
         }
     }
     
+    //Lista plana
+    var allClientsSorted: [Client]{
+        groupedClients
+            .keys.sorted()
+            .flatMap { groupedClients[$0] ?? []}
+    }
+    
     //AGRUPAMENTO
     var groupedClients: [String: [Client]] {
         
