@@ -29,6 +29,10 @@ final class AppointmentReportFlowFactory {
     func makeClientHistoryView() -> ClientHistoryView {
         ClientHistoryView()
     }
+
+    func makePreferencesView() -> PreferencesView {
+        PreferencesView()
+    }
     
     func makeSearchChatbotView(appointments: [Appointment]) -> SearchChatbotView {
         SearchChatbotView(

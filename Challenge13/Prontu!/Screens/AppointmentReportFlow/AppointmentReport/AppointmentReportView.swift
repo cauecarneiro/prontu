@@ -51,7 +51,9 @@ struct AppointmentReportView: View {
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                toolbarButton(icon: "person")
+                toolbarButton(icon: "person") {
+                    viewModel.navigateToPreferences()
+                }
             }
         }
     }
@@ -65,8 +67,8 @@ struct AppointmentReportView: View {
         .pickerStyle(.segmented)
     }
 
-    private func toolbarButton(icon: String) -> some View {
-        Button { } label: {
+    private func toolbarButton(icon: String, action: @escaping () -> Void = {}) -> some View {
+        Button { action() } label: {
             Image(systemName: icon)
                 .font(.system(size: Layout.toolbarIconFontSize, weight: .semibold))
                 .foregroundStyle(Color.primary)

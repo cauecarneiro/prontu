@@ -58,6 +58,10 @@ final class AppointmentReportViewModel: ObservableObject {
         coordinator?.presentSearchChatbot(appointments: appointments)
     }
 
+    func navigateToPreferences() {
+        coordinator?.navigateToPreferences()
+    }
+
     func selectBar(id: String) {
         selectedBarID = id
     }

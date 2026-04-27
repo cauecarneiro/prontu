@@ -7,41 +7,37 @@
 import SwiftUI
 
 struct OnBoardingPageView: View{
-    
+
     let page: OnBoardingPage
-    let action: () -> Void
-    
+
     var body: some View{
-        
         VStack{
-            
             Spacer()
-            
-            Image(systemName: page.image)
+
+            Image(page.image)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 180, height: 180)
-                .foregroundStyle(Color(GlobalConfiguration.primaryBlue))
+                .frame(
+                    width: page.image == "Calendar" ? 260 : 220,
+                    height: page.image == "Calendar" ? 260 : 220
+                )
+                .offset(x: page.image == "Calendar" ? -18 : 0)
                 .padding(.bottom, 40)
-            
+
             Text(page.title)
                 .font(.title2)
                 .bold()
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
-            
+
             Text(page.description)
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
                 .padding(.top, 12)
-            
-            Spacer()
-            
-            ContinueButton(label: "Continuar", action: action)
-            }
-        }
-    }//end body
-}
 
+            Spacer()
+        }
+    }
+}
