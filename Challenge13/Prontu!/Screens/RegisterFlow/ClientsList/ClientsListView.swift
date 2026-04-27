@@ -60,9 +60,12 @@ struct ClientsListView: View {
                                 }
                             },
                             onReleased: { letter in
-                                scrollTargetLetter = letter//guarda a primeira letra
-                                withAnimation {
-                                    isGrouped = false  //volta para flat
+                                isGrouped = false
+                                scrollTargetLetter = nil
+                                
+                                //delay para FlatListView renderizar primeiro
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                                    scrollTargetLetter = letter
                                 }
                             }
                         
