@@ -21,10 +21,12 @@ final class AppointmentReportFlowCoordinator: Coordinator {
     
     @MainActor @ViewBuilder func coordinate(to route: AppointmentReportFlowRouter) -> some View {
         switch route {
-        case .clientHistory(let currentClient, let clientAppointments): // TODO: ver se faz sentido
+        case .clientHistory(let currentClient, let clientAppointments):
             factory.makeClientHistoryView()
         case .searchChatBot(let appointment):
             factory.makeSearchChatbotView(appointments: appointment)
+        case .preferences:
+            factory.makePreferencesView()
         }
     }
     
@@ -49,11 +51,14 @@ extension AppointmentReportFlowCoordinator: AppointmentReportCoordinatorProtocol
     func presentSearchChatbot(appointments: [Appointment]) {
         presentTo(.searchChatBot(appointments))
     }
-    
+
     func navigateToClientHistory(client: Client, appointments: [Appointment]) {
         navigateTo(.clientHistory(client, appointments))
     }
-    
+
+    func navigateToPreferences() {
+        navigateTo(.preferences)
+    }
 }
 
 extension AppointmentReportFlowCoordinator: SearchChatBotCoordinatorProtocol {

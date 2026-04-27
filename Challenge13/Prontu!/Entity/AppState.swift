@@ -8,6 +8,7 @@
 import Foundation
 
 enum AppState {
+    case onboarding
     case unlock
     case lock
 }
