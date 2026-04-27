@@ -43,7 +43,7 @@ final class DatabaseService {
     /**
      Atualiza um elemento do banco de dados
      */
-    func update<T: PersistentModel>(element: T) {
+    func save() {
         saveContext()
     }
     
@@ -59,6 +59,14 @@ final class DatabaseService {
             print("Error ao buscar os dados: \(error)")
             return []
         }
+    }
+
+    func getAppointment(id: UUID) -> Appointment? {
+        let predicate = #Predicate<Appointment> { appointment in
+            appointment.id == id
+        }
+
+        return getAllElements(predicate: predicate).first
     }
     
     private func saveContext() {

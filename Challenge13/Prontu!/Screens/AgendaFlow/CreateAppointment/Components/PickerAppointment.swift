@@ -64,16 +64,16 @@ struct AppointmentPickerList: View {
                     }
                 }
             }
-            Divider()
+//            Divider() // TODO: Ainda não foi decidido como vai funcionar a frequência
             
-            AppointmentDetailsCardRow(title: frequencyLabel) {
-                Picker("", selection: $selectedFrequency) {
-                    ForEach(Frequency.allCases) { frequency in
-                        Text(frequency.rawValue)
-                            .tag(frequency)
-                    }
-                }
-            }
+//            AppointmentDetailsCardRow(title: frequencyLabel) {
+//                Picker("", selection: $selectedFrequency) {
+//                    ForEach(Frequency.allCases) { frequency in
+//                        Text(frequency.rawValue)
+//                            .tag(frequency)
+//                    }
+//                }
+//            }
         }
         .tint(.gray)
         .fontWeight(.semibold)

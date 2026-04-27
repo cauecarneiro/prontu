@@ -45,6 +45,5 @@ struct AddEquipament: View {
         .padding()
         .background(Color.white)
         .cornerRadius(16)
-        .padding()
     }
 }

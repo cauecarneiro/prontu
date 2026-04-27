@@ -204,11 +204,12 @@ struct EditClientView: View {
     private var leadingToolbarItem: some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
             Button(action: viewModel.dismiss) {
-                Image(systemName: "xmark")
+                Image(systemName: "chevron.backward")
                     .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(Color.primary)
             }
-            .buttonStyle(.plain)
+            .frame(maxWidth: 30)
+            .tint(.black)
         }
     }
 
@@ -239,23 +240,14 @@ struct EditClientView: View {
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(Color.primary)
                 }
-                .buttonStyle(.plain)
+                .frame(maxWidth: 30)
+                .tint(.black)
             }
         }
     }
 }
 
 // MARK: - Previews
-
-#Preview("Expandido") {
-    let db = makeRegisterFlowDatabaseService()
-    let client = Client(name: "Carlos Souza", contactInfo: "(11) 99123-4567")
-    client.appointments = Array(Appointment.mockData().prefix(5))
-    let vm = EditClientViewModel(client: client, databaseService: db, coordinator: nil)
-    return NavigationStack {
-        EditClientView(viewModel: vm)
-    }
-}
 
 #Preview("Sem Sessões") {
     let db = makeRegisterFlowDatabaseService()

@@ -18,11 +18,11 @@ struct AppointmentDetailsStatusPicker: View {
         case .confirmed:
             return GlobalConfiguration.primaryBlue
         case .cancelled:
-            return .red
+            return GlobalConfiguration.destructiveRed
         case .finished:
             return GlobalConfiguration.primaryGreen
         case .blocked:
-            return .gray
+            return GlobalConfiguration.neutralGray
         }
     }
     

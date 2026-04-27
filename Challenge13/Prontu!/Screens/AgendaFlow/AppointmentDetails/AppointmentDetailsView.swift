@@ -8,89 +8,73 @@
 import SwiftUI
 
 struct AppointmentDetailsView: View {
-    
+
     @ObservedObject var viewModel: AppointmentDetailsViewModel
+    @FocusState private var focusedField: FocusField?
+
+    private enum Layout {
+        static let toolbarButtonMaxWidth: CGFloat = 30
+    }
+
+    private enum FocusField {
+        case active
+    }
     
     var body: some View {
-        VStack(spacing: GlobalConfiguration.normalSpacing) {
-            
-            AppointmentDetailsStatusPicker(selectedStatus: $viewModel.currentStatus)
-                .frame(maxWidth: .infinity, alignment: .trailing)
-            
-            if let client = viewModel.client {
-                Button(action: viewModel.onClientClick) {
-                    HStack {
-                        ClientRow(client: client)
-                        
-                        Image(systemName: "chevron.forward")
-                    }
-                    .padding(.horizontal)
-                    .background {
-                        RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius)
-                            .foregroundStyle(.white)
-                    }
-                    
-                }
-                .buttonStyle(.plain)
+        ScrollView {
+            if viewModel.isEditing {
+                AppointmentDetailsEditContainerView(
+                    viewModel: viewModel,
+                    focusedField: $focusedField,
+                    notesField: .active
+                )
+            } else {
+                AppointmentDetailsContainerView(
+                    viewModel: viewModel,
+                    focusedField: $focusedField,
+                    notesField: .active
+                )
+                
+                DeleteButton(action: viewModel.deleteAppointment)
             }
             
-            VStack(alignment: .leading) {
-                AppointmentDetailsCardRow(title: "Data") {
-                    HStack {
-                        Image(systemName: "calendar")
-                        
-                        Text(viewModel.dateText)
-                    }
-                    .fontWeight(.medium)
-                    .foregroundStyle(.secondary)
-                }
-                
-                Divider()
-                
-                AppointmentDetailsCardRow(title: "Horário") {
-                    HStack {
-                        Image(systemName: "calendar")
-                        
-                        Text(viewModel.timeText)
-                    }
-                    .fontWeight(.medium)
-                    .foregroundStyle(.secondary)
-                }
-                
-                Divider()
-                
-                AppointmentDetailsCardRow(title: "Duração") {
-                    HStack {
-                        Image(systemName: "clock.arrow.trianglehead.clockwise.rotate.90.path.dotted")
-                        
-                        Text(viewModel.durationText)
-                    }
-                    .fontWeight(.medium)
-                    .foregroundStyle(.secondary)
-                }
-            }
-            .padding()
-            .frame(maxWidth: .infinity)
-            .background {
-                RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius)
-                    .foregroundStyle(.white)
-            }
-            
-            Spacer()
         }
+        .scrollIndicators(.hidden)
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(.systemGroupedBackground))
+        .background(GlobalConfiguration.groupedBackground)
         .navigationTitle("Sessão")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden()
+        .alert("Conflito de horários", isPresented: .init(value: $viewModel.alertMessage)) {
+
+        } message: {
+            Text(viewModel.alertMessage ?? "")
+        }
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Edit", systemImage: "pencil") {
-                    viewModel.navigateToEditAppointment()
+            if viewModel.appointment.status != .blocked {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(
+                        viewModel.isEditing ? "Cancelar edição" : "Editar",
+                        systemImage: viewModel.isEditing ? "pencil.slash" : "pencil"
+                    ) {
+                        focusedField = nil
+                        viewModel.toggleEditing()
+                    }
+                    .frame(maxWidth: Layout.toolbarButtonMaxWidth)
+                    .tint(.black)
                 }
-                .buttonStyle(.plain)
+            }
+
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Voltar", systemImage: "chevron.backward") {
+                    viewModel.dismiss()
+                }
+                .frame(maxWidth: Layout.toolbarButtonMaxWidth)
+                .tint(.black)
             }
         }
+
     }
 }
 
@@ -102,7 +86,13 @@ struct AppointmentDetailsView: View {
             endDate: .now.addingTimeInterval(3600 * 1.5),
             client: .init(name: "Caio", contactInfo: "999999")
         )
-        
-        AppointmentDetailsView(viewModel: .init(coordinator: coordinator, appointment: appointment))
+
+        AppointmentDetailsView(
+            viewModel: .init(
+                coordinator: coordinator,
+                databaseService: .init(context: makeMainContext()),
+                appointment: appointment
+            )
+        )
     }
 }

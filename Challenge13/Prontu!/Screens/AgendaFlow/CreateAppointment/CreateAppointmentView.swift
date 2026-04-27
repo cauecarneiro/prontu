@@ -20,7 +20,11 @@ struct CreateAppointmentView: View {
     enum FocusField: Hashable {
         case name, contactInfo, observations
     }
-    
+
+    private enum Layout {
+        static let toolbarButtonMaxWidth: CGFloat = 30
+    }
+
     private enum ScrollAnchor: String {
         case contactSection
         case notesSection
@@ -31,12 +35,23 @@ struct CreateAppointmentView: View {
         VStack(spacing:0) {
             
             ScrollView {
-                
-                PickerClientButton(client: viewModel.selectedClient) {
-                    viewModel.presentSelectedClient()
+
+                Picker("", selection: $viewModel.scheduleType) {
+                    ForEach(CreateAppointmentViewModel.ScheduleType.allCases) { scheduleType in
+                        Text(scheduleType.rawValue)
+                            .tag(scheduleType)
+                    }
                 }
+                .pickerStyle(.segmented)
                 .padding()
-                
+
+                if viewModel.shouldShowAppointmentFields {
+                    PickerClientButton(client: viewModel.selectedClient) {
+                        viewModel.presentSelectedClient()
+                    }
+                    .padding()
+                }
+
                 AppointmentPickerList(
                     selectedDate: $viewModel.selectedDate,
                     selectedStartTime: $viewModel.selectedStartTime,
@@ -44,14 +59,17 @@ struct CreateAppointmentView: View {
                     selectedFrequency: $viewModel.selectedFrequency
                 )
                 .padding()
-                
-                AddEquipament(
-                    resultado: viewModel.resultado,
-                    action: {
-                        viewModel.presentGenerateEquipamentSheet()
-                    }
-                )
-                
+
+                if viewModel.shouldShowAppointmentFields {
+                    AddEquipament(
+                        resultado: viewModel.resultado,
+                        action: {
+                            viewModel.presentGenerateEquipamentSheet()
+                        }
+                    )
+                    .padding()
+                }
+
                 NotesTextArea(
                     text: $viewModel.observations,
                     placeholder: "Escreva mais detalhes...",
@@ -63,8 +81,8 @@ struct CreateAppointmentView: View {
                 .padding()
                 
                 FooterButton(
-                    title: "Agendar",
-                    isEnabled: viewModel.selectedClient != nil,
+                    title: viewModel.footerTitle,
+                    isEnabled: viewModel.canSave,
                     action: {
                         viewModel.saveAppointment()
                     }
@@ -75,13 +93,13 @@ struct CreateAppointmentView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden()
         .scrollDismissesKeyboard(.interactively)
-        .background(Color(.systemGroupedBackground))
+        .background(GlobalConfiguration.groupedBackground)
         .onTapGesture {
             // Fecha o teclado ao tocar fora
             focusedField = nil
         }
         .alert("Conflito de horários", isPresented: .init(value: $viewModel.alertMessage)) {
-            
+
         } message: {
             Text(viewModel.alertMessage ?? "")
         }
@@ -90,7 +108,7 @@ struct CreateAppointmentView: View {
                 Button("Voltar", systemImage: "chevron.backward") {
                     viewModel.dismissCreateAppointment()
                 }
-                .frame(maxWidth: 30)
+                .frame(maxWidth: Layout.toolbarButtonMaxWidth)
                 .tint(.black)
             }
         }
