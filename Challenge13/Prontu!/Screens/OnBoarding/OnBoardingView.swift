@@ -5,6 +5,7 @@
 //  Created by Luciana Liebl de Freitas on 27/04/26.
 //
 import SwiftUI
+import Combine
 
 struct OnBoardingView: View{
     
