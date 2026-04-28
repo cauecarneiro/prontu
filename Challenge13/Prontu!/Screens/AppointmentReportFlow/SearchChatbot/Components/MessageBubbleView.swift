@@ -21,7 +21,7 @@ struct MessageBubbleView: View{
     private var isHero: Bool{ message.author == .hero }
 
     // Largura animada do clip mask do bubble (apenas hero animado)
-    @State private var bubbleClipWidth: CGFloat = 0
+    @State private var bubbleClipWidth: CGFloat = 72
     
     //Layout da mensagem:
     var body: some View{
