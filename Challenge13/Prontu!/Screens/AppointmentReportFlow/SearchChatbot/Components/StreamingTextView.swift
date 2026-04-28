@@ -11,18 +11,14 @@ struct StreamingTextView: View {
     var initialBlur: CGFloat = 8
     var initialOffsetY: CGFloat = 4
     var skipAnimation: Bool = false
+    var onNaturalWidthChanged: ((CGFloat) -> Void)? = nil
     var onTick: (() -> Void)? = nil
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var revealedTokenCount: Int = 0
 
-    private var tokens: [Token] {
-        Token.tokenize(text)
-    }
-
-    private var shouldAnimate: Bool {
-        !skipAnimation && !reduceMotion
-    }
+    private var tokens: [Token] { Token.tokenize(text) }
+    private var shouldAnimate: Bool { !skipAnimation && !reduceMotion }
 
     private var visibleTokens: [(offset: Int, token: Token)] {
         let target = shouldAnimate ? revealedTokenCount : tokens.count
@@ -38,7 +34,10 @@ struct StreamingTextView: View {
                     Text(value)
                         .font(.body)
                         .fixedSize(horizontal: true, vertical: false)
-                        .transition(.streamWord(blur: initialBlur, offsetY: initialOffsetY))
+                        .transition(
+                            .streamWord(blur: initialBlur, offsetY: initialOffsetY)
+                            .animation(.easeOut(duration: 0.38))
+                        )
                 case .newline:
                     Color.clear
                         .frame(height: 0)
@@ -46,7 +45,10 @@ struct StreamingTextView: View {
                 }
             }
         }
-        .animation(.spring(response: 0.5, dampingFraction: 0.85), value: revealedTokenCount)
+        .onGeometryChange(for: CGFloat.self, of: { $0.size.width }) { newWidth in
+            guard newWidth > 0 else { return }
+            onNaturalWidthChanged?(newWidth)
+        }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(text)
         .task(id: text) {
@@ -166,10 +168,7 @@ struct WordFlowLayout: Layout {
             if i < rows.count - 1 { totalHeight += lineSpacing }
             maxRowWidth = max(maxRowWidth, row.width)
         }
-        return CGSize(
-            width: maxRowWidth,
-            height: totalHeight
-        )
+        return CGSize(width: maxRowWidth, height: totalHeight)
     }
 
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
@@ -178,55 +177,40 @@ struct WordFlowLayout: Layout {
         for row in rows {
             var x = bounds.minX
             for item in row.items {
-                let size = item.size
                 item.subview.place(
                     at: CGPoint(x: x, y: y),
-                    proposal: ProposedViewSize(size)
+                    proposal: ProposedViewSize(item.size)
                 )
-                x += size.width + spacing
+                x += item.size.width + spacing
             }
             y += row.height + lineSpacing
         }
     }
 
-    private struct RowItem {
-        let subview: LayoutSubview
-        let size: CGSize
-    }
-
-    private struct Row {
-        var items: [RowItem]
-        var width: CGFloat
-        var height: CGFloat
-    }
+    private struct RowItem { let subview: LayoutSubview; let size: CGSize }
+    private struct Row { var items: [RowItem]; var width: CGFloat; var height: CGFloat }
 
     private func computeRows(subviews: Subviews, maxWidth: CGFloat) -> [Row] {
         var rows: [Row] = []
         var current = Row(items: [], width: 0, height: 0)
 
         for subview in subviews {
-            let isBreak = subview[ForceLineBreakKey.self]
-            if isBreak {
+            if subview[ForceLineBreakKey.self] {
                 rows.append(current)
                 current = Row(items: [], width: 0, height: 0)
                 continue
             }
-
             let size = subview.sizeThatFits(.unspecified)
-
             if current.width + size.width > maxWidth, !current.items.isEmpty {
                 rows.append(current)
                 current = Row(items: [], width: 0, height: 0)
             }
-
             current.items.append(RowItem(subview: subview, size: size))
             current.width += size.width + spacing
             current.height = max(current.height, size.height)
         }
 
-        if !current.items.isEmpty || rows.isEmpty {
-            rows.append(current)
-        }
+        if !current.items.isEmpty || rows.isEmpty { rows.append(current) }
         return rows
     }
 }

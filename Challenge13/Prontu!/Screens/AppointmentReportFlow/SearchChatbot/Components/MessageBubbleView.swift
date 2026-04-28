@@ -19,6 +19,9 @@ struct MessageBubbleView: View{
     var skipAnimation: Bool = false
     //Verica se é a IA ou  o user
     private var isHero: Bool{ message.author == .hero }
+
+    // Largura animada do clip mask do bubble (apenas hero animado)
+    @State private var bubbleClipWidth: CGFloat = 0
     
     //Layout da mensagem:
     var body: some View{
@@ -58,6 +61,12 @@ struct MessageBubbleView: View{
             StreamingTextView(
                 text: message.text,
                 skipAnimation: skipAnimation,
+                onNaturalWidthChanged: { newWidth in
+                    guard !skipAnimation else { return }
+                    withAnimation(.easeInOut(duration: 0.38).delay(0.05)) {
+                        bubbleClipWidth = newWidth + 28
+                    }
+                },
                 onTick: onStreamTick
             )
         } else {
@@ -65,16 +74,25 @@ struct MessageBubbleView: View{
         }
     }
 
-    private var textBubble: some View{
+    private var useClipAnimation: Bool {
+        isHero && !skipAnimation
+    }
+
+    private var textBubble: some View {
         textContent
             .padding(.horizontal, 14)
             .padding(.top, 10)
             .padding(.bottom, 16)
-//            .frame(maxWidth: .infinity, alignment: isHero ? .leading : .trailing)
-//            .fixedSize(horizontal: false, vertical: true)
             .background(isHero ? Color(.systemFill).opacity(0.55) : Color(GlobalConfiguration.primaryBlue))
             .foregroundStyle(isHero ? Color.secondary : Color.white)
-            .clipShape(RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius))
+            .mask(alignment: .leading) {
+                if useClipAnimation {
+                    RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius)
+                        .frame(width: bubbleClipWidth)
+                } else {
+                    RoundedRectangle(cornerRadius: GlobalConfiguration.normalCornerRadius)
+                }
+            }
     }
 }
 

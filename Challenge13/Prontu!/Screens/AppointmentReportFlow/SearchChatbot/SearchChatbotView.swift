@@ -36,7 +36,7 @@ struct SearchChatbotView: View {
                                 .id(message.id)
 
                             }
-                            .padding(.horizontal, 25)
+                            .padding(.horizontal, 16)
                             //.padding(.vertical, 10)
 
                             if viewModel.loading {
