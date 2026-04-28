@@ -47,6 +47,7 @@ struct AppointmentDetailsView: View {
         .navigationTitle("Sessão")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden()
+        .enableSwipeBack()
         .alert("Conflito de horários", isPresented: .init(value: $viewModel.alertMessage)) {
 
         } message: {
