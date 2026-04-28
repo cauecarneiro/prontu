@@ -21,11 +21,19 @@ struct SearchChatbotView: View {
                     ScrollView {
                         LazyVStack(spacing: 12) {
                             ForEach(viewModel.messages) { message in
-                                MessageBubbleView(message: message){ suggestion in
-                                    viewModel.sendSuggestion(suggestion)
-                                }
+                                MessageBubbleView(
+                                    message: message,
+                                    onSuggestion: { suggestion in
+                                        viewModel.sendSuggestion(suggestion)
+                                    },
+                                    onStreamTick: {
+                                        withAnimation(.easeOut(duration: 0.1)) {
+                                            proxy.scrollTo(message.id, anchor: .bottom)
+                                        }
+                                    }
+                                )
                                 .id(message.id)
-                                
+
                             }
                             .padding(.horizontal, 25)
                             //.padding(.vertical, 10)

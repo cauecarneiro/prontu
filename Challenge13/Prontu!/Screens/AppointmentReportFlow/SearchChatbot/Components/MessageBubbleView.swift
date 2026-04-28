@@ -13,6 +13,8 @@ struct MessageBubbleView: View{
     let message: MessageChat
     //Callback ao clicar na sugestão
     let onSuggestion: (HeroSuggestion) -> Void
+    //Callback chamado a cada palavra revelada na animação de streaming (apenas hero)
+    var onStreamTick: (() -> Void)? = nil
     //Verica se é a IA ou  o user
     private var isHero: Bool{ message.author == .hero }
     
@@ -48,9 +50,17 @@ struct MessageBubbleView: View{
         .frame(maxWidth: .infinity)
     }
     
+    @ViewBuilder
+    private var textContent: some View {
+        if isHero {
+            StreamingTextView(text: message.text, onTick: onStreamTick)
+        } else {
+            Text(message.text).font(.body)
+        }
+    }
+
     private var textBubble: some View{
-        Text(message.text)
-            .font(.body)
+        textContent
             .padding(.horizontal, 14)
             .padding(.top, 10)
             .padding(.bottom, 16)
