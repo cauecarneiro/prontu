@@ -39,6 +39,8 @@ struct Challenge13App: App {
         WindowGroup {
             
             switch coordinator.appState {
+            case .onboarding:
+                OnBoardingView(onComplete: { coordinator.completeOnboarding() })
             case .unlock:
                 MainTabView(coordinator: coordinator)
                     .modelContainer(container)

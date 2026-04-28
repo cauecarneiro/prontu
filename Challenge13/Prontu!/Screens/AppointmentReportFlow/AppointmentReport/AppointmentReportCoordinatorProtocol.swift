@@ -10,4 +10,5 @@ import Foundation
 protocol AppointmentReportCoordinatorProtocol: AnyObject {
     func presentSearchChatbot(appointments: [Appointment])
     func navigateToClientHistory(client: Client, appointments: [Appointment])
+    func navigateToPreferences()
 }

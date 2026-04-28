@@ -45,12 +45,21 @@ final class MainTabCoordinator: ObservableObject {
         self.screenMonitor = screenMonitor
         self.settingsStore = settingsStore
         
-        appState = settingsStore.isAuthenticationEnabled ? .lock : .unlock
-        
+        if !UserDefaults.standard.bool(forKey: "hasCompletedOnboarding") {
+            appState = .onboarding
+        } else {
+            appState = settingsStore.isAuthenticationEnabled ? .lock : .unlock
+        }
+
         observeAuthenticationSetting()
         configureScenePhaseObservation(isEnabled: settingsStore.isAuthenticationEnabled)
     }
     
+    func completeOnboarding() {
+        UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+        appState = .unlock  // sempre vai para o app após o onboarding, sem passar pela tela de lock
+    }
+
     func authentication() async throws {
         if isRunningAuthentication { return }
         
