@@ -1,0 +1,45 @@
+## PR: Fix form persistence and swipe-back gesture
+## Branch: Fixes/UIPolished → develop
+
+### MUDANÇAS PRINCIPAIS
+
+#### 1. Fix Form State Persistence (CreateClientViewModel)
+- Problema: Formulário de novo contato abria preenchido com dados do contato anterior
+- Causa: CreateClientViewModel reutilizado (lazy var) sem reset de estado entre aberturas
+- Solução: Adicionado reset() que limpa name, contactInfo, observations
+- Padrão: Mesmo usado em CreateAppointmentViewModel (defer via Task.yield())
+- Arquivo: Challenge13/Prontu!/Screens/RegisterFlow/CreateClient/CreateClientViewModel.swift
+
+#### 2. Re-enable Swipe-Back Gesture
+- Problema: Swipe backward não funcionava com navigationBarBackButtonHidden(true)
+- Causa: iOS desativa interactivePopGestureRecognizer quando back button é hidden
+- Solução: UIViewRepresentable (View+SwipeBack) que reabilita o gesture
+- Aplicado em: EditClientView, CreateAppointmentView, AppointmentDetailsView
+- Novo arquivo: Challenge13/Prontu!/Helpers/Extension/View+SwipeBack.swift
+
+### ARQUIVOS MODIFICADOS
+
+1. Challenge13/Prontu!/Screens/RegisterFlow/CreateClient/CreateClientViewModel.swift
+   - Adicionado método reset() privado
+   - Chamado em dismiss() e save()
+
+2. Challenge13/Prontu!/Helpers/Extension/View+SwipeBack.swift
+   - Novo arquivo com extensão View
+   - Implementa UIViewRepresentable para acessar UINavigationController
+
+3. Challenge13/Prontu!/Screens/RegisterFlow/EditClient/EditClientView.swift
+   - Adicionado .enableSwipeBack() após navigationBarBackButtonHidden(true)
+
+4. Challenge13/Prontu!/Screens/AgendaFlow/AppointmentDetails/AppointmentDetailsView.swift
+   - Adicionado .enableSwipeBack() após navigationBarBackButtonHidden()
+
+5. Challenge13/Prontu!/Screens/AgendaFlow/CreateAppointment/CreateAppointmentView.swift
+   - Adicionado .enableSwipeBack() após navigationBarBackButtonHidden()
+
+### TESTE
+- Adicionar contato → salvar → FAB → formulário vazio ✓
+- Preencher parcialmente → fechar swipe → FAB → formulário vazio ✓
+- Swipe backward em 3 views com back button hidden ✓
+
+### COMMIT
+- d6097d9: Fix form state persistence and add swipe-back gesture
