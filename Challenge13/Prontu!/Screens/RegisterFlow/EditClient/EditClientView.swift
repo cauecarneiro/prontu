@@ -65,6 +65,7 @@ struct EditClientView: View {
         }
         .background(GlobalConfiguration.groupedBackground)
         .navigationBarBackButtonHidden(true)
+        .enableSwipeBack()
         .toolbar {
             leadingToolbarItem
             trailingToolbarItems

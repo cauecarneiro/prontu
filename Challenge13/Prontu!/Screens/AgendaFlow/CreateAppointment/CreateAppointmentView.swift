@@ -92,6 +92,7 @@ struct CreateAppointmentView: View {
         .navigationBarTitle("Agendamento")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden()
+        .enableSwipeBack()
         .scrollDismissesKeyboard(.interactively)
         .background(GlobalConfiguration.groupedBackground)
         .onTapGesture {

@@ -22,30 +22,32 @@ struct AppointmentDetailsView: View {
     
     var body: some View {
         ScrollView {
-            if viewModel.isEditing {
-                AppointmentDetailsEditContainerView(
-                    viewModel: viewModel,
-                    focusedField: $focusedField,
-                    notesField: .active
-                )
-            } else {
-                AppointmentDetailsContainerView(
-                    viewModel: viewModel,
-                    focusedField: $focusedField,
-                    notesField: .active
-                )
-                
-                DeleteButton(action: viewModel.deleteAppointment)
+            VStack(spacing: GlobalConfiguration.normalSpacing) {
+                if viewModel.isEditing {
+                    AppointmentDetailsEditContainerView(
+                        viewModel: viewModel,
+                        focusedField: $focusedField,
+                        notesField: .active
+                    )
+                } else {
+                    AppointmentDetailsContainerView(
+                        viewModel: viewModel,
+                        focusedField: $focusedField,
+                        notesField: .active
+                    )
+
+                    DeleteButton(action: viewModel.deleteAppointment)
+                }
             }
-            
+            .padding()
         }
         .scrollIndicators(.hidden)
-        .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(GlobalConfiguration.groupedBackground)
         .navigationTitle("Sessão")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden()
+        .enableSwipeBack()
         .alert("Conflito de horários", isPresented: .init(value: $viewModel.alertMessage)) {
 
         } message: {
