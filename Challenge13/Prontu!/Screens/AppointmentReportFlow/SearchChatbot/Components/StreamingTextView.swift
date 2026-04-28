@@ -8,26 +8,37 @@ import SwiftUI
 struct StreamingTextView: View {
     let text: String
     var wordInterval: Duration = .milliseconds(90)
-    var revealDuration: Double = 0.45
     var initialBlur: CGFloat = 8
+    var initialOffsetY: CGFloat = 4
+    var skipAnimation: Bool = false
     var onTick: (() -> Void)? = nil
 
-    @State private var revealedWords: Int = 0
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var revealedTokenCount: Int = 0
 
     private var tokens: [Token] {
         Token.tokenize(text)
     }
 
+    private var shouldAnimate: Bool {
+        !skipAnimation && !reduceMotion
+    }
+
+    private var visibleTokens: [(offset: Int, token: Token)] {
+        let target = shouldAnimate ? revealedTokenCount : tokens.count
+        return Array(tokens.enumerated().prefix(target))
+            .map { (offset: $0.offset, token: $0.element) }
+    }
+
     var body: some View {
-        WordFlowLayout(spacing: 0, lineSpacing: 2) {
-            ForEach(Array(tokens.enumerated()), id: \.offset) { index, token in
-                switch token {
+        WordFlowLayout(spacing: 0, lineSpacing: 4) {
+            ForEach(visibleTokens, id: \.offset) { entry in
+                switch entry.token {
                 case .word(let value):
                     Text(value)
                         .font(.body)
-                        .opacity(index < revealedWords ? 1 : 0)
-                        .blur(radius: index < revealedWords ? 0 : initialBlur)
-                        .animation(.easeOut(duration: revealDuration), value: revealedWords)
+                        .fixedSize(horizontal: true, vertical: false)
+                        .transition(.streamWord(blur: initialBlur, offsetY: initialOffsetY))
                 case .newline:
                     Color.clear
                         .frame(height: 0)
@@ -35,21 +46,34 @@ struct StreamingTextView: View {
                 }
             }
         }
+        .animation(.spring(response: 0.5, dampingFraction: 0.85), value: revealedTokenCount)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(text)
         .task(id: text) {
-            revealedWords = 0
-            for (i, token) in tokens.enumerated() {
-                guard case .word = token else {
-                    revealedWords = i + 1
-                    continue
-                }
-                do {
-                    try await Task.sleep(for: wordInterval)
-                } catch {
-                    return
-                }
-                revealedWords = i + 1
-                onTick?()
+            guard shouldAnimate else {
+                revealedTokenCount = tokens.count
+                return
             }
+            revealedTokenCount = 0
+            var wordsRevealedSinceTick = 0
+            for (i, token) in tokens.enumerated() {
+                if case .word = token {
+                    do {
+                        try await Task.sleep(for: wordInterval)
+                    } catch {
+                        return
+                    }
+                    revealedTokenCount = i + 1
+                    wordsRevealedSinceTick += 1
+                    if wordsRevealedSinceTick >= 4 {
+                        onTick?()
+                        wordsRevealedSinceTick = 0
+                    }
+                } else {
+                    revealedTokenCount = i + 1
+                }
+            }
+            onTick?()
         }
     }
 }
@@ -89,7 +113,31 @@ extension StreamingTextView {
     }
 }
 
-// MARK: - Line break marker (used by WordFlowLayout)
+// MARK: - Stream word transition
+
+private struct StreamWordModifier: ViewModifier {
+    let active: Bool
+    let blur: CGFloat
+    let offsetY: CGFloat
+
+    func body(content: Content) -> some View {
+        content
+            .opacity(active ? 0 : 1)
+            .blur(radius: active ? blur : 0)
+            .offset(y: active ? offsetY : 0)
+    }
+}
+
+private extension AnyTransition {
+    static func streamWord(blur: CGFloat, offsetY: CGFloat) -> AnyTransition {
+        .modifier(
+            active: StreamWordModifier(active: true, blur: blur, offsetY: offsetY),
+            identity: StreamWordModifier(active: false, blur: blur, offsetY: offsetY)
+        )
+    }
+}
+
+// MARK: - Line break marker
 
 private struct LineBreakMarker: ViewModifier {
     func body(content: Content) -> some View {
@@ -101,11 +149,11 @@ private struct ForceLineBreakKey: LayoutValueKey {
     static let defaultValue: Bool = false
 }
 
-// MARK: - WordFlowLayout (leading-aligned, supports forced line breaks)
+// MARK: - WordFlowLayout
 
 struct WordFlowLayout: Layout {
     var spacing: CGFloat = 0
-    var lineSpacing: CGFloat = 2
+    var lineSpacing: CGFloat = 4
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
         let maxWidth = proposal.width ?? .infinity
@@ -119,7 +167,7 @@ struct WordFlowLayout: Layout {
             maxRowWidth = max(maxRowWidth, row.width)
         }
         return CGSize(
-            width: proposal.width ?? maxRowWidth,
+            width: maxRowWidth,
             height: totalHeight
         )
     }

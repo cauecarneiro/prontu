@@ -27,24 +27,34 @@ class SearchChatbotViewModel: ObservableObject {
     
     private let engine: AppointmentChatEngine
     private weak var coordinator: (any SearchChatBotCoordinatorProtocol)?
-    
+    private var currentReplyTask: Task<Void, Never>?
+
     init(engine: AppointmentChatEngine, coordinator: (any SearchChatBotCoordinatorProtocol)?) {
         self.engine = engine
         self.coordinator = coordinator
     }
-    
+
+    deinit {
+        currentReplyTask?.cancel()
+    }
+
     func sendUserMessage(_ text: String) {
         messages.append(.init(author: .user, text: text))
-        
+
         loading = true
-        
-        Task {
+
+        currentReplyTask?.cancel()
+        currentReplyTask = Task { [weak self] in
+            guard let self else { return }
             do {
-                let response = try await engine.reply(to: text)
+                let response = try await self.engine.reply(to: text)
+                try Task.checkCancellation()
                 await MainActor.run {
                     self.messages.append(response)
                     self.loading = false
                 }
+            } catch is CancellationError {
+                return
             } catch {
                 await MainActor.run {
                     self.messages.append(
@@ -71,6 +81,7 @@ class SearchChatbotViewModel: ObservableObject {
     }
     
     func dismiss() {
+        currentReplyTask?.cancel()
         coordinator?.dismissSearchChatBot()
     }
     

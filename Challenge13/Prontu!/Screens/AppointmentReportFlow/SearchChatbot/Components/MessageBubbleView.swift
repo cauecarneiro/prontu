@@ -15,6 +15,8 @@ struct MessageBubbleView: View{
     let onSuggestion: (HeroSuggestion) -> Void
     //Callback chamado a cada palavra revelada na animação de streaming (apenas hero)
     var onStreamTick: (() -> Void)? = nil
+    //Quando true, a mensagem aparece sem animação de streaming
+    var skipAnimation: Bool = false
     //Verica se é a IA ou  o user
     private var isHero: Bool{ message.author == .hero }
     
@@ -53,7 +55,11 @@ struct MessageBubbleView: View{
     @ViewBuilder
     private var textContent: some View {
         if isHero {
-            StreamingTextView(text: message.text, onTick: onStreamTick)
+            StreamingTextView(
+                text: message.text,
+                skipAnimation: skipAnimation,
+                onTick: onStreamTick
+            )
         } else {
             Text(message.text).font(.body)
         }

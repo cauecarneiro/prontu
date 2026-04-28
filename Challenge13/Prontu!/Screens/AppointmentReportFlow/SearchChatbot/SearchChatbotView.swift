@@ -27,25 +27,28 @@ struct SearchChatbotView: View {
                                         viewModel.sendSuggestion(suggestion)
                                     },
                                     onStreamTick: {
-                                        withAnimation(.easeOut(duration: 0.1)) {
+                                        withAnimation(.easeOut(duration: 0.15)) {
                                             proxy.scrollTo(message.id, anchor: .bottom)
                                         }
-                                    }
+                                    },
+                                    skipAnimation: message.id != viewModel.messages.last?.id
                                 )
                                 .id(message.id)
 
                             }
                             .padding(.horizontal, 25)
                             //.padding(.vertical, 10)
-                            
-                            if viewModel.loading{
+
+                            if viewModel.loading {
                                 TypingIndicatorView()
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .padding(.leading, 16)
                                     .id("typing")
+                                    .transition(.opacity.combined(with: .move(edge: .bottom)))
                             }
                         }
                         .scrollDismissesKeyboard(.interactively)
+                        .animation(.easeInOut(duration: 0.25), value: viewModel.loading)
                         .onChange(of: viewModel.messages.count) { _, _ in
                             rollDown(proxy: proxy)
                         }
