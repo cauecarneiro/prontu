@@ -84,6 +84,7 @@ struct PrivacyPolicyView: View {
                         dismiss()
                     }
                     .frame(maxWidth: 30)
+                    .tint(.black)
                 }
             }
         }
