@@ -47,8 +47,6 @@ struct AppointmentIntentClassifier {
             """
         }
 
-        try await Task.sleep(for: .seconds(2))
-        
         return response.content
     }
 }

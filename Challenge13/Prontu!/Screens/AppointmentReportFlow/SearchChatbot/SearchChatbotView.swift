@@ -21,23 +21,34 @@ struct SearchChatbotView: View {
                     ScrollView {
                         LazyVStack(spacing: 12) {
                             ForEach(viewModel.messages) { message in
-                                MessageBubbleView(message: message){ suggestion in
-                                    viewModel.sendSuggestion(suggestion)
-                                }
+                                MessageBubbleView(
+                                    message: message,
+                                    onSuggestion: { suggestion in
+                                        viewModel.sendSuggestion(suggestion)
+                                    },
+                                    onStreamTick: {
+                                        withAnimation(.easeOut(duration: 0.15)) {
+                                            proxy.scrollTo(message.id, anchor: .bottom)
+                                        }
+                                    },
+                                    skipAnimation: message.id != viewModel.messages.last?.id
+                                )
                                 .id(message.id)
-                                
+
                             }
-                            .padding(.horizontal, 25)
+                            .padding(.horizontal, 16)
                             //.padding(.vertical, 10)
-                            
-                            if viewModel.loading{
+
+                            if viewModel.loading {
                                 TypingIndicatorView()
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .padding(.leading, 16)
                                     .id("typing")
+                                    .transition(.opacity.combined(with: .move(edge: .bottom)))
                             }
                         }
                         .scrollDismissesKeyboard(.interactively)
+                        .animation(.easeInOut(duration: 0.25), value: viewModel.loading)
                         .onChange(of: viewModel.messages.count) { _, _ in
                             rollDown(proxy: proxy)
                         }

@@ -148,3 +148,8 @@ AI-Driven-Development/
 .agents/
 .agents/skills/
 skills/
+
+# Project-specific exports and assets
+Prontu.icon/
+Prontu Exports/
+Prontu-iOS-Default-1024x1024@1x.png
