@@ -132,3 +132,24 @@ iOSInjectionProject/
 **/xcshareddata/WorkspaceSettings.xcsettings
 
 # End of https://www.toptal.com/developers/gitignore/api/swift,macos,xcode
+
+# Claude/Codex instructions and config
+CLAUDE.md
+.claude/
+.codex/
+codex/
+
+# Markdown files
+*.md
+AGENTS.md
+
+# Local AI-driven development artifacts
+AI-Driven-Development/
+.agents/
+.agents/skills/
+skills/
+
+# Project-specific exports and assets
+Prontu.icon/
+Prontu Exports/
+Prontu-iOS-Default-1024x1024@1x.png
