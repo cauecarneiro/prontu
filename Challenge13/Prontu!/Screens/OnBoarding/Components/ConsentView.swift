@@ -28,11 +28,11 @@ struct ConsentView: View{
                 .bold()
                 .padding(.bottom, 24)
 
-            VStack(spacing: 0){
+            VStack(spacing: .zero){
                 Button {
                     showTermsSheet = true
                 } label: {
-                    DocRowView(icon: "doc.text", label: "Termos de Serviço")
+                    DocRowView(icon: "doc.text", label: "Termos de Uso")
                 }
                 .foregroundStyle(.primary)
 
@@ -53,7 +53,7 @@ struct ConsentView: View{
 
             ContinueButton(label: "Aceitar e Continuar", action: acceptAction)
 
-            Text("Ao clicar em \"Aceitar e Continuar\", você concorda com os Termos de Serviço e a Política de Privacidade.")
+            Text("Ao clicar em \"Aceitar e Continuar\", você concorda com os Termos de Uso e a Política de Privacidade.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -61,10 +61,12 @@ struct ConsentView: View{
                 .padding(.bottom, 24)
         }
         .sheet(isPresented: $showTermsSheet) {
-            Color(.systemGroupedBackground).ignoresSafeArea()
+            TermsOfUseView()
+                .padding(4)
         }
         .sheet(isPresented: $showPrivacySheet) {
-            Color(.systemGroupedBackground).ignoresSafeArea()
+            PrivacyPolicyView()
+                .padding(4)
         }
     }
 }
