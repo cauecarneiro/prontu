@@ -11,34 +11,50 @@ struct LockScreenView: View {
     @ObservedObject var coordinator: MainTabCoordinator
     @Environment(\.scenePhase) var scenePhase
     @State var error: String? = nil
-    
-    var body: some View {
-        VStack {
-            Button("Unlock") {
-                Task {
-                    do {
-                        try await coordinator.authentication()
-                    } catch {
-                        self.error = error.localizedDescription
-                    }
-                }
-            }
 
-        }
-        .onChange(of: scenePhase) { _ , newValue in
-            if newValue == .active {
-                Task {
-                    do {
-                        try await coordinator.authentication()
-                    } catch {
-                        self.error = error.localizedDescription
-                    }
+    var body: some View {
+        ZStack {
+            Color(.systemGroupedBackground).ignoresSafeArea()
+
+            VStack(spacing: 20) {
+                Image(systemName: "lock.fill")
+                    .font(.system(size: 56, weight: .medium))
+                    .foregroundStyle(GlobalConfiguration.primaryBlue)
+                    .padding(.bottom, 4)
+
+                Text("Prontu! bloqueado")
+                    .font(.title.bold())
+                    .foregroundStyle(.primary)
+
+                Button {
+                    unlock()
+                } label: {
+                    Text("Desbloquear com Face ID")
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 28)
+                        .padding(.vertical, 16)
+                        .background(GlobalConfiguration.primaryBlue)
+                        .clipShape(Capsule())
                 }
+                .buttonStyle(.plain)
+                .padding(.top, 4)
             }
         }
-        .alert(error ?? "", isPresented: Binding(value: $error) ) {
-            Button("OK") {
-                
+        .onChange(of: scenePhase) { _, newValue in
+            if newValue == .active { unlock() }
+        }
+        .alert(error ?? "", isPresented: Binding(value: $error)) {
+            Button("OK") { }
+        }
+    }
+
+    private func unlock() {
+        Task {
+            do {
+                try await coordinator.authentication()
+            } catch {
+                self.error = error.localizedDescription
             }
         }
     }

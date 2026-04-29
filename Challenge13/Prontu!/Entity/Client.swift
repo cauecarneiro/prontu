@@ -19,7 +19,7 @@ final class Client { // nunca apagar o client, mudar para o isDeleted para true,
     var observations: String?
     var isDeleted: Bool = false
     
-    @Relationship(deleteRule: .nullify, inverse: \Appointment.client)
+    @Relationship(deleteRule: .cascade, inverse: \Appointment.client)
     var appointments: [Appointment] = []
     
     init(

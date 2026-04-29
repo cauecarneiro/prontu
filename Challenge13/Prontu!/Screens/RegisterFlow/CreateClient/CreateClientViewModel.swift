@@ -41,9 +41,22 @@ final class CreateClientViewModel: ObservableObject {
             observations: trimmedObservations.isEmpty ? nil : trimmedObservations
         ))
         coordinator?.dismissCreateClient()
+        reset()
     }
 
     func dismiss() {
         coordinator?.dismissCreateClient()
+        reset()
+    }
+
+    private func reset() {
+        Task {
+            await Task.yield()
+            await MainActor.run {
+                name = ""
+                contactInfo = ""
+                observations = ""
+            }
+        }
     }
 }
