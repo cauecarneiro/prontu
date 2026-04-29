@@ -82,10 +82,12 @@ struct PreferencesView: View {
             Text("A autenticação biométrica ajuda a proteger o acesso ao app neste dispositivo. Ao desativá-lo, o acesso às suas informações ficará menos protegido.")
         }
         .sheet(isPresented: $showTermsSheet) {
-            Color(.systemGroupedBackground).ignoresSafeArea()
+            TermsOfUseView()
+                .padding(4)
         }
         .sheet(isPresented: $showPrivacySheet) {
-            Color(.systemGroupedBackground).ignoresSafeArea()
+            PrivacyPolicyView()
+                .padding(4)
         }
     }
 }
