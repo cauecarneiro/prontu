@@ -47,6 +47,11 @@ final class EditClientViewModel: ObservableObject {
         isEditing = false
     }
 
+    func deleteClient() {
+        databaseService.delete(element: client)
+        coordinator?.dismissEditClient()
+    }
+
     func cancelEdit() {
         name = client.name
         contactInfo = client.contactInfo

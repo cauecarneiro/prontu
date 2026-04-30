@@ -12,6 +12,7 @@ struct EditClientView: View {
     @ObservedObject var viewModel: EditClientViewModel
     @Namespace private var heroNamespace
     @State private var isCollapsed: Bool = false
+    @State private var showDeleteConfirmation: Bool = false
     @FocusState private var focusedField: FocusField?
 
     private enum FocusField { case name, contactInfo }
@@ -28,8 +29,18 @@ struct EditClientView: View {
         static let expandedPhoneSize: CGFloat = 15
         static let collapsedPhoneSize: CGFloat = 13
         static let horizontalPadding: CGFloat = 16
+        static let toolbarButtonMaxWidth: CGFloat = 30
+        static let toolbarButtonSpacing: CGFloat = 12
+        static let toolbarIconSize: CGFloat = 17
         static let morphSpring: Animation = .spring(response: 0.35, dampingFraction: 0.75)
         static let editSpring: Animation = .spring(response: 0.3, dampingFraction: 0.7)
+    }
+
+    private enum TextValue {
+        static let deleteClientConfirmationTitle = "Excluir cliente?"
+        static let deleteClientConfirmationMessage = "Esta ação também remove as sessões vinculadas a este cliente."
+        static let deleteClientButtonTitle = "Excluir cliente"
+        static let cancelButtonTitle = "Cancelar"
     }
 
     // MARK: - Body
@@ -69,6 +80,19 @@ struct EditClientView: View {
         .toolbar {
             leadingToolbarItem
             trailingToolbarItems
+        }
+        .confirmationDialog(
+            TextValue.deleteClientConfirmationTitle,
+            isPresented: $showDeleteConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button(TextValue.deleteClientButtonTitle, role: .destructive) {
+                viewModel.deleteClient()
+            }
+
+            Button(TextValue.cancelButtonTitle, role: .cancel) { }
+        } message: {
+            Text(TextValue.deleteClientConfirmationMessage)
         }
         .animation(Layout.editSpring, value: viewModel.isEditing)
     }
@@ -206,10 +230,10 @@ struct EditClientView: View {
         ToolbarItem(placement: .navigationBarLeading) {
             Button(action: viewModel.dismiss) {
                 Image(systemName: "chevron.backward")
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(.system(size: Layout.toolbarIconSize, weight: .semibold))
                     .foregroundStyle(Color.primary)
             }
-            .frame(maxWidth: 30)
+            .frame(maxWidth: Layout.toolbarButtonMaxWidth)
             .tint(.black)
         }
     }
@@ -218,7 +242,7 @@ struct EditClientView: View {
     private var trailingToolbarItems: some ToolbarContent {
         if viewModel.isEditing {
             ToolbarItem(placement: .navigationBarTrailing) {
-                HStack(spacing: 12) {
+                HStack(spacing: Layout.toolbarButtonSpacing) {
                     Button("Cancelar") {
                         focusedField = nil
                         viewModel.cancelEdit()
@@ -236,13 +260,25 @@ struct EditClientView: View {
             }
         } else {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button { viewModel.isEditing = true } label: {
-                    Image(systemName: "pencil")
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundStyle(Color.primary)
+                HStack(spacing: Layout.toolbarButtonSpacing) {
+                    Button {
+                        showDeleteConfirmation = true
+                    } label: {
+                        Image(systemName: "trash")
+                            .font(.system(size: Layout.toolbarIconSize, weight: .semibold))
+                            .foregroundStyle(GlobalConfiguration.destructiveRed)
+                    }
+                    .frame(maxWidth: Layout.toolbarButtonMaxWidth)
+                    .tint(GlobalConfiguration.destructiveRed)
+
+                    Button { viewModel.isEditing = true } label: {
+                        Image(systemName: "pencil")
+                            .font(.system(size: Layout.toolbarIconSize, weight: .semibold))
+                            .foregroundStyle(Color.primary)
+                    }
+                    .frame(maxWidth: Layout.toolbarButtonMaxWidth)
+                    .tint(.black)
                 }
-                .frame(maxWidth: 30)
-                .tint(.black)
             }
         }
     }
