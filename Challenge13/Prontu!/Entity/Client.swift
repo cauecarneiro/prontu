@@ -9,7 +9,7 @@ import SwiftData
 import Foundation
 
 @Model
-final class Client { // nunca apagar o client, mudar para o isDeleted para true, TODO: Se pa teremos q deletar msm
+final class Client {
     
     @Attribute(.unique)
     var id: UUID = UUID()
@@ -17,7 +17,6 @@ final class Client { // nunca apagar o client, mudar para o isDeleted para true,
     var name: String
     var contactInfo: String
     var observations: String?
-    var isDeleted: Bool = false
     
     @Relationship(deleteRule: .cascade, inverse: \Appointment.client)
     var appointments: [Appointment] = []
